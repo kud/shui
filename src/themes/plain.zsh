@@ -1,0 +1,37 @@
+#!/usr/bin/env zsh
+#
+# plain theme — no colour, text and ASCII icons only
+# equivalent to NO_COLOR; safe for CI, logs, and non-interactive use
+#
+
+source "${SHUI_DIR}/src/themes/default.zsh"
+
+SHUI_RESET=""
+SHUI_BOLD=""
+SHUI_DIM=""
+SHUI_ITALIC=""
+SHUI_UNDERLINE=""
+
+SHUI_COLOR_PRIMARY=""
+SHUI_COLOR_SUCCESS=""
+SHUI_COLOR_WARNING=""
+SHUI_COLOR_ERROR=""
+SHUI_COLOR_INFO=""
+SHUI_COLOR_MUTED=""
+SHUI_COLOR_ACCENT=""
+
+SHUI_BG_SUCCESS=""
+SHUI_BG_WARNING=""
+SHUI_BG_ERROR=""
+SHUI_BG_INFO=""
+SHUI_BG_PRIMARY=""
+SHUI_BG_MUTED=""
+
+SHUI_ICON_SUCCESS="✓"
+SHUI_ICON_ERROR="✗"
+SHUI_ICON_WARNING="!"
+SHUI_ICON_INFO="i"
+SHUI_ICON_BULLET=">"
+SHUI_ICON_ARROW="->"
+SHUI_ICON_CHECK="✓"
+SHUI_ICON_CROSS="✗"
