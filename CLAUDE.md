@@ -61,8 +61,8 @@ Screenshots in `assets/` are SVG files generated from asciinema recordings. Use 
 asciinema rec /tmp/shui-<name>.cast --cols <W> --rows <H> --overwrite -f asciicast-v2 \
   -c "SHUI_ICONS=emoji zsh -c 'source shui.zsh && <commands>'"
 
-# Convert to SVG
-svg-term --in /tmp/shui-<name>.cast --out assets/<name>.svg --width <W> --height <H> --no-cursor
+# Convert to SVG — --at 99999 freezes on the final frame (omitting it produces a blinking animation)
+svg-term --in /tmp/shui-<name>.cast --out assets/<name>.svg --width <W> --height <H> --no-cursor --at 99999
 ```
 
 Requirements: `asciinema` (brew), `svg-term-cli` (npm install -g svg-term-cli).
