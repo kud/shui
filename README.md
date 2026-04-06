@@ -170,8 +170,6 @@ shui warning "Proceed with caution"
 shui info    "For your information"
 ```
 
-![messages](assets/messages.png)
-
 ---
 
 #### Text
@@ -205,8 +203,6 @@ shui divider                        # full-width horizontal rule
 shui spacer                         # one blank line
 shui spacer 3                       # three blank lines
 ```
-
-![layout](assets/layout.png)
 
 ---
 
@@ -243,7 +239,6 @@ shui pill 135 "custom"   # any 256-colour code (0–255)
 
 Available types: `success` `error` `warning` `info` `primary` `muted` `accent` or any `0–255` colour code
 
-![inline](assets/inline.png)
 
 ---
 
@@ -257,7 +252,6 @@ shui box --title="Summary" "3 installed\n1 skipped\n0 errors"
 shui box --title="Status" "$(shui badge success OK) All systems nominal"
 ```
 
-![box](assets/box.png)
 
 ---
 
@@ -273,7 +267,6 @@ shui table \
   "python|3.12.0|$(shui badge warning outdated)"
 ```
 
-![table](assets/table.png)
 
 ---
 
