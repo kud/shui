@@ -1,10 +1,19 @@
-# shui · 水
+<div align="center">
+  <img src="icon.png" width="128" alt="shui" />
+  <h1>shui · 水</h1>
+  <p><strong>Fluid terminal UI for Zsh.</strong></p>
+  <p>
+    <img src="https://img.shields.io/badge/zsh-5.0%2B-blue" alt="Zsh 5.0+" />
+    <img src="https://img.shields.io/badge/dependencies-none-brightgreen" alt="No dependencies" />
+    <img src="https://img.shields.io/badge/license-MIT-lightgrey" alt="MIT" />
+  </p>
+</div>
 
-**Fluid terminal UI for Zsh.**
+---
 
-A design system for the shell. One file to source. A complete set of components — messages, badges, pills, boxes, tables, spinners, and interactive prompts — all styled through a clean token-based theme system.
+Most Zsh scripts scatter raw `echo -e "\033[32m..."` calls everywhere. shui gives you a proper design system instead — semantic components, a token-based theme engine, and a single consistent API.
 
-No dependencies. Pure Zsh.
+One file to source. No dependencies. Pure Zsh.
 
 ---
 
@@ -20,12 +29,6 @@ git clone https://github.com/kud/shui ~/.shui
 
 ```zsh
 git submodule add https://github.com/kud/shui lib/shui
-```
-
-### Via curl
-
-```zsh
-curl -fsSL https://raw.githubusercontent.com/kud/shui/main/install.sh | zsh
 ```
 
 ---
