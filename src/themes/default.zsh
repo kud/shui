@@ -3,11 +3,11 @@
 # default theme — 256-colour with automatic 16-colour fallback
 #
 
-SHUI_RESET="\033[0m"
-SHUI_BOLD="\033[1m"
-SHUI_DIM="\033[2m"
-SHUI_ITALIC="\033[3m"
-SHUI_UNDERLINE="\033[4m"
+SHUI_RESET=$'\033[0m'
+SHUI_BOLD=$'\033[1m'
+SHUI_DIM=$'\033[2m'
+SHUI_ITALIC=$'\033[3m'
+SHUI_UNDERLINE=$'\033[4m'
 
 SHUI_COLOR_PRIMARY=$(_shui_color  "38;5;226" "0;33")
 SHUI_COLOR_SUCCESS=$(_shui_color  "38;5;46"  "0;32")

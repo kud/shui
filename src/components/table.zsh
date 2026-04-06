@@ -13,16 +13,13 @@ _shui_table() {
     esac
   done
 
-  local -a col_widths
-  local num_cols=0
+  local -a col_widths cols
+  local num_cols=0 row col len i dashes
 
   for row in "${data_rows[@]}"; do
-    local -a cols=("${(s//)row}")
-    # split on sep (handle multi-char sep too)
-    cols=("${(@s:${sep}:)row}")
-    local i=1
+    IFS="$sep" read -rA cols <<< "$row"
+    i=1
     for col in "${cols[@]}"; do
-      local len
       len=$(_shui_visible_len "$col")
       [[ ${col_widths[$i]:-0} -lt $len ]] && col_widths[$i]=$len
       (( i++ ))
@@ -32,7 +29,6 @@ _shui_table() {
 
   local top_sep="┌" mid_sep="├" bot_sep="└"
   for ((i=1; i<=num_cols; i++)); do
-    local dashes
     dashes=$(_shui_repeat "─" $(( col_widths[$i] + 2 )))
     top_sep+="${dashes}"
     mid_sep+="${dashes}"
@@ -46,16 +42,15 @@ _shui_table() {
 
   echo -e "${SHUI_COLOR_MUTED}${top_sep}${SHUI_RESET}"
 
-  local is_header=true
+  local is_header=true vis_len pad
   for row in "${data_rows[@]}"; do
-    local -a cols=("${(@s:${sep}:)row}")
+    IFS="$sep" read -rA cols <<< "$row"
 
     printf '%s' "${SHUI_COLOR_MUTED}│${SHUI_RESET}"
     for ((i=1; i<=num_cols; i++)); do
-      local col="${cols[$i]:-}"
-      local vis_len
+      col="${cols[$i]:-}"
       vis_len=$(_shui_visible_len "$col")
-      local pad=$(( col_widths[$i] - vis_len ))
+      pad=$(( col_widths[$i] - vis_len ))
 
       if $is_header; then
         printf ' %s%s%s' "${SHUI_BOLD}" "$col" "${SHUI_RESET}"

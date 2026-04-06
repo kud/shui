@@ -33,10 +33,10 @@ _shui_box() {
     printf '┐%s\n' "${SHUI_RESET}"
   fi
 
+  local vis_len pad
   for line in "${content_lines[@]}"; do
-    local vis_len
     vis_len=$(_shui_visible_len "$line")
-    local pad=$(( inner - vis_len ))
+    pad=$(( inner - vis_len ))
     [[ $pad -lt 0 ]] && pad=0
     printf '%s' "${SHUI_COLOR_MUTED}│${SHUI_RESET}  ${line}"
     _shui_repeat " " "$pad"

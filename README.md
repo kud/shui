@@ -17,6 +17,9 @@ Most Zsh scripts scatter raw `echo -e "\033[32m..."` calls everywhere. shui give
 
 One file to source. No dependencies. Pure Zsh.
 
+> Examples below use `SHUI_ICONS=emoji` — works everywhere without a Nerd Font.
+> Swap to `SHUI_ICONS=nerd` for richer glyphs if you have one installed.
+
 ---
 
 ## Table of contents
@@ -124,6 +127,13 @@ shui warning "Deprecated flag used"
 shui info    "Running in dry-run mode"
 ```
 
+```console
+✅ Deployment complete
+❌ Build failed
+⚠️ Deprecated flag used
+ℹ️ Running in dry-run mode
+```
+
 ---
 
 ## Usage
@@ -164,10 +174,17 @@ SHUI_THEME=minimal source "$SHUI_DIR/shui.zsh"
 The four semantic message types. Each prints an icon and coloured text on its own line.
 
 ```zsh
-shui success "Operation completed"
-shui error   "Something went wrong"
-shui warning "Proceed with caution"
-shui info    "For your information"
+shui success "Deployment complete"
+shui error   "Build failed: config not found"
+shui warning "API key expires in 3 days"
+shui info    "Running in dry-run mode"
+```
+
+```console
+✅ Deployment complete
+❌ Build failed: config not found
+⚠️ API key expires in 3 days
+ℹ️ Running in dry-run mode
 ```
 
 ---
@@ -177,13 +194,22 @@ shui info    "For your information"
 Inline text formatting and semantic colour helpers.
 
 ```zsh
-shui bold      "Bold"
-shui dim       "Dimmed"
-shui italic    "Italic"
-shui underline "Underlined"
+shui bold      "Bold text"
+shui dim       "Dimmed text"
+shui italic    "Italic text"
+shui underline "Underlined text"
 
-shui text --color=success "Custom colour"
+shui text --color=success "Success colour"
 shui text --color=muted   "Muted colour"
+```
+
+```console
+Bold text
+Dimmed text
+Italic text
+Underlined text
+Success colour
+Muted colour
 ```
 
 Available colour types: `success` `error` `warning` `info` `primary` `muted` `accent`
@@ -195,13 +221,23 @@ Available colour types: `success` `error` `warning` `info` `primary` `muted` `ac
 Structure your script output with sections, headings, and spacing.
 
 ```zsh
-shui section    "Major Section"     # bold, coloured top-level heading
-shui subtitle   "Sub-heading"       # arrow + bold
-shui subsection "Nested item"       # indented bullet
+shui section    "Setup"
+shui subtitle   "Installing packages"
+shui subsection "npm dependencies"
+shui subsection "brew formulae"
+shui divider
+shui spacer
+shui spacer 3
+```
 
-shui divider                        # full-width horizontal rule
-shui spacer                         # one blank line
-shui spacer 3                       # three blank lines
+```console
+
+Setup
+
+→ Installing packages
+  • npm dependencies
+  • brew formulae
+────────────────────────────────────────────────────────────────────────────────
 ```
 
 ---
@@ -212,7 +248,12 @@ Solid background inline label. Writes to stdout **without a newline** — use in
 
 ```zsh
 echo "Version: $(shui badge success v2.0)"
-echo "$(shui badge error FAIL) Build #42 failed"
+echo "Build:   $(shui badge error FAIL)  $(shui badge success PASS)  $(shui badge muted SKIP)"
+```
+
+```console
+Version:  v2.0
+Build:    FAIL    PASS    SKIP
 ```
 
 ```zsh
@@ -232,13 +273,17 @@ echo "Status: $(shui pill warning beta)"
 echo "$(shui pill success stable)  $(shui pill muted deprecated)"
 ```
 
+```console
+Status:  beta
+ stable   deprecated
+```
+
 ```zsh
 shui pill <type> <text>
 shui pill 135 "custom"   # any 256-colour code (0–255)
 ```
 
 Available types: `success` `error` `warning` `info` `primary` `muted` `accent` or any `0–255` colour code
-
 
 ---
 
@@ -247,17 +292,28 @@ Available types: `success` `error` `warning` `info` `primary` `muted` `accent` o
 Bordered content block with an optional title. Inline components work inside content.
 
 ```zsh
-shui box "Simple content"
+shui box "Simple content inside a box"
 shui box --title="Summary" "3 installed\n1 skipped\n0 errors"
 shui box --title="Status" "$(shui badge success OK) All systems nominal"
 ```
 
+```console
+┌────────────────────────────────────────────┐
+│  Simple content inside a box               │
+└────────────────────────────────────────────┘
+
+┌──────────────── Summary ───────────────────┐
+│  3 installed                               │
+│  1 skipped                                 │
+│  0 errors                                  │
+└────────────────────────────────────────────┘
+```
 
 ---
 
 #### Table
 
-Pipe-separated (`|`) rows. First argument is the header. Column widths adjust automatically and inline components in cells are handled correctly.
+Pipe-separated (`|`) rows by default. First argument is the header. Column widths adjust automatically. Use `--sep` to change the delimiter.
 
 ```zsh
 shui table \
@@ -267,18 +323,37 @@ shui table \
   "python|3.12.0|$(shui badge warning outdated)"
 ```
 
+```console
+┌─────────┬──────────┬──────────┐
+│ Package │ Version  │ Status   │
+├─────────┼──────────┼──────────┤
+│ node    │ 20.11.0  │  OK      │
+│ bun     │ 1.1.3    │  OK      │
+│ python  │ 3.12.0   │  outdated│
+└─────────┴──────────┴──────────┘
+```
 
 ---
 
 #### Progress
 
-Renders a progress bar inline. Add `echo` after to move to the next line.
+Adds a newline by default. Use `--inline` for loop-based updates.
 
 ```zsh
-shui progress 45 100
-shui progress 45 100 --width=30
-shui progress 45 100 --label="Downloading "
+shui progress 50 100
+shui progress 50 100 --width=30 --label="Downloading "
+
+# loop use
+for i in {1..100}; do
+  shui progress $i 100 --inline
+  sleep 0.05
+done
 echo
+```
+
+```console
+████████████████████░░░░░░░░░░░░░░░░░░░░ 50%
+Downloading ██████████░░░░░░░░░░░░░░░░░░░░ 50%
 ```
 
 ---
@@ -294,6 +369,11 @@ shui spinner \
   --success="Installed!" \
   --fail="Installation failed" \
   "Installing…" -- npm install
+```
+
+```console
+⠹ Installing brew packages...
+✅ Installed!
 ```
 
 ---
@@ -313,6 +393,18 @@ choice=$(shui select "Pick a profile:" work personal staging)
 # Input — prints the entered value to stdout
 name=$(shui input "Your name:")
 name=$(shui input --default="world" "Your name:")
+```
+
+```console
+ℹ️  Deploy to production? [y/N]
+
+ℹ️  Pick a profile:
+  1) work
+  2) personal
+  3) staging
+→
+
+ℹ️  Your name: (world)
 ```
 
 ---
@@ -441,7 +533,7 @@ zsh demo.zsh --interactive   # includes confirm, select, and input
 ## Requirements
 
 - Zsh 5.0+
-- A [Nerd Font](https://www.nerdfonts.com/) for the `default` and `minimal` themes — or use `SHUI_THEME=plain` for ASCII-only output
+- A [Nerd Font](https://www.nerdfonts.com/) for the `default` and `minimal` themes — or use `SHUI_ICONS=emoji` or `SHUI_ICONS=none`
 
 ---
 
