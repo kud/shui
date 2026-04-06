@@ -10,6 +10,15 @@ SHUI_DIR="${0:A:h}"
 source "${SHUI_DIR}/src/tokens/colors.zsh"
 source "${SHUI_DIR}/src/tokens/contract.zsh"
 
+_SHUI_ICONS="${SHUI_ICONS:-nerd}"
+
+if [[ -f "${SHUI_DIR}/src/icons/${_SHUI_ICONS}.zsh" ]]; then
+  source "${SHUI_DIR}/src/icons/${_SHUI_ICONS}.zsh"
+else
+  echo "shui: icon set '${_SHUI_ICONS}' not found, falling back to nerd" >&2
+  source "${SHUI_DIR}/src/icons/nerd.zsh"
+fi
+
 _SHUI_THEME="${SHUI_THEME:-default}"
 
 if [[ -f "${SHUI_DIR}/src/themes/${_SHUI_THEME}.zsh" ]]; then

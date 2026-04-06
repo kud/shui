@@ -40,6 +40,9 @@ One file to source. No dependencies. Pure Zsh.
   - [NO_COLOR](#no_color)
   - [Custom themes](#custom-themes)
   - [Token reference](#token-reference)
+- [Icons](#icons)
+  - [Icon sets](#icon-sets)
+  - [Selecting an icon set](#selecting-an-icon-set)
 - [Demo](#demo)
 - [Requirements](#requirements)
 - [License](#license)
@@ -119,6 +122,8 @@ shui warning "Proceed with caution"
 shui info    "For your information"
 ```
 
+![messages](assets/messages.svg)
+
 ---
 
 #### Text
@@ -152,6 +157,8 @@ shui divider                        # full-width horizontal rule
 shui spacer                         # one blank line
 shui spacer 3                       # three blank lines
 ```
+
+![layout](assets/layout.svg)
 
 ---
 
@@ -188,6 +195,8 @@ shui pill 135 "custom"   # any 256-colour code (0–255)
 
 Available types: `success` `error` `warning` `info` `primary` `muted` `accent` or any `0–255` colour code
 
+![inline](assets/inline.svg)
+
 ---
 
 #### Box
@@ -199,6 +208,8 @@ shui box "Simple content"
 shui box --title="Summary" "3 installed\n1 skipped\n0 errors"
 shui box --title="Status" "$(shui badge success OK) All systems nominal"
 ```
+
+![box](assets/box.svg)
 
 ---
 
@@ -213,6 +224,8 @@ shui table \
   "bun|1.1.3|$(shui badge success OK)" \
   "python|3.12.0|$(shui badge warning outdated)"
 ```
+
+![table](assets/table.svg)
 
 ---
 
@@ -345,6 +358,33 @@ shui theme validate   # check all required tokens are defined
 | `SHUI_BG_SUCCESS` `SHUI_BG_WARNING` `SHUI_BG_ERROR` `SHUI_BG_INFO` `SHUI_BG_PRIMARY` `SHUI_BG_MUTED` | Badge background colours |
 | `SHUI_ICON_SUCCESS` `SHUI_ICON_ERROR` `SHUI_ICON_WARNING` `SHUI_ICON_INFO`                           | Status icons             |
 | `SHUI_ICON_BULLET` `SHUI_ICON_ARROW` `SHUI_ICON_CHECK` `SHUI_ICON_CROSS`                             | UI icons                 |
+
+---
+
+## Icons
+
+### Icon sets
+
+| Set     | Requires                                | Description                     |
+| ------- | --------------------------------------- | ------------------------------- |
+| `nerd`  | [Nerd Font](https://www.nerdfonts.com/) | Rich glyphicons _(default)_     |
+| `emoji` | Nothing                                 | Unicode emoji, works everywhere |
+| `none`  | Nothing                                 | No icons — text only            |
+
+### Selecting an icon set
+
+```zsh
+SHUI_ICONS=emoji source shui.zsh   # emoji
+SHUI_ICONS=nerd  source shui.zsh   # nerd font (default)
+SHUI_ICONS=none  source shui.zsh   # no icons
+```
+
+Combine freely with any theme:
+
+```zsh
+SHUI_THEME=minimal SHUI_ICONS=emoji source shui.zsh
+SHUI_THEME=plain   SHUI_ICONS=none   source shui.zsh   # fully plain
+```
 
 ---
 

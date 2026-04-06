@@ -23,12 +23,3 @@ SHUI_BG_ERROR=$(_shui_bg_color    "48;5;196" "41")
 SHUI_BG_INFO=$(_shui_bg_color     "48;5;39"  "44")
 SHUI_BG_PRIMARY=$(_shui_bg_color  "48;5;226" "43")
 SHUI_BG_MUTED=$(_shui_bg_color    "48;5;240" "100")
-
-SHUI_ICON_SUCCESS=""
-SHUI_ICON_ERROR=""
-SHUI_ICON_WARNING=""
-SHUI_ICON_INFO=""
-SHUI_ICON_BULLET="▸"
-SHUI_ICON_ARROW=""
-SHUI_ICON_CHECK=""
-SHUI_ICON_CROSS=""
