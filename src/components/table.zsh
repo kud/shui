@@ -3,12 +3,23 @@
 _shui_table() {
   [[ $# -eq 0 ]] && return
 
-  local -a rows=("$@")
+  local sep="|"
+  local -a data_rows=()
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --sep=*) sep="${1#--sep=}"; shift ;;
+      *)       data_rows+=("$1"); shift ;;
+    esac
+  done
+
   local -a col_widths
   local num_cols=0
 
-  for row in "${rows[@]}"; do
-    local -a cols=("${(s:|:)row}")
+  for row in "${data_rows[@]}"; do
+    local -a cols=("${(s//)row}")
+    # split on sep (handle multi-char sep too)
+    cols=("${(@s:${sep}:)row}")
     local i=1
     for col in "${cols[@]}"; do
       local len
@@ -36,8 +47,8 @@ _shui_table() {
   echo -e "${SHUI_COLOR_MUTED}${top_sep}${SHUI_RESET}"
 
   local is_header=true
-  for row in "${rows[@]}"; do
-    local -a cols=("${(s:|:)row}")
+  for row in "${data_rows[@]}"; do
+    local -a cols=("${(@s:${sep}:)row}")
 
     printf '%s' "${SHUI_COLOR_MUTED}│${SHUI_RESET}"
     for ((i=1; i<=num_cols; i++)); do

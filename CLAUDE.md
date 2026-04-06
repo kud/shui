@@ -54,18 +54,23 @@ Themes only define **colours**. Icons are owned by icon sets. The `plain` theme 
 
 ## Generating README screenshots
 
-Screenshots in `assets/` are SVG files generated from asciinema recordings. Use **emoji icon set** (`SHUI_ICONS=emoji`) so glyphs render universally without Nerd Font.
+Screenshots in `assets/` are **PNG files** (SVGs caused flickering on GitHub due to `xlink:href` CSP stripping).
+
+Pipeline: asciinema → svg-term (static frame) → rsvg-convert (SVG → PNG).
 
 ```zsh
-# Record a cast (must use -f asciicast-v2 — svg-term does not support v3)
+# 1. Record a cast (must use -f asciicast-v2 — svg-term does not support v3)
 asciinema rec /tmp/shui-<name>.cast --cols <W> --rows <H> --overwrite -f asciicast-v2 \
   -c "SHUI_ICONS=emoji zsh -c 'source shui.zsh && <commands>'"
 
-# Convert to SVG — --at 99999 freezes on the final frame (omitting it produces a blinking animation)
-svg-term --in /tmp/shui-<name>.cast --out assets/<name>.svg --width <W> --height <H> --no-cursor --at 99999
+# 2. Convert to SVG — --at 99999 freezes on the final frame (omitting it produces animation)
+svg-term --in /tmp/shui-<name>.cast --out /tmp/shui-<name>.svg --width <W> --height <H> --no-cursor --at 99999
+
+# 3. Convert SVG to PNG at 2x for retina clarity
+rsvg-convert -z 2 /tmp/shui-<name>.svg -o assets/<name>.png
 ```
 
-Requirements: `asciinema` (brew), `svg-term-cli` (npm install -g svg-term-cli).
+Requirements: `asciinema` (brew), `svg-term-cli` (npm install -g svg-term-cli), `librsvg` (brew install librsvg).
 
 After regenerating SVGs, commit `assets/` alongside any code changes.
 

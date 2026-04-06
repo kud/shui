@@ -4,12 +4,14 @@ _shui_progress() {
   local current="$1" total="$2"
   local width=40
   local label=""
+  local inline=false
 
   shift 2
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --width=*) width="${1#--width=}"; shift ;;
-      --label=*) label="${1#--label=} "; shift ;;
+      --width=*)  width="${1#--width=}";  shift ;;
+      --label=*)  label="${1#--label=} "; shift ;;
+      --inline)   inline=true;            shift ;;
       *) shift ;;
     esac
   done
@@ -29,4 +31,6 @@ _shui_progress() {
     "$SHUI_RESET" \
     "$SHUI_COLOR_MUTED" "$SHUI_RESET" \
     "$percentage" "$SHUI_RESET"
+
+  $inline || printf '\n'
 }

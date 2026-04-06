@@ -69,11 +69,12 @@ _shui_theme_cmd() {
 
 _shui_help() {
   echo
-  echo -e "${SHUI_BOLD}${SHUI_COLOR_PRIMARY}shui · 水  —  fluid terminal UI for Zsh${SHUI_RESET}"
+  echo -e "${SHUI_BOLD}${SHUI_COLOR_PRIMARY}shui · 水  —  Shell UI for Zsh${SHUI_RESET}"
   echo
   cat <<'HELP'
 USAGE
   shui <command> [options] [args…]
+  shui <command> --help          per-command help
 
 TEXT
   shui bold <text>
@@ -101,10 +102,10 @@ INLINE  (use inside $(...))
 
 BLOCKS
   shui box [--title=<title>] <content>
-  shui table <header> [<row>…]
+  shui table [--sep=<char>] <header> [<row>…]
 
 PROGRESS
-  shui progress <current> <total> [--width=N] [--label=<text>]
+  shui progress <current> <total> [--width=N] [--label=<text>] [--inline]
   shui spinner [--success=<msg>] [--fail=<msg>] <message> -- <command>
 
 INTERACTIVE
@@ -117,6 +118,12 @@ THEME
   shui theme create <name>
   shui theme validate
 
+ICONS
+  SHUI_ICONS=nerd|emoji|none
+
+QUIET
+  SHUI_QUIET=1               suppress all output
+
 TYPES
   success  error  warning  info  primary  muted  accent
 
@@ -125,10 +132,80 @@ VERSION
 HELP
 }
 
+_shui_help_cmd() {
+  local cmd="$1"
+  case "$cmd" in
+    bold|dim|italic|underline)
+      echo "Usage: shui ${cmd} <text>"
+      echo "Prints text with ${cmd} formatting." ;;
+    text)
+      echo "Usage: shui text [--color=<type>] <text>"
+      echo "Types: success error warning info primary muted accent" ;;
+    success|error|warning|info)
+      echo "Usage: shui ${cmd} <message>"
+      echo "Prints a ${cmd} message with icon and colour." ;;
+    section|subtitle|subsection)
+      echo "Usage: shui ${cmd} <title>"
+      echo "Prints a ${cmd} heading." ;;
+    divider)
+      echo "Usage: shui divider"
+      echo "Prints a full-width horizontal rule." ;;
+    spacer)
+      echo "Usage: shui spacer [n]"
+      echo "Prints n blank lines (default: 1)." ;;
+    badge)
+      echo "Usage: shui badge <type> <text>"
+      echo "Inline solid-background label. Use inside \$(...)."
+      echo "Types: success error warning info primary muted" ;;
+    pill)
+      echo "Usage: shui pill <type> <text>"
+      echo "       shui pill <0-255> <text>"
+      echo "Inline rounded-edge tag. Use inside \$(...)."
+      echo "Types: success error warning info primary muted accent or 0–255 colour code" ;;
+    box)
+      echo "Usage: shui box [--title=<title>] <content>"
+      echo "Bordered content block. Content may contain \\n for multiple lines." ;;
+    table)
+      echo "Usage: shui table [--sep=<char>] <header> [<row>…]"
+      echo "Pipe-separated columns by default. Use --sep to change delimiter."
+      echo "Example: shui table --sep=, \"Name,Age\" \"Alice,30\"" ;;
+    progress)
+      echo "Usage: shui progress <current> <total> [--width=N] [--label=<text>] [--inline]"
+      echo "Adds a newline by default. Use --inline for loop-based updates." ;;
+    spinner)
+      echo "Usage: shui spinner [--success=<msg>] [--fail=<msg>] <message> -- <command>"
+      echo "Runs <command> with a spinner. Exits with the command's exit code." ;;
+    confirm)
+      echo "Usage: shui confirm [--default=y|n] <prompt>"
+      echo "Exits 0 for yes, 1 for no." ;;
+    select)
+      echo "Usage: shui select <prompt> <opt1> [opt2…]"
+      echo "Prints the chosen option to stdout." ;;
+    input)
+      echo "Usage: shui input [--default=<value>] <prompt>"
+      echo "Prints the entered value to stdout." ;;
+    theme)
+      echo "Usage: shui theme list|create|validate"
+      echo "  list      — list available themes"
+      echo "  create    — scaffold a new theme"
+      echo "  validate  — check all required tokens are defined" ;;
+    *)
+      echo "shui: no help available for '${cmd}'" >&2
+      return 1 ;;
+  esac
+}
+
 shui() {
   [[ $# -eq 0 ]] && { _shui_help; return 0; }
+  [[ -n "${SHUI_QUIET:-}" ]] && return 0
 
   local cmd="$1"; shift
+
+  # Per-command --help
+  if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    _shui_help_cmd "$cmd"
+    return 0
+  fi
 
   case "$cmd" in
     bold|dim|italic|underline|text)             _shui_text    "$cmd" "$@" ;;

@@ -1,7 +1,7 @@
 <div align="center">
   <img src="icon.png" width="128" alt="shui" />
   <h1>shui · 水</h1>
-  <p><strong>Fluid terminal UI for Zsh.</strong></p>
+  <p><strong>Shell UI for Zsh. 水 — fluid by design.</strong></p>
   <p>
     <img src="https://img.shields.io/badge/zsh-5.0%2B-blue" alt="Zsh 5.0+" />
     <img src="https://img.shields.io/badge/dependencies-none-brightgreen" alt="No dependencies" />
@@ -10,6 +10,8 @@
 </div>
 
 ---
+
+**shui** = Shell UI. 水 = water in Chinese — fluid, effortless, takes the shape of its container.
 
 Most Zsh scripts scatter raw `echo -e "\033[32m..."` calls everywhere. shui gives you a proper design system instead — semantic components, a token-based theme engine, and a single consistent API.
 
@@ -20,6 +22,12 @@ One file to source. No dependencies. Pure Zsh.
 ## Table of contents
 
 - [Installation](#installation)
+  - [Manually](#manually)
+  - [Submodule](#as-a-project-submodule-recommended-for-scripts)
+  - [Antidote](#antidote)
+  - [Zinit](#zinit)
+  - [Oh My Zsh](#oh-my-zsh)
+  - [Zplug](#zplug)
 - [Quick start](#quick-start)
 - [Usage](#usage)
   - [Importing in your project](#importing-in-your-project)
@@ -57,10 +65,50 @@ One file to source. No dependencies. Pure Zsh.
 git clone https://github.com/kud/shui ~/.shui
 ```
 
-### As a project submodule (recommended)
+### As a project submodule (recommended for scripts)
 
 ```zsh
 git submodule add https://github.com/kud/shui lib/shui
+```
+
+### Antidote
+
+Add to your `.zsh_plugins.txt`:
+
+```
+kud/shui
+```
+
+Then reload:
+
+```zsh
+antidote load
+```
+
+### Zinit
+
+```zsh
+zinit light kud/shui
+```
+
+### Oh My Zsh
+
+Clone into your custom plugins directory:
+
+```zsh
+git clone https://github.com/kud/shui ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/shui
+```
+
+Then add `shui` to the `plugins` array in `~/.zshrc`:
+
+```zsh
+plugins=(... shui)
+```
+
+### Zplug
+
+```zsh
+zplug "kud/shui"
 ```
 
 ---
@@ -122,7 +170,7 @@ shui warning "Proceed with caution"
 shui info    "For your information"
 ```
 
-![messages](assets/messages.svg)
+![messages](assets/messages.png)
 
 ---
 
@@ -158,7 +206,7 @@ shui spacer                         # one blank line
 shui spacer 3                       # three blank lines
 ```
 
-![layout](assets/layout.svg)
+![layout](assets/layout.png)
 
 ---
 
@@ -195,7 +243,7 @@ shui pill 135 "custom"   # any 256-colour code (0–255)
 
 Available types: `success` `error` `warning` `info` `primary` `muted` `accent` or any `0–255` colour code
 
-![inline](assets/inline.svg)
+![inline](assets/inline.png)
 
 ---
 
@@ -209,7 +257,7 @@ shui box --title="Summary" "3 installed\n1 skipped\n0 errors"
 shui box --title="Status" "$(shui badge success OK) All systems nominal"
 ```
 
-![box](assets/box.svg)
+![box](assets/box.png)
 
 ---
 
@@ -225,7 +273,7 @@ shui table \
   "python|3.12.0|$(shui badge warning outdated)"
 ```
 
-![table](assets/table.svg)
+![table](assets/table.png)
 
 ---
 
