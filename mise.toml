@@ -1,0 +1,11 @@
+[tasks.test]
+description = "Run all test suites"
+run = "for f in tests/*.zsh; do zsh \"$f\"; done"
+
+[tasks.lint]
+description = "Syntax-check all Zsh source files"
+run = "zsh -n shui.zsh && zsh -n src/**/*.zsh && echo 'OK'"
+
+[tasks.demo]
+description = "Run the visual component demo"
+run = "zsh demo.zsh"
