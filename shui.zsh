@@ -88,25 +88,83 @@ MESSAGES
   shui error <message>
   shui warning <message>
   shui info <message>
+  shui success-simple <message> [lines_before]
+  shui error-simple <message>
+  shui warning-simple <message>
+  shui info-simple <message>
+  shui muted <message>
 
 LAYOUT
   shui section <title>
   shui subtitle <title>
   shui subsection <title>
-  shui divider
+  shui divider [--char=C] [--width=N] [--color=<type>]
+  shui hr
+  shui center-text <text> [--width=N]
   shui spacer [n]
 
 INLINE  (use inside $(...))
   shui badge <type> <text>
   shui pill <type> <text>
+  shui pill-custom <fg> <bg> <text>
 
 BLOCKS
   shui box [--title=<title>] <content>
   shui table [--sep=<char>] <header> [<row>…]
 
 PROGRESS
-  shui progress <current> <total> [--width=N] [--label=<text>] [--inline]
+  shui progress <current> <total> [--width=N] [--label=<text>] [--filled-char=X] [--empty-char=Y] [--inline]
   shui spinner [--success=<msg>] [--fail=<msg>] <message> -- <command>
+  shui spinner-tick <frame_idx> <msg>
+  shui spinner-clear
+
+TASK
+  shui task-start <msg>
+  shui task-done <msg>
+  shui final-success <msg>
+  shui final-fail <msg>
+
+TITLE
+  shui title <text>
+  shui title-action <action> <target>
+  shui title-install <target>
+  shui title-update <target>
+
+STEP
+  shui set-total-steps <n>
+  shui next-step <msg>
+
+PROMPT
+  shui user-prompt <msg>
+  shui input-prompt <msg>
+
+ANIMATION
+  shui dots-loading [--duration=N] <msg>
+  shui typewriter [--delay=N] [--color=<type>] <text>
+  shui pulse [--count=N] <text>
+  shui fade-in [--steps=N] <text>
+
+CURSOR
+  shui hide-cursor
+  shui show-cursor
+  shui save-cursor
+  shui restore-cursor
+  shui move-cursor <row> <col>
+  shui clear-line
+  shui cleanup
+
+LINK
+  shui hyperlink <text> <url>
+  shui print-link <text> <url>
+
+UTIL
+  shui terminal-size
+
+DEBUG  (requires SHUI_DEBUG=true)
+  shui debug <msg>
+  shui debug-vars <var1> [var2…]
+  shui debug-timing <start_epoch> <operation_name>
+  shui debug-command <cmd…>
 
 INTERACTIVE
   shui confirm [--default=y|n] <prompt>
@@ -125,7 +183,7 @@ QUIET
   SHUI_QUIET=1               suppress all output
 
 TYPES
-  success  error  warning  info  primary  muted  accent
+  success  error  warning  info  primary  muted  accent  secondary  danger
 
 VERSION
   shui version
@@ -208,15 +266,33 @@ shui() {
   fi
 
   case "$cmd" in
-    bold|dim|italic|underline|text)             _shui_text    "$cmd" "$@" ;;
-    success|error|warning|info)                 _shui_message "$cmd" "$@" ;;
-    section|subtitle|subsection|divider|spacer) _shui_layout  "$cmd" "$@" ;;
-    badge)    _shui_badge    "$@" ;;
-    pill)     _shui_pill     "$@" ;;
-    box)      _shui_box      "$@" ;;
-    table)    _shui_table    "$@" ;;
-    progress) _shui_progress "$@" ;;
-    spinner)  _shui_spinner  "$@" ;;
+    bold|dim|italic|underline|text)                            _shui_text    "$cmd" "$@" ;;
+    success|error|warning|info)                                _shui_message "$cmd" "$@" ;;
+    success-simple|error-simple|warning-simple|info-simple)    _shui_message_simple "${cmd%-simple}" "$@" ;;
+    muted)                                                     _shui_message_simple "muted" "$@" ;;
+    section|subtitle|subsection|divider|hr|spacer|center-text) _shui_layout  "$cmd" "$@" ;;
+    badge)        _shui_badge       "$@" ;;
+    pill)         _shui_pill        "$@" ;;
+    pill-custom)  _shui_pill_custom "$@" ;;
+    box)          _shui_box         "$@" ;;
+    table)        _shui_table       "$@" ;;
+    progress)     _shui_progress    "$@" ;;
+    spinner)      _shui_spinner     "$@" ;;
+    spinner-tick) _shui_spinner_tick "$@" ;;
+    spinner-clear) _shui_spinner_clear ;;
+    task-start|task-done|final-success|final-fail) _shui_task "$cmd" "$@" ;;
+    title|title-action|title-install|title-update) _shui_title "$cmd" "$@" ;;
+    set-total-steps|next-step)                     _shui_step  "$cmd" "$@" ;;
+    user-prompt|input-prompt)                      _shui_prompt "$cmd" "$@" ;;
+    dots-loading|typewriter|pulse|fade-in)         _shui_animation "$cmd" "$@" ;;
+    hide-cursor|show-cursor|save-cursor|restore-cursor|move-cursor|clear-line|cleanup) _shui_cursor "$cmd" "$@" ;;
+    hyperlink)   _shui_hyperlink  "$@" ;;
+    print-link)  _shui_print_link "$@" ;;
+    terminal-size) _shui_util "terminal-size" ;;
+    debug)         _shui_debug         "$@" ;;
+    debug-vars)    _shui_debug_vars    "$@" ;;
+    debug-timing)  _shui_debug_timing  "$@" ;;
+    debug-command) _shui_debug_command "$@" ;;
     confirm)  _shui_confirm  "$@" ;;
     select)   _shui_select   "$@" ;;
     input)    _shui_input    "$@" ;;

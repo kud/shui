@@ -38,3 +38,14 @@ _shui_spinner() {
 
   return $exit_code
 }
+
+_shui_spinner_tick() {
+  local frame_idx="$1" msg="$2"
+  local -a frames=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
+  local idx=$(( (frame_idx % ${#frames[@]}) + 1 ))
+  printf '\r%s%s%s %s' "$SHUI_COLOR_PRIMARY" "${frames[$idx]}" "$SHUI_RESET" "$msg"
+}
+
+_shui_spinner_clear() {
+  printf '\r\033[K'
+}
