@@ -8,13 +8,15 @@ _shui_pill() {
   local color_code text_color=15
 
   case "$type" in
-    success)      color_code=46;  text_color=0  ;;
-    error|danger) color_code=196; text_color=15 ;;
-    warning)      color_code=208; text_color=0  ;;
-    info)         color_code=39;  text_color=15 ;;
-    primary)      color_code=226; text_color=0  ;;
-    accent)       color_code=226; text_color=0  ;;
-    muted|default)color_code=240; text_color=15 ;;
+    success)           color_code=46;  text_color=0  ;;
+    error|danger|critical) color_code=196; text_color=15 ;;
+    warning)           color_code=208; text_color=0  ;;
+    info)              color_code=39;  text_color=15 ;;
+    primary|major)     color_code=226; text_color=0  ;;
+    accent|minor)      color_code=33;  text_color=15 ;;
+    muted|default|patch) color_code=240; text_color=15 ;;
+    done)              color_code=46;  text_color=0  ;;
+    white|light)       color_code=255; text_color=0  ;;
     *)
       if [[ "$type" =~ ^[0-9]+$ ]] && (( type >= 0 && type <= 255 )); then
         color_code=$type
@@ -30,4 +32,17 @@ _shui_pill() {
   local text_fg=$'\e[38;5;'${text_color}'m'
 
   printf '%s' "${reset}${fg}▐${bg}${text_fg}${text}${reset}${fg}▌${reset}"
+}
+
+_shui_pill_custom() {
+  local fg_code="$1" bg_code="$2" text="$3"
+
+  [[ -n "${NO_COLOR:-}" ]] && { printf '[%s]' "$text"; return; }
+
+  local reset=$'\e[0m'
+  local bg=$'\e[48;5;'${bg_code}'m'
+  local fg=$'\e[38;5;'${fg_code}'m'
+  local bg_fg=$'\e[38;5;'${bg_code}'m'
+
+  printf '%s' "${reset}${bg_fg}▐${bg}${fg}${text}${reset}${bg_fg}▌${reset}"
 }

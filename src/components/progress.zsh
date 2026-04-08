@@ -5,13 +5,16 @@ _shui_progress() {
   local width=40
   local label=""
   local inline=false
+  local filled_char="█" empty_char="░"
 
   shift 2
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --width=*)  width="${1#--width=}";  shift ;;
-      --label=*)  label="${1#--label=} "; shift ;;
-      --inline)   inline=true;            shift ;;
+      --width=*)        width="${1#--width=}";        shift ;;
+      --label=*)        label="${1#--label=} ";       shift ;;
+      --filled-char=*)  filled_char="${1#--filled-char=}"; shift ;;
+      --empty-char=*)   empty_char="${1#--empty-char=}";   shift ;;
+      --inline)         inline=true;                 shift ;;
       *) shift ;;
     esac
   done
@@ -21,8 +24,8 @@ _shui_progress() {
   local empty=$(( width - filled ))
 
   local bar_filled="" bar_empty=""
-  [[ $filled -gt 0 ]] && bar_filled=$(_shui_repeat "█" "$filled")
-  [[ $empty  -gt 0 ]] && bar_empty=$(_shui_repeat  "░" "$empty")
+  [[ $filled -gt 0 ]] && bar_filled=$(_shui_repeat "$filled_char" "$filled")
+  [[ $empty  -gt 0 ]] && bar_empty=$(_shui_repeat  "$empty_char"  "$empty")
 
   printf '\r%s%s%s%s%s%s%s %s%d%%%s' \
     "$label" \
