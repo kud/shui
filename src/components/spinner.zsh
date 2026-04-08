@@ -15,6 +15,7 @@ _shui_spinner() {
 
   local -a frames=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
 
+  _shui_iterm_progress 3
   "$@" &
   local pid=$!
   local i=1
@@ -31,11 +32,14 @@ _shui_spinner() {
   printf '\r\033[K'
 
   if [[ $exit_code -eq 0 ]]; then
+    _shui_iterm_progress 1 100
     echo -e "${SHUI_COLOR_SUCCESS}${SHUI_ICON_SUCCESS}${SHUI_RESET} ${success_msg:-${message}}"
   else
+    _shui_iterm_progress 2
     echo -e "${SHUI_COLOR_ERROR}${SHUI_ICON_ERROR}${SHUI_RESET} ${fail_msg:-${message} failed}"
   fi
 
+  _shui_iterm_progress 0
   return $exit_code
 }
 

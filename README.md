@@ -356,11 +356,33 @@ echo
 Downloading ██████████░░░░░░░░░░░░░░░░░░░░ 50%
 ```
 
+**iTerm2 Dock/tab badge** — pass `--iterm` (or `--iterm=<state>`) to also update the native macOS progress indicator. No-op in other terminals.
+
+| Flag                         | iTerm2 state             |
+| ---------------------------- | ------------------------ |
+| `--iterm` / `--iterm=normal` | Normal (blue)            |
+| `--iterm=success`            | Success (green)          |
+| `--iterm=warning`            | Warning (yellow)         |
+| `--iterm=error`              | Error (red)              |
+| `--iterm=indeterminate`      | Spinning (no percentage) |
+| `--iterm=clear`              | Dismiss the indicator    |
+
+```zsh
+for i in $(seq 0 5 100); do
+  shui progress $i 100 --label="Downloading " --iterm --inline
+  sleep 0.05
+done
+shui progress 0 100 --iterm=clear --inline
+echo
+```
+
 ---
 
 #### Spinner
 
 Runs a command in the background with a spinner. Exits with the command's exit code.
+
+In iTerm2, automatically emits an indeterminate badge while running, switches to success or error on completion, then clears.
 
 ```zsh
 shui spinner "Installing…" -- brew install ripgrep
