@@ -55,6 +55,10 @@ One file to source. No dependencies. Pure Zsh.
   - [Icon sets](#icon-sets)
   - [Selecting an icon set](#selecting-an-icon-set)
 - [Demo](#demo)
+- [Development](#development)
+  - [Task runner](#task-runner)
+  - [Tests](#tests)
+  - [Syntax check](#syntax-check)
 - [Requirements](#requirements)
 - [License](#license)
 
@@ -548,6 +552,42 @@ SHUI_THEME=plain   SHUI_ICONS=none   source shui.zsh   # fully plain
 ```zsh
 zsh demo.zsh
 zsh demo.zsh --interactive   # includes confirm, select, and input
+```
+
+---
+
+## Development
+
+### Task runner
+
+Tasks are managed with [mise](https://mise.jdx.dev/):
+
+```zsh
+mise run test   # run all test suites
+mise run lint   # syntax-check all Zsh source files
+mise run demo   # run the visual component demo
+```
+
+### Tests
+
+The test suite lives in `tests/` and uses a lightweight Zsh harness with inline ✓/✗ output per assertion.
+
+```zsh
+mise run test
+
+# or run a single suite directly
+zsh tests/test-components.zsh
+zsh tests/test-feat-close-api-gap.zsh
+```
+
+The shared harness (`tests/_harness.zsh`) provides `assert_eq`, `assert_contains`, `assert_not_contains`, `assert_exit_ok`, and `strip_ansi`. Both suites source it.
+
+### Syntax check
+
+```zsh
+mise run lint
+# equivalent to:
+zsh -n shui.zsh && zsh -n src/**/*.zsh
 ```
 
 ---
