@@ -4,61 +4,61 @@
 # https://www.nerdfonts.com/
 #
 
-SHUI_ICON_SUCCESS=""
-SHUI_ICON_ERROR=""
-SHUI_ICON_WARNING=""
-SHUI_ICON_INFO=""
+SHUI_ICON_SUCCESS=$'\UF00C'    # nf-fa-check
+SHUI_ICON_ERROR=$'\UF00D'      # nf-fa-times
+SHUI_ICON_WARNING=$'\UF071'    # nf-fa-warning
+SHUI_ICON_INFO=$'\UF05A'       # nf-fa-info-circle
 SHUI_ICON_BULLET="▸"
-SHUI_ICON_ARROW=""
-SHUI_ICON_CHECK=""
-SHUI_ICON_CROSS=""
+SHUI_ICON_ARROW=$'\UF178'      # nf-fa-long-arrow-right
+SHUI_ICON_CHECK=$'\UF00C'      # nf-fa-check
+SHUI_ICON_CROSS=$'\UF00D'      # nf-fa-times
 
-SHUI_ICON_CHECKMARK=""
-SHUI_ICON_QUESTION=""
-SHUI_ICON_CHECK_ALT=""
-SHUI_ICON_CROSS_ALT=""
+SHUI_ICON_CHECKMARK=$'\UF058'  # nf-fa-check-circle
+SHUI_ICON_QUESTION=$'\UF059'   # nf-fa-question-circle
+SHUI_ICON_CHECK_ALT=$'\UF046'  # nf-fa-check-square-o
+SHUI_ICON_CROSS_ALT=$'\UF05C'  # nf-fa-times-circle-o
 
-SHUI_ICON_ARROW_RIGHT=""
-SHUI_ICON_ARROW_LEFT=""
-SHUI_ICON_ARROW_UP=""
-SHUI_ICON_ARROW_DOWN=""
+SHUI_ICON_ARROW_RIGHT=$'\UF061' # nf-fa-arrow-right
+SHUI_ICON_ARROW_LEFT=$'\UF060'  # nf-fa-arrow-left
+SHUI_ICON_ARROW_UP=$'\UF062'    # nf-fa-arrow-up
+SHUI_ICON_ARROW_DOWN=$'\UF063'  # nf-fa-arrow-down
 
-SHUI_ICON_DOWNLOAD=""
-SHUI_ICON_UPLOAD=""
-SHUI_ICON_DELETE=""
-SHUI_ICON_EDIT=""
-SHUI_ICON_SEARCH=""
-SHUI_ICON_SETTINGS=""
-SHUI_ICON_REFRESH=""
-SHUI_ICON_LOCK=""
-SHUI_ICON_UNLOCK=""
+SHUI_ICON_DOWNLOAD=$'\UF019'   # nf-fa-download
+SHUI_ICON_UPLOAD=$'\UF093'     # nf-fa-upload
+SHUI_ICON_DELETE=$'\UF1F8'     # nf-fa-trash
+SHUI_ICON_EDIT=$'\UF040'       # nf-fa-pencil
+SHUI_ICON_SEARCH=$'\UF002'     # nf-fa-search
+SHUI_ICON_SETTINGS=$'\UF013'   # nf-fa-cog
+SHUI_ICON_REFRESH=$'\UF021'    # nf-fa-refresh
+SHUI_ICON_LOCK=$'\UF023'       # nf-fa-lock
+SHUI_ICON_UNLOCK=$'\UF09C'     # nf-fa-unlock
 
-SHUI_ICON_TOOLS=""
-SHUI_ICON_COMPUTER=""
-SHUI_ICON_PLUG=""
-SHUI_ICON_INSTALL=""
-SHUI_ICON_BOLT=""
-SHUI_ICON_ROCKET=""
-SHUI_ICON_CLOCK=""
-SHUI_ICON_FIRE=""
-SHUI_ICON_STAR=""
-SHUI_ICON_HEART=""
-SHUI_ICON_THUMBS_UP=""
+SHUI_ICON_TOOLS=$'\UF0AD'      # nf-fa-wrench
+SHUI_ICON_COMPUTER=$'\UF108'   # nf-fa-desktop
+SHUI_ICON_PLUG=$'\UF1E6'       # nf-fa-plug
+SHUI_ICON_INSTALL=$'\UF487'    # nf-oct-package
+SHUI_ICON_BOLT=$'\UF0E7'       # nf-fa-bolt
+SHUI_ICON_ROCKET=$'\UF135'     # nf-fa-rocket
+SHUI_ICON_CLOCK=$'\UF017'      # nf-fa-clock-o
+SHUI_ICON_FIRE=$'\UF06D'       # nf-fa-fire
+SHUI_ICON_STAR=$'\UF005'       # nf-fa-star
+SHUI_ICON_HEART=$'\UF004'      # nf-fa-heart
+SHUI_ICON_THUMBS_UP=$'\UF164'  # nf-fa-thumbs-up
 
-SHUI_ICON_INFO_BRACKET=""
-SHUI_ICON_WARN_BRACKET=""
-SHUI_ICON_USER_BRACKET=""
-SHUI_ICON_INPUT_BRACKET=""
+SHUI_ICON_INFO_BRACKET=$'\UF129'   # nf-fa-info
+SHUI_ICON_WARN_BRACKET=$'\UF12A'   # nf-fa-exclamation
+SHUI_ICON_USER_BRACKET=$'\UF007'   # nf-fa-user
+SHUI_ICON_INPUT_BRACKET=$'\UF11C'  # nf-fa-keyboard-o
 
-SHUI_ICON_STARTER=""
-SHUI_ICON_PROMPT=""
-SHUI_ICON_PALETTE=""
-SHUI_ICON_GLOBE=""
-SHUI_ICON_TABLE=""
-SHUI_ICON_FORWARD=""
-SHUI_ICON_CHART=""
-SHUI_ICON_BUG=""
-SHUI_ICON_LOADING=""
+SHUI_ICON_STARTER=$'\UF04B'    # nf-fa-play
+SHUI_ICON_PROMPT=$'\UF120'     # nf-fa-terminal
+SHUI_ICON_PALETTE=$'\UF1FC'    # nf-fa-paint-brush
+SHUI_ICON_GLOBE=$'\UF0AC'      # nf-fa-globe
+SHUI_ICON_TABLE=$'\UF0CE'      # nf-fa-table
+SHUI_ICON_FORWARD=$'\UF04E'    # nf-fa-forward
+SHUI_ICON_CHART=$'\UF080'      # nf-fa-bar-chart
+SHUI_ICON_BUG=$'\UF188'        # nf-fa-bug
+SHUI_ICON_LOADING=$'\UF110'    # nf-fa-spinner
 
 SHUI_ICON_CIRCLE="●"
 SHUI_ICON_CIRCLE_EMPTY="○"

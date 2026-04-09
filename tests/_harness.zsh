@@ -88,6 +88,17 @@ assert_defined() {
   fi
 }
 
+assert_not_empty() {
+  local desc="$1" val="$2"
+  if [[ -n "$val" ]]; then
+    _t_pass "$desc"
+  else
+    _t_fail "$desc"
+    printf '      %sexpected non-empty value%s\n' "$_T_DIM" "$_T_RESET"
+    _FAILURES+=("✗ ${desc} — value is empty")
+  fi
+}
+
 strip_ansi() { printf '%s' "$1" | sed 's/\x1b\[[0-9;]*[mK]//g'; }
 
 _t_results() {
