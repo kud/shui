@@ -2,11 +2,7 @@
 
 _shui_banner() {
   local type="$1"; shift
-  local -a content_lines=()
-
-  while IFS=$'\n' read -r line; do
-    content_lines+=("$line")
-  done <<< "$(echo -e "${*}")"
+  local -a content_lines=("$@")
 
   local color icon
   case "$type" in
@@ -16,33 +12,16 @@ _shui_banner() {
     info|*)  color="$SHUI_COLOR_INFO";    icon="$SHUI_ICON_INFO"    ;;
   esac
 
-  local inner=$(( _SHUI_TERMINAL_WIDTH - 8 ))
-  local vis_len pad
-
-  printf '%s┌' "$color"; _shui_repeat "─" $(( inner + 2 )); printf '┐%s\n' "$SHUI_RESET"
-
+  local bar="${color}▌${SHUI_RESET}"
+  printf '%s\n' "$bar"
   local first=true
   for line in "${content_lines[@]}"; do
-    vis_len=$(_shui_visible_len "$line")
-    pad=$(( inner - vis_len )); [[ $pad -lt 0 ]] && pad=0
-
     if $first; then
-      printf '%s│%s  %s %s  %s%s  %s│%s\n' \
-        "$color" "$SHUI_RESET" \
-        "${color}${SHUI_BOLD}${icon}${SHUI_RESET}" \
-        "${SHUI_BOLD}${line}${SHUI_RESET}" \
-        "$(_shui_repeat " " "$pad")" \
-        "$color" "$SHUI_RESET" \
-        "$SHUI_RESET"
+      printf '%s  %s%s%s  %s%s%s\n' "$bar" "${color}${SHUI_BOLD}" "$icon" "${SHUI_RESET}" "${SHUI_BOLD}" "$line" "${SHUI_RESET}"
       first=false
     else
-      printf '%s│%s     %s%s  %s│%s\n' \
-        "$color" "$SHUI_RESET" \
-        "$line" \
-        "$(_shui_repeat " " $(( pad + ${#icon} )) )" \
-        "$color" "$SHUI_RESET"
+      printf '%s     %s\n' "$bar" "$line"
     fi
   done
-
-  printf '%s└' "$color"; _shui_repeat "─" $(( inner + 2 )); printf '┘%s\n' "$SHUI_RESET"
+  printf '%s\n' "$bar"
 }
