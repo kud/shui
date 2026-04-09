@@ -60,6 +60,20 @@ SHUI_ICON_CHART=$'\UF080'      # nf-fa-bar-chart
 SHUI_ICON_BUG=$'\UF188'        # nf-fa-bug
 SHUI_ICON_LOADING=$'\UF110'    # nf-fa-spinner
 
+SHUI_ICON_ROBOT=$'\UF544'      # nf-fa-robot
+SHUI_ICON_APPLE=$'\UF179'      # nf-fa-apple
+SHUI_ICON_GIT=$'\UF1D3'        # nf-fa-git
+SHUI_ICON_FOLDER=$'\UF07B'     # nf-fa-folder
+SHUI_ICON_LINK=$'\UF0C1'       # nf-fa-link
+SHUI_ICON_CLOUD=$'\UF0C2'      # nf-fa-cloud
+SHUI_ICON_BREW=$'\UE115'       # nf-dev-brew
+SHUI_ICON_NODE=$'\UE718'       # nf-dev-nodejs_small
+SHUI_ICON_PYTHON=$'\UE606'     # nf-dev-python
+SHUI_ICON_RUBY=$'\UE791'       # nf-dev-ruby
+SHUI_ICON_RUST=$'\UE7A8'       # nf-dev-rust
+SHUI_ICON_GEM=$'\UF3D1'        # nf-md-diamond_stone
+SHUI_ICON_GO=$'\UE724'         # nf-dev-go
+
 SHUI_ICON_CIRCLE="●"
 SHUI_ICON_CIRCLE_EMPTY="○"
 SHUI_ICON_SQUARE="■"
