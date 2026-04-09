@@ -167,7 +167,7 @@ DEBUG  (requires SHUI_DEBUG=true)
   shui debug-command <cmd…>
 
 INTERACTIVE
-  shui confirm [--default=y|n] <prompt>
+  shui confirm <prompt> [y|n]
   shui select <prompt> <opt1> [opt2…]
   shui input [--default=<value>] <prompt>
 
@@ -234,8 +234,8 @@ _shui_help_cmd() {
       echo "Usage: shui spinner [--success=<msg>] [--fail=<msg>] <message> -- <command>"
       echo "Runs <command> with a spinner. Exits with the command's exit code." ;;
     confirm)
-      echo "Usage: shui confirm [--default=y|n] <prompt>"
-      echo "Exits 0 for yes, 1 for no." ;;
+      echo "Usage: shui confirm <prompt> [y|n]"
+      echo "Second arg sets the default (y or n). Exits 0 for yes, 1 for no." ;;
     select)
       echo "Usage: shui select <prompt> <opt1> [opt2…]"
       echo "Prints the chosen option to stdout." ;;
