@@ -28,5 +28,9 @@ _shui_message_simple() {
 
   local i
   for ((i=0; i<lines_before; i++)); do echo; done
-  echo -e "${color}${icon}${SHUI_RESET} ${msg}"
+  if [[ "$type" == "muted" ]]; then
+    echo -e "${color}${icon} ${msg}${SHUI_RESET}"
+  else
+    echo -e "${color}${icon}${SHUI_RESET} ${msg}"
+  fi
 }
