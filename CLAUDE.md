@@ -76,6 +76,28 @@ After regenerating SVGs, commit `assets/` alongside any code changes.
 
 ---
 
+## Nerd Font icons (`src/icons/nerd.zsh`)
+
+Nerd Font glyphs are invisible in Claude's environment (PUA codepoints render as empty). See the global `CLAUDE.md` for the general inspection pattern.
+
+Rules specific to this project:
+
+- All `SHUI_ICON_*` assignments in `nerd.zsh` **must** use `$'\UXXXX'` escape sequences — never raw bytes.
+- `emoji.zsh` and `none.zsh` must define the exact same set of variables as `nerd.zsh` (parity).
+- Run `mise test` to verify — `tests/test-icons.zsh` checks non-empty values, escape syntax, and cross-set parity.
+
+To inspect current codepoints:
+
+```js
+node -e "
+import { readFileSync } from 'fs';
+for (const line of readFileSync('src/icons/nerd.zsh', 'utf8').split('\n')) {
+  const m = line.match(/^(SHUI_ICON_\w+)=\\\$'(.*?)'/);
+  if (m) console.log(m[1] + ': U+' + parseInt(m[2].replace(/\\\\U/, ''), 16).toString(16).toUpperCase().padStart(4, '0'));
+}
+"
+```
+
 ## Versioning
 
 ```zsh
