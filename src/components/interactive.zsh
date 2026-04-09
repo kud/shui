@@ -7,7 +7,6 @@ _shui_confirm() {
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --default=*) default="${1#--default=}"; shift ;;
-      y|n)         default="$1";             shift ;;
       *)           prompt="$1";              shift ;;
     esac
   done

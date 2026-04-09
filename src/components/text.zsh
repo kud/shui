@@ -14,8 +14,10 @@ _shui_text() {
 
       while [[ $# -gt 0 ]]; do
         case "$1" in
-          --color=*)
-            case "${1#--color=}" in
+          --color=*|success|error|warning|info|muted|accent|primary)
+            local type="${1#--color=}"
+            [[ "$1" != --color=* ]] && type="$1"
+            case "$type" in
               success) color="$SHUI_COLOR_SUCCESS" ;;
               error)   color="$SHUI_COLOR_ERROR"   ;;
               warning) color="$SHUI_COLOR_WARNING" ;;

@@ -81,7 +81,7 @@ TEXT
   shui dim <text>
   shui italic <text>
   shui underline <text>
-  shui text [--color=<type>] <text>
+  shui text [<type>] <text>
 
 MESSAGES
   shui success <message>
@@ -110,10 +110,11 @@ INLINE  (use inside $(...))
 
 BLOCKS
   shui box [--title=<title>] <content>
+  shui banner <type> <title> [content]
   shui table [--sep=<char>] <header> [<row>…]
 
 PROGRESS
-  shui progress <current> <total> [--width=N] [--label=<text>] [--filled-char=X] [--empty-char=Y] [--inline]
+  shui progress <current> <total> [--width=N] [--label=<text>] [--filled-char=X] [--empty-char=Y] [--inline] [--iterm=normal|success|error|warning|indeterminate|clear]
   shui spinner [--success=<msg>] [--fail=<msg>] <message> -- <command>
   shui spinner-tick <frame_idx> <msg>
   shui spinner-clear
@@ -133,10 +134,6 @@ TITLE
 STEP
   shui set-total-steps <n>
   shui next-step <msg>
-
-PROMPT
-  shui user-prompt <msg>
-  shui input-prompt <msg>
 
 ANIMATION
   shui dots-loading [--duration=N] <msg>
@@ -167,7 +164,7 @@ DEBUG  (requires SHUI_DEBUG=true)
   shui debug-command <cmd…>
 
 INTERACTIVE
-  shui confirm <prompt> [y|n]
+  shui confirm [--default=y|n] <prompt>
   shui select <prompt> <opt1> [opt2…]
   shui input [--default=<value>] <prompt>
 
@@ -197,8 +194,9 @@ _shui_help_cmd() {
       echo "Usage: shui ${cmd} <text>"
       echo "Prints text with ${cmd} formatting." ;;
     text)
-      echo "Usage: shui text [--color=<type>] <text>"
-      echo "Types: success error warning info primary muted accent" ;;
+      echo "Usage: shui text [<type>] <text>"
+      echo "Types: success error warning info primary muted accent"
+      echo "Example: shui text success \"Done\"" ;;
     success|error|warning|info)
       echo "Usage: shui ${cmd} <message>"
       echo "Prints a ${cmd} message with icon and colour." ;;
@@ -228,14 +226,15 @@ _shui_help_cmd() {
       echo "Pipe-separated columns by default. Use --sep to change delimiter."
       echo "Example: shui table --sep=, \"Name,Age\" \"Alice,30\"" ;;
     progress)
-      echo "Usage: shui progress <current> <total> [--width=N] [--label=<text>] [--inline]"
-      echo "Adds a newline by default. Use --inline for loop-based updates." ;;
+      echo "Usage: shui progress <current> <total> [--width=N] [--label=<text>] [--filled-char=X] [--empty-char=Y] [--inline] [--iterm=<state>]"
+      echo "Adds a newline by default. Use --inline for loop-based updates."
+      echo "iTerm states: normal success error warning indeterminate clear" ;;
     spinner)
       echo "Usage: shui spinner [--success=<msg>] [--fail=<msg>] <message> -- <command>"
       echo "Runs <command> with a spinner. Exits with the command's exit code." ;;
     confirm)
-      echo "Usage: shui confirm <prompt> [y|n]"
-      echo "Second arg sets the default (y or n). Exits 0 for yes, 1 for no." ;;
+      echo "Usage: shui confirm [--default=y|n] <prompt>"
+      echo "Exits 0 for yes, 1 for no. Default is n." ;;
     select)
       echo "Usage: shui select <prompt> <opt1> [opt2…]"
       echo "Prints the chosen option to stdout." ;;
@@ -275,6 +274,7 @@ shui() {
     pill)         _shui_pill        "$@" ;;
     pill-custom)  _shui_pill_custom "$@" ;;
     box)          _shui_box         "$@" ;;
+    banner)       _shui_banner      "$@" ;;
     table)        _shui_table       "$@" ;;
     progress)     _shui_progress    "$@" ;;
     spinner)      _shui_spinner     "$@" ;;
@@ -283,7 +283,6 @@ shui() {
     task-start|task-done|final-success|final-fail) _shui_task "$cmd" "$@" ;;
     title|title-action|title-install|title-update) _shui_title "$cmd" "$@" ;;
     set-total-steps|next-step)                     _shui_step  "$cmd" "$@" ;;
-    user-prompt|input-prompt)                      _shui_prompt "$cmd" "$@" ;;
     dots-loading|typewriter|pulse|fade-in)         _shui_animation "$cmd" "$@" ;;
     hide-cursor|show-cursor|save-cursor|restore-cursor|move-cursor|clear-line|cleanup) _shui_cursor "$cmd" "$@" ;;
     hyperlink)   _shui_hyperlink  "$@" ;;
