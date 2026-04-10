@@ -34,7 +34,7 @@ src/
     spinner.zsh           # command spinner — wraps a command, exits with its exit code
     loader.zsh            # indeterminate loader — looping indicator (--style=dots|pulse|spinner)
     animation.zsh         # one-shot text effects — typewriter, fade-in
-    screen.zsh            # section header + command runner with elapsed time
+    screen.zsh            # section header + command runner with elapsed time; also timer-start/timer-end for per-step timing
     interactive.zsh       # confirm, select, input
 assets/                   # SVG screenshots embedded in README
 demo.zsh                  # visual showcase of all components

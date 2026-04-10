@@ -39,6 +39,7 @@ One file to source. No dependencies. Pure Zsh.
     - [Text](#text)
     - [Layout](#layout)
     - [Screen](#screen)
+    - [Timer](#timer)
     - [Badge](#badge)
     - [Pill](#pill)
     - [Box](#box)
@@ -264,15 +265,41 @@ shui screen "Running tests" -- zsh tests/test-components.zsh
 Building
 
 ✅ Build complete
-⏱ 3s
+⏱ Building · 3s
 
 Running tests
 ...
-⏱ 1m 12s
+⏱ Running tests · 1m 12s
 ```
 
 ```zsh
 shui screen <title> -- <command> [args…]
+```
+
+---
+
+#### Timer
+
+Lightweight per-step timing. Call `timer-start` before a block and `timer-end <label>` after — prints elapsed time in muted colour without affecting output or exit codes.
+
+```zsh
+shui timer-start
+mise plugins update
+shui timer-end "Plugin index update"
+
+shui timer-start
+mise install
+shui timer-end "Tool install"
+```
+
+```console
+⏱ Plugin index update · 2s
+⏱ Tool install · 8s
+```
+
+```zsh
+shui timer-start
+shui timer-end <label>
 ```
 
 ---
