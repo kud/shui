@@ -8,7 +8,7 @@ _shui_layout() {
       echo -e "\n${SHUI_BOLD}${SHUI_COLOR_PRIMARY}${*}${SHUI_RESET}"
       ;;
     subtitle)
-      echo -e "\n${SHUI_COLOR_PRIMARY}◆${SHUI_RESET} ${SHUI_BOLD}${*}${SHUI_RESET}"
+      echo -e "\n${SHUI_COLOR_WARNING}${SHUI_BOLD}${*}${SHUI_RESET}"
       ;;
     subsection)
       echo -e "${SHUI_COLOR_ACCENT}${SHUI_ICON_BULLET}${SHUI_RESET} ${*}"

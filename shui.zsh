@@ -105,6 +105,7 @@ LAYOUT
   shui hr
   shui center-text <text> [--width=N]
   shui spacer [n]
+  shui screen <title> -- <command> [args…]
 
 INLINE  (use inside $(...))
   shui badge <type> <text>
@@ -206,6 +207,9 @@ _shui_help_cmd() {
     section|subtitle|subsection)
       echo "Usage: shui ${cmd} <title>"
       echo "Prints a ${cmd} heading." ;;
+    screen)
+      echo "Usage: shui screen <title> -- <command> [args…]"
+      echo "Renders a section header, runs <command>, then shows elapsed time." ;;
     divider)
       echo "Usage: shui divider"
       echo "Prints a full-width horizontal rule." ;;
@@ -273,6 +277,7 @@ shui() {
     success-simple|error-simple|warning-simple|info-simple)    _shui_message_simple "${cmd%-simple}" "$@" ;;
     muted)                                                     _shui_message_simple "muted" "$@" ;;
     section|subtitle|subsection|divider|hr|spacer|center-text) _shui_layout  "$cmd" "$@" ;;
+    screen)       _shui_screen      "$@" ;;
     badge)        _shui_badge       "$@" ;;
     pill)         _shui_pill        "$@" ;;
     pill-custom)  _shui_pill_custom "$@" ;;
