@@ -110,7 +110,6 @@ LAYOUT
 INLINE  (use inside $(...))
   shui badge <type> <text>
   shui pill <type> <text>
-  shui pill-custom <fg> <bg> <text>
 
 BLOCKS
   shui box [--title=<title>] <content>
@@ -139,8 +138,10 @@ STEP
   shui set-total-steps <n>
   shui next-step <msg>
 
+LOADER
+  shui loader [--style=dots|pulse|spinner] [--duration=N] <msg>
+
 ANIMATION
-  shui dots-loading [--duration=N] <msg>
   shui typewriter [--delay=N] [--color=<type>] <text>
   shui pulse [--count=N] <text>
   shui fade-in [--steps=N] <text>
@@ -280,7 +281,6 @@ shui() {
     screen)       _shui_screen      "$@" ;;
     badge)        _shui_badge       "$@" ;;
     pill)         _shui_pill        "$@" ;;
-    pill-custom)  _shui_pill_custom "$@" ;;
     box)          _shui_box         "$@" ;;
     banner)       _shui_banner      "$@" ;;
     table)        _shui_table       "$@" ;;
@@ -291,7 +291,8 @@ shui() {
     task-start|task-done|final-success|final-fail) _shui_task "$cmd" "$@" ;;
     title|title-action|title-install|title-update) _shui_title "$cmd" "$@" ;;
     set-total-steps|next-step)                     _shui_step  "$cmd" "$@" ;;
-    dots-loading|typewriter|pulse|fade-in)         _shui_animation "$cmd" "$@" ;;
+    loader)                                          _shui_loader    "$@" ;;
+    typewriter|pulse|fade-in)                        _shui_animation "$cmd" "$@" ;;
     hide-cursor|show-cursor|save-cursor|restore-cursor|move-cursor|clear-line|cleanup) _shui_cursor "$cmd" "$@" ;;
     hyperlink)   _shui_hyperlink  "$@" ;;
     print-link)  _shui_print_link "$@" ;;

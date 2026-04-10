@@ -64,20 +64,6 @@ assert_not_contains "NO_COLOR has no ANSI escapes" $'\033' "$_out"
 unset NO_COLOR
 
 # ---------------------------------------------------------------------------
-# 4. _shui_pill_custom
-# ---------------------------------------------------------------------------
-_t_section "_shui_pill_custom"
-
-_out=$(strip_ansi "$(_shui_pill_custom 15 46 "custom-text")")
-assert_contains "renders the text" "custom-text" "$_out"
-
-export NO_COLOR=1
-_out=$(_shui_pill_custom 15 46 "nc-text")
-assert_eq "NO_COLOR renders [text]" "[nc-text]" "$_out"
-assert_not_contains "NO_COLOR has no ANSI escapes" $'\033' "$_out"
-unset NO_COLOR
-
-# ---------------------------------------------------------------------------
 # 5. _shui_message
 # ---------------------------------------------------------------------------
 _t_section "_shui_message"

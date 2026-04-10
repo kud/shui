@@ -4,28 +4,6 @@ _shui_animation() {
   local type="$1"; shift
 
   case "$type" in
-    dots-loading)
-      local duration=3
-      local msg="Loading"
-      while [[ $# -gt 0 ]]; do
-        case "$1" in
-          --duration=*) duration="${1#--duration=}"; shift ;;
-          *)            msg="$1";                    shift ;;
-        esac
-      done
-      local end=$(( EPOCHSECONDS + duration ))
-      local i=0
-      while (( EPOCHSECONDS < end )); do
-        local dots=$(( (i % 3) + 1 ))
-        local dot_str=""
-        local d
-        for ((d=0; d<dots; d++)); do dot_str+="."; done
-        printf '\r%s%s%s' "$SHUI_COLOR_INFO" "${msg}${dot_str}" "$SHUI_RESET"
-        sleep 0.4
-        (( i++ ))
-      done
-      printf '\r\033[K'
-      ;;
     typewriter)
       local delay=0.03
       local color="$SHUI_COLOR_PRIMARY"

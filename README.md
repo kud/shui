@@ -38,6 +38,7 @@ One file to source. No dependencies. Pure Zsh.
     - [Messages](#messages)
     - [Text](#text)
     - [Layout](#layout)
+    - [Screen](#screen)
     - [Badge](#badge)
     - [Pill](#pill)
     - [Box](#box)
@@ -238,10 +239,38 @@ shui spacer 3
 
 Setup
 
-→ Installing packages
-  • npm dependencies
-  • brew formulae
+◆ Installing packages
+• npm dependencies
+• brew formulae
 ────────────────────────────────────────────────────────────────────────────────
+```
+
+---
+
+#### Screen
+
+Renders a section header, runs a command, then prints elapsed time. Returns the command's exit code.
+
+```zsh
+shui screen "Building" -- npm run build
+
+shui screen "Running tests" -- zsh tests/test-components.zsh
+```
+
+```console
+
+Building
+
+✅ Build complete
+⏱ 3s
+
+Running tests
+...
+⏱ 1m 12s
+```
+
+```zsh
+shui screen <title> -- <command> [args…]
 ```
 
 ---
@@ -503,20 +532,22 @@ shui theme validate   # check all required tokens are defined
 
 ### Token reference
 
-| Token                                                                                                | Purpose                  |
-| ---------------------------------------------------------------------------------------------------- | ------------------------ |
-| `SHUI_RESET`                                                                                         | Reset all styles         |
-| `SHUI_BOLD` `SHUI_DIM` `SHUI_ITALIC` `SHUI_UNDERLINE`                                                | Text styles              |
-| `SHUI_COLOR_PRIMARY`                                                                                 | Primary accent colour    |
-| `SHUI_COLOR_SUCCESS`                                                                                 | Success colour           |
-| `SHUI_COLOR_WARNING`                                                                                 | Warning colour           |
-| `SHUI_COLOR_ERROR`                                                                                   | Error colour             |
-| `SHUI_COLOR_INFO`                                                                                    | Info colour              |
-| `SHUI_COLOR_MUTED`                                                                                   | Secondary / dim text     |
-| `SHUI_COLOR_ACCENT`                                                                                  | Highlight accent         |
-| `SHUI_BG_SUCCESS` `SHUI_BG_WARNING` `SHUI_BG_ERROR` `SHUI_BG_INFO` `SHUI_BG_PRIMARY` `SHUI_BG_MUTED` | Badge background colours |
-| `SHUI_ICON_SUCCESS` `SHUI_ICON_ERROR` `SHUI_ICON_WARNING` `SHUI_ICON_INFO`                           | Status icons             |
-| `SHUI_ICON_BULLET` `SHUI_ICON_ARROW` `SHUI_ICON_CHECK` `SHUI_ICON_CROSS`                             | UI icons                 |
+| Token                                                                                                                 | Purpose                  |
+| --------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `SHUI_RESET`                                                                                                          | Reset all styles         |
+| `SHUI_BOLD` `SHUI_DIM` `SHUI_ITALIC` `SHUI_UNDERLINE`                                                                 | Text styles              |
+| `SHUI_COLOR_PRIMARY`                                                                                                  | Primary accent colour    |
+| `SHUI_COLOR_SUCCESS`                                                                                                  | Success colour           |
+| `SHUI_COLOR_WARNING`                                                                                                  | Warning colour           |
+| `SHUI_COLOR_ERROR`                                                                                                    | Error colour             |
+| `SHUI_COLOR_INFO`                                                                                                     | Info colour              |
+| `SHUI_COLOR_MUTED`                                                                                                    | Secondary / dim text     |
+| `SHUI_COLOR_ACCENT`                                                                                                   | Highlight accent         |
+| `SHUI_BG_SUCCESS` `SHUI_BG_WARNING` `SHUI_BG_ERROR` `SHUI_BG_INFO` `SHUI_BG_PRIMARY` `SHUI_BG_MUTED`                  | Badge background colours |
+| `SHUI_ICON_SUCCESS` `SHUI_ICON_ERROR` `SHUI_ICON_WARNING` `SHUI_ICON_INFO`                                            | Status icons             |
+| `SHUI_ICON_BULLET` `SHUI_ICON_ARROW` `SHUI_ICON_CHECK` `SHUI_ICON_CROSS`                                              | UI icons                 |
+| `SHUI_ICON_ROBOT` `SHUI_ICON_APPLE` `SHUI_ICON_GIT` `SHUI_ICON_FOLDER` `SHUI_ICON_LINK` `SHUI_ICON_CLOUD`             | Infrastructure icons     |
+| `SHUI_ICON_NODE` `SHUI_ICON_PYTHON` `SHUI_ICON_RUBY` `SHUI_ICON_RUST` `SHUI_ICON_GO` `SHUI_ICON_GEM` `SHUI_ICON_BREW` | Language & tool icons    |
 
 ---
 

@@ -31,18 +31,5 @@ _shui_pill() {
   local fg=$'\e[38;5;'${color_code}'m'
   local text_fg=$'\e[38;5;'${text_color}'m'
 
-  printf '%s' "${reset}${fg}▐${bg}${text_fg}${text}${reset}${fg}▌${reset}"
-}
-
-_shui_pill_custom() {
-  local fg_code="$1" bg_code="$2" text="$3"
-
-  [[ -n "${NO_COLOR:-}" ]] && { printf '[%s]' "$text"; return; }
-
-  local reset=$'\e[0m'
-  local bg=$'\e[48;5;'${bg_code}'m'
-  local fg=$'\e[38;5;'${fg_code}'m'
-  local bg_fg=$'\e[38;5;'${bg_code}'m'
-
-  printf '%s' "${reset}${bg_fg}▐${bg}${fg}${text}${reset}${bg_fg}▌${reset}"
+  printf '%s' "${reset}${fg}▐${bg}${text_fg} ${text} ${reset}${fg}▌${reset}"
 }
