@@ -18,7 +18,12 @@ _shui_timer_end() {
 }
 
 _shui_screen() {
-  local title="$1"; shift
+  local title="$1" label; shift
+  if [[ "$1" == "--label" ]]; then
+    label="$2"; shift 2
+  else
+    label="$title"
+  fi
   [[ "$1" == "--" ]] && shift
 
   local _start=$SECONDS
@@ -34,6 +39,6 @@ _shui_screen() {
     _time="$(( _elapsed / 60 ))m $(( _elapsed % 60 ))s"
   fi
 
-  _shui_message_simple muted "⏱ ${title} · ${_time}" 1
+  _shui_message_simple muted "⏱ ${label} · ${_time}" 1
   return $_exit
 }
