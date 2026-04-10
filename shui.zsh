@@ -278,6 +278,8 @@ shui() {
     muted)                                                     _shui_message_simple "muted" "$@" ;;
     section|subtitle|subsection|divider|hr|spacer|center-text) _shui_layout  "$cmd" "$@" ;;
     screen)       _shui_screen      "$@" ;;
+    timer-start)  _shui_timer_start      ;;
+    timer-end)    _shui_timer_end   "$@" ;;
     badge)        _shui_badge       "$@" ;;
     pill)         _shui_pill        "$@" ;;
     box)          _shui_box         "$@" ;;
