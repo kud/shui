@@ -7,6 +7,9 @@
 SHUI_VERSION="0.1.0"
 SHUI_DIR="${0:A:h}"
 
+[[ -n "${_SHUI_LOADED:-}" ]] && return 0
+typeset -g _SHUI_LOADED=1
+
 source "${SHUI_DIR}/src/tokens/colors.zsh"
 source "${SHUI_DIR}/src/tokens/contract.zsh"
 
