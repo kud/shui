@@ -17,6 +17,6 @@ _shui_screen() {
     _time="$(( _elapsed / 60 ))m $(( _elapsed % 60 ))s"
   fi
 
-  _shui_message_simple muted "⏱ ${_time}" 1
+  _shui_message_simple muted "⏱ ${title} · ${_time}" 1
   return $_exit
 }
