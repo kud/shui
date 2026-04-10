@@ -143,7 +143,6 @@ LOADER
 
 ANIMATION
   shui typewriter [--delay=N] [--color=<type>] <text>
-  shui pulse [--count=N] <text>
   shui fade-in [--steps=N] <text>
 
 CURSOR
@@ -292,7 +291,7 @@ shui() {
     title|title-action|title-install|title-update) _shui_title "$cmd" "$@" ;;
     set-total-steps|next-step)                     _shui_step  "$cmd" "$@" ;;
     loader)                                          _shui_loader    "$@" ;;
-    typewriter|pulse|fade-in)                        _shui_animation "$cmd" "$@" ;;
+    typewriter|fade-in)                              _shui_animation "$cmd" "$@" ;;
     hide-cursor|show-cursor|save-cursor|restore-cursor|move-cursor|clear-line|cleanup) _shui_cursor "$cmd" "$@" ;;
     hyperlink)   _shui_hyperlink  "$@" ;;
     print-link)  _shui_print_link "$@" ;;

@@ -46,6 +46,7 @@ One file to source. No dependencies. Pure Zsh.
     - [Progress](#progress)
     - [Spinner](#spinner)
     - [Loader](#loader)
+    - [Animation](#animation)
     - [Interactive](#interactive)
 - [Themes](#themes)
   - [Built-in themes](#built-in-themes)
@@ -459,6 +460,25 @@ shui loader [--style=dots|pulse|spinner] [--duration=N] <msg>
 | `dots`    | Cycling dot trail — `.` `..` `...` |
 | `pulse`   | Bold/dim alternating text          |
 | `spinner` | Braille spinner character          |
+
+---
+
+#### Animation
+
+One-shot text effects — play once and exit.
+
+```zsh
+shui typewriter "Deploying to production…"
+shui typewriter --delay=0.05 --color=success "Done!"
+
+shui fade-in "Welcome"
+shui fade-in --steps=10 "Welcome"
+```
+
+```zsh
+shui typewriter [--delay=N] [--color=<type>] <text>
+shui fade-in    [--steps=N] <text>
+```
 
 ---
 

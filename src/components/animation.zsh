@@ -35,24 +35,6 @@ _shui_animation() {
       done
       printf '%s\n' "$SHUI_RESET"
       ;;
-    pulse)
-      local count=3
-      local text=""
-      while [[ $# -gt 0 ]]; do
-        case "$1" in
-          --count=*) count="${1#--count=}"; shift ;;
-          *)         text="$1";            shift ;;
-        esac
-      done
-      local p
-      for ((p=0; p<count; p++)); do
-        printf '\r%s%s%s' "$SHUI_BOLD" "$text" "$SHUI_RESET"
-        sleep 0.3
-        printf '\r%s%s%s' "$SHUI_DIM" "$text" "$SHUI_RESET"
-        sleep 0.3
-      done
-      printf '\r%s\n' "$text"
-      ;;
     fade-in)
       local steps=5
       local text=""
