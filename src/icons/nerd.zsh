@@ -68,7 +68,7 @@ SHUI_ICON_BUG=""             # U+F188  nf-fa-bug
 SHUI_ICON_LOADING=""         # U+F110  nf-fa-spinner
 
 # ── Tech ────────────────────────────────────────────────────────────────────────
-SHUI_ICON_ROBOT=""           # U+F544  nf-fa-robot
+SHUI_ICON_ROBOT=""           # U+E28C  nf-mdi-robot
 SHUI_ICON_APPLE=""           # U+F179  nf-fa-apple
 SHUI_ICON_GIT=""             # U+F1D3  nf-fa-git
 SHUI_ICON_FOLDER=""          # U+F07B  nf-fa-folder
