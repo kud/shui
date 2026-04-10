@@ -45,6 +45,7 @@ One file to source. No dependencies. Pure Zsh.
     - [Table](#table)
     - [Progress](#progress)
     - [Spinner](#spinner)
+    - [Loader](#loader)
     - [Interactive](#interactive)
 - [Themes](#themes)
   - [Built-in themes](#built-in-themes)
@@ -430,6 +431,34 @@ shui spinner \
 ⠹ Installing brew packages...
 ✅ Installed!
 ```
+
+---
+
+#### Loader
+
+Indeterminate loading indicator — loops for a fixed duration then clears the line. Use when you can't wrap a command in `spinner`.
+
+```zsh
+shui loader "Installing packages"
+shui loader --duration=10 "Building"
+shui loader --style=dots    "Connecting"   # default
+shui loader --style=pulse   "Connecting"
+shui loader --style=spinner "Connecting"
+```
+
+```console
+Connecting...
+```
+
+```zsh
+shui loader [--style=dots|pulse|spinner] [--duration=N] <msg>
+```
+
+| Style     | Description                        |
+| --------- | ---------------------------------- |
+| `dots`    | Cycling dot trail — `.` `..` `...` |
+| `pulse`   | Bold/dim alternating text          |
+| `spinner` | Braille spinner character          |
 
 ---
 

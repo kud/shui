@@ -31,7 +31,10 @@ src/
     box.zsh               # bordered content block
     table.zsh             # pipe-separated column table
     progress.zsh          # inline progress bar
-    spinner.zsh           # command spinner
+    spinner.zsh           # command spinner — wraps a command, exits with its exit code
+    loader.zsh            # indeterminate loader — looping indicator (--style=dots|pulse|spinner)
+    animation.zsh         # one-shot text effects — typewriter, pulse, fade-in
+    screen.zsh            # section header + command runner with elapsed time
     interactive.zsh       # confirm, select, input
 assets/                   # SVG screenshots embedded in README
 demo.zsh                  # visual showcase of all components
