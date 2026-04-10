@@ -16,7 +16,7 @@ SHUI_COLOR_WARNING=$(_shui_color   "38;5;208" "0;33")
 SHUI_COLOR_ERROR=$(_shui_color     "38;5;196" "0;31")
 SHUI_COLOR_INFO=$(_shui_color      "38;5;39"  "0;34")
 SHUI_COLOR_MUTED=$(_shui_color     "38;5;240" "0;90")
-SHUI_COLOR_ACCENT=$(_shui_color    "38;5;226" "0;33")
+SHUI_COLOR_ACCENT=$(_shui_color    "38;5;51"  "0;36")
 SHUI_COLOR_SECONDARY=$(_shui_color "38;5;245" "0;37")
 SHUI_COLOR_DANGER=$(_shui_color    "38;5;196" "0;31")
 

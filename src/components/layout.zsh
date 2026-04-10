@@ -11,7 +11,7 @@ _shui_layout() {
       echo -e "\n${SHUI_COLOR_WARNING}${SHUI_BOLD}${*}${SHUI_RESET}"
       ;;
     subsection)
-      echo -e "${SHUI_COLOR_ACCENT}${SHUI_ICON_BULLET}${SHUI_RESET} ${*}"
+      echo -e "${SHUI_COLOR_ACCENT}${SHUI_BOLD}${SHUI_ICON_BULLET}${SHUI_RESET} ${*}"
       ;;
     divider)
       local char="─" width="$_SHUI_TERMINAL_WIDTH" color="$SHUI_COLOR_MUTED"

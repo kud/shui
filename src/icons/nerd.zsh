@@ -74,7 +74,7 @@ SHUI_ICON_GIT=""             # U+F1D3  nf-fa-git
 SHUI_ICON_FOLDER=""          # U+F07B  nf-fa-folder
 SHUI_ICON_LINK=""            # U+F0C1  nf-fa-link
 SHUI_ICON_CLOUD=""           # U+F0C2  nf-fa-cloud
-SHUI_ICON_BREW=""            # U+E115  nf-dev-brew
+SHUI_ICON_BREW=$'\UF0FC'      # U+F0FC  nf-fa-beer
 SHUI_ICON_NODE=""            # U+E718  nf-dev-nodejs_small
 SHUI_ICON_PYTHON=""          # U+E235  nf-seti-python
 SHUI_ICON_RUBY=""            # U+E791  nf-dev-ruby
@@ -107,10 +107,10 @@ SHUI_ICON_PL_CAP_RIGHT=""    # U+E0B4  nf-pl-right_soft_divider
 SHUI_ICON_PL_CAP_LEFT=""     # U+E0B6  nf-pl-left_soft_divider
 
 # ── Geometric (Unicode, no Nerd Font required) ──────────────────────────────
-SHUI_ICON_BULLET="▸"
-SHUI_ICON_CIRCLE="●"
-SHUI_ICON_CIRCLE_EMPTY="○"
-SHUI_ICON_SQUARE="■"
-SHUI_ICON_SQUARE_EMPTY="□"
-SHUI_ICON_TRIANGLE="▲"
-SHUI_ICON_DIAMOND="◆"
+SHUI_ICON_BULLET="›"            # U+203A  single right-pointing angle quotation mark
+SHUI_ICON_CIRCLE="●"            # U+25CF  black circle
+SHUI_ICON_CIRCLE_EMPTY="○"      # U+25CB  white circle
+SHUI_ICON_SQUARE="■"            # U+25A0  black square
+SHUI_ICON_SQUARE_EMPTY="□"      # U+25A1  white square
+SHUI_ICON_TRIANGLE="▲"           # U+25B2  black up-pointing triangle
+SHUI_ICON_DIAMOND="◆"           # U+25C6  black diamond
