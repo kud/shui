@@ -13,7 +13,7 @@ _shui_banner() {
   esac
 
   local bar="${color}▌${SHUI_RESET}"
-  printf '%s\n' "$bar"
+  printf '\n%s\n' "$bar"
   local first=true
   for line in "${content_lines[@]}"; do
     if $first; then
