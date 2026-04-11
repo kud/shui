@@ -104,6 +104,7 @@ LAYOUT
   shui subtitle <title>
   shui subsection <title>
   shui divider [--char=C] [--width=N] [--color=<type>]
+  shui fence [label]
   shui hr
   shui center-text <text> [--width=N]
   shui spacer [n]
@@ -278,7 +279,7 @@ shui() {
     success|error|warning|info)                                _shui_message "$cmd" "$@" ;;
     success-simple|error-simple|warning-simple|info-simple)    _shui_message_simple "${cmd%-simple}" "$@" ;;
     muted)                                                     _shui_message_simple "muted" "$@" ;;
-    section|subtitle|subsection|divider|hr|spacer|center-text) _shui_layout  "$cmd" "$@" ;;
+    section|subtitle|subsection|divider|hr|spacer|center-text|fence) _shui_layout  "$cmd" "$@" ;;
     screen)       _shui_screen      "$@" ;;
     timer-start)  _shui_timer_start      ;;
     timer-end)    _shui_timer_end   "$@" ;;

@@ -42,6 +42,20 @@ _shui_layout() {
       _shui_repeat "─" 40
       printf '%s\n' "${SHUI_RESET}"
       ;;
+    fence)
+      local label="${1:-}" char="─" color="$SHUI_COLOR_MUTED"
+      if [[ -n "$label" ]]; then
+        local prefix="── ${label} "
+        local prefix_len=$(( ${#label} + 4 ))
+        local trail_len=$(( _SHUI_TERMINAL_WIDTH - prefix_len ))
+        [[ $trail_len -lt 2 ]] && trail_len=2
+        printf '%s%s%s%s\n' "$color" "$prefix" "$(_shui_repeat "$char" $trail_len)" "$SHUI_RESET"
+      else
+        printf '%s' "$color"
+        _shui_repeat "$char" "$_SHUI_TERMINAL_WIDTH"
+        printf '%s\n' "$SHUI_RESET"
+      fi
+      ;;
     spacer)
       local n="${1:-1}"
       for ((i=0; i<n; i++)); do echo; done
