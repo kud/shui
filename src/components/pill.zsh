@@ -4,6 +4,7 @@ _shui_pill() {
   local type="$1" text="$2"
 
   [[ -n "${NO_COLOR:-}" ]] && { printf '[%s]' "$text"; return; }
+  [[ -z "${SHUI_ICON_PL_CAP_LEFT:-}" ]]  && { printf '[%s]' "$text"; return; }
 
   local color_code text_color=15
 

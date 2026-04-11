@@ -13,6 +13,8 @@ typeset -g _SHUI_LOADED=1
 source "${SHUI_DIR}/src/tokens/colors.zsh"
 source "${SHUI_DIR}/src/tokens/contract.zsh"
 
+source "${SHUI_DIR}/src/icons/unicode.zsh"
+
 _SHUI_ICONS="${SHUI_ICONS:-nerd}"
 
 if [[ -f "${SHUI_DIR}/src/icons/${_SHUI_ICONS}.zsh" ]]; then

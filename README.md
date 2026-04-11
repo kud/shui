@@ -631,11 +631,14 @@ shui theme validate   # check all required tokens are defined
 
 ### Icon sets
 
-| Set     | Requires                                | Description                     |
-| ------- | --------------------------------------- | ------------------------------- |
-| `nerd`  | [Nerd Font](https://www.nerdfonts.com/) | Rich glyphicons _(default)_     |
-| `emoji` | Nothing                                 | Unicode emoji, works everywhere |
-| `none`  | Nothing                                 | No icons — text only            |
+| Set       | Requires                                | Description                              |
+| --------- | --------------------------------------- | ---------------------------------------- |
+| `nerd`    | [Nerd Font](https://www.nerdfonts.com/) | Rich glyphicons _(default)_              |
+| `emoji`   | Nothing                                 | Unicode emoji, works everywhere          |
+| `none`    | Nothing                                 | No icons — text only                     |
+| `unicode` | Nothing                                 | Base layer — always loaded automatically |
+
+> `unicode.zsh` is sourced before the selected icon set on every load. It defines geometric symbols (`›`, `●`, `▲`, etc.) that work in any terminal. The selected icon set can override them — `none` blanks them all, `emoji` inherits them unchanged.
 
 ### Selecting an icon set
 
