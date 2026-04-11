@@ -20,10 +20,10 @@ _shui_confirm() {
 
   printf '%s%s%s %s [%s] ' \
     "$SHUI_COLOR_INFO" "$SHUI_ICON_INFO" "$SHUI_RESET" \
-    "$prompt" "$hint"
+    "$prompt" "$hint" >&2
 
   local response
-  read -r response
+  read -r response </dev/tty
   response="${response:-$default}"
 
   [[ "$response" =~ ^[yY]$ ]]
@@ -33,24 +33,25 @@ _shui_select() {
   local prompt="$1"; shift
   local -a options=("$@")
 
-  echo -e "${SHUI_COLOR_INFO}${SHUI_ICON_BULLET}${SHUI_RESET} ${prompt}"
+  printf '%s%s%s %s\n' \
+    "$SHUI_COLOR_INFO" "$SHUI_ICON_BULLET" "$SHUI_RESET" "$prompt" >&2
 
   local i=1
   for opt in "${options[@]}"; do
-    echo -e "  ${SHUI_COLOR_MUTED}${i})${SHUI_RESET} ${opt}"
+    printf '  %s%s)%s %s\n' "$SHUI_COLOR_MUTED" "$i" "$SHUI_RESET" "$opt" >&2
     (( i++ ))
   done
 
-  printf '%s%s%s ' "$SHUI_COLOR_MUTED" "$SHUI_ICON_ARROW" "$SHUI_RESET"
+  printf '%s%s%s ' "$SHUI_COLOR_MUTED" "$SHUI_ICON_ARROW" "$SHUI_RESET" >&2
 
   local choice
-  read -r choice
+  read -r choice </dev/tty
 
   if [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= ${#options[@]} )); then
-    echo "${options[$choice]}"
+    printf '%s\n' "${options[$choice]}"
     return 0
   else
-    echo "shui: invalid selection '${choice}'" >&2
+    printf 'shui: invalid selection "%s"\n' "$choice" >&2
     return 1
   fi
 }
@@ -71,9 +72,9 @@ _shui_input() {
 
   printf '%s%s%s %s%s ' \
     "$SHUI_COLOR_INFO" "$SHUI_ICON_BULLET" "$SHUI_RESET" \
-    "$prompt" "$hint"
+    "$prompt" "$hint" >&2
 
   local value
-  read -r value
-  echo "${value:-$default}"
+  read -r value </dev/tty
+  printf '%s\n' "${value:-$default}"
 }
