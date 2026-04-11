@@ -31,5 +31,5 @@ _shui_pill() {
   local fg=$'\e[38;5;'${color_code}'m'
   local text_fg=$'\e[38;5;'${text_color}'m'
 
-  printf '%s' "${reset}${fg}$'\UE0B6'${bg}${text_fg}${text}${reset}${fg}$'\UE0B4'${reset}"
+  printf '%s' "${reset}${fg}${SHUI_ICON_PL_CAP_LEFT}${bg}${text_fg}${text}${reset}${fg}${SHUI_ICON_PL_CAP_RIGHT}${reset}"
 }
