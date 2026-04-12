@@ -6,1670 +6,495 @@
     <title>shui · 水 — Shell UI for Zsh</title>
     <meta
       name="description"
-      content="Shell UI for Zsh. Fluid by design. Semantic components, a token-based theme engine, and a single consistent API."
+      content="A Zsh design system. Semantic components, a token-based theme engine, and one consistent API."
     />
-    <link
-      rel="icon"
-      type="image/png"
-      href="https://raw.githubusercontent.com/kud/shui/main/icon.png"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      :root {
-        --bg: #080a0c;
-        --surface: #101316;
-        --surface-2: #161a1e;
-        --border: #1c2026;
-        --border-2: #272d35;
-        --text: #e8eaed;
-        --text-muted: #6b7280;
-        --text-dim: #2e3540;
-        --accent: #22d3ee;
-        --accent-dim: rgba(34, 211, 238, 0.07);
-        --green: #4ade80;
-        --red: #f87171;
-        --yellow: #fbbf24;
-        --blue: #60a5fa;
-        --purple: #c084fc;
-        --radius: 10px;
-        --radius-sm: 6px;
-        --font: "Inter", system-ui, -apple-system, sans-serif;
-        --mono: "JetBrains Mono", "Cascadia Code", ui-monospace, monospace;
-      }
-
-      html {
-        scroll-behavior: smooth;
-      }
-
-      body {
-        font-family: var(--font);
-        background: var(--bg);
-        color: var(--text);
-        line-height: 1.6;
-        -webkit-font-smoothing: antialiased;
-        overflow-x: hidden;
-      }
-
-      /* ── Nav ───────────────────────────────────────── */
-
-      nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 2rem;
-        height: 54px;
-        background: rgba(8, 10, 12, 0.82);
-        backdrop-filter: blur(14px) saturate(1.4);
-        border-bottom: 1px solid var(--border);
-      }
-
-      .nav-logo {
-        font-size: 0.95rem;
-        font-weight: 600;
-        letter-spacing: -0.02em;
-        color: var(--text);
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 0.35rem;
-      }
-
-      .nav-logo .kanji {
-        color: var(--accent);
-      }
-
-      .nav-links {
-        display: flex;
-        align-items: center;
-        gap: 1.75rem;
-        list-style: none;
-      }
-
-      .nav-links a {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        text-decoration: none;
-        transition: color 0.15s;
-      }
-
-      .nav-links a:hover {
-        color: var(--text);
-      }
-
-      .nav-gh {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        font-size: 0.85rem;
-        font-weight: 500;
-        color: var(--text);
-        background: var(--surface-2);
-        border: 1px solid var(--border-2);
-        border-radius: var(--radius-sm);
-        padding: 0.35rem 0.8rem;
-        text-decoration: none;
-        transition:
-          border-color 0.15s,
-          background 0.15s,
-          color 0.15s;
-      }
-
-      .nav-gh:hover {
-        border-color: var(--accent);
-        background: var(--accent-dim);
-        color: var(--accent);
-      }
-
-      /* ── Hero ──────────────────────────────────────── */
-
-      .hero {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 8rem 1.5rem 5rem;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .hero::before {
-        content: "";
-        position: absolute;
-        top: -10%;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 900px;
-        height: 700px;
-        background: radial-gradient(
-          ellipse at 50% 30%,
-          rgba(34, 211, 238, 0.055) 0%,
-          transparent 65%
-        );
-        pointer-events: none;
-      }
-
-      .hero-icon {
-        width: 76px;
-        height: 76px;
-        border-radius: 18px;
-        margin-bottom: 1.75rem;
-        box-shadow:
-          0 0 0 1px rgba(34, 211, 238, 0.15),
-          0 0 40px rgba(34, 211, 238, 0.18),
-          0 0 80px rgba(34, 211, 238, 0.07),
-          0 16px 40px rgba(0, 0, 0, 0.5);
-      }
-
-      @keyframes shimmer {
-        0% {
-          background-position: -200% center;
-        }
-        100% {
-          background-position: 200% center;
-        }
-      }
-
-      .hero-title {
-        font-size: clamp(2.75rem, 6.5vw, 4.25rem);
-        font-weight: 700;
-        letter-spacing: -0.045em;
-        line-height: 1.05;
-        margin-bottom: 1rem;
-        background: linear-gradient(
-          110deg,
-          #ffffff 20%,
-          var(--accent) 55%,
-          #ffffff 80%
-        );
-        background-size: 220% auto;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        animation: shimmer 7s linear infinite;
-      }
-
-      .hero-tagline {
-        font-size: 1.05rem;
-        color: var(--text-muted);
-        max-width: 420px;
-        margin-bottom: 2.5rem;
-        line-height: 1.65;
-      }
-
-      .hero-tagline strong {
-        color: var(--text);
-        font-weight: 500;
-      }
-
-      .hero-install {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.6rem;
-        background: var(--surface);
-        border: 1px solid var(--border-2);
-        border-radius: var(--radius);
-        padding: 0.6rem 1rem;
-        margin-bottom: 1.75rem;
-        font-family: var(--mono);
-        font-size: 0.875rem;
-      }
-
-      .hero-install .p {
-        color: var(--accent);
-        user-select: none;
-      }
-      .hero-install code {
-        color: var(--text);
-      }
-
-      .copy-btn {
-        background: none;
-        border: none;
-        color: var(--text-muted);
-        cursor: pointer;
-        padding: 0.2rem;
-        border-radius: 4px;
-        line-height: 0;
-        transition:
-          color 0.15s,
-          background 0.15s;
-      }
-
-      .copy-btn:hover {
-        color: var(--accent);
-        background: var(--accent-dim);
-      }
-      .copy-btn.copied {
-        color: var(--green);
-      }
-
-      .hero-ctas {
-        display: flex;
-        gap: 0.75rem;
-        margin-bottom: 4rem;
-      }
-
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        padding: 0.6rem 1.2rem;
-        border-radius: var(--radius-sm);
-        font-size: 0.875rem;
-        font-weight: 500;
-        text-decoration: none;
-        border: 1px solid transparent;
-        transition: all 0.15s;
-      }
-
-      .btn-primary {
-        background: var(--accent);
-        color: #000;
-        font-weight: 600;
-      }
-      .btn-primary:hover {
-        background: #67e8f9;
-        box-shadow: 0 0 24px rgba(34, 211, 238, 0.35);
-      }
-
-      .btn-ghost {
-        background: var(--surface-2);
-        color: var(--text);
-        border-color: var(--border-2);
-      }
-      .btn-ghost:hover {
-        border-color: var(--accent);
-        background: var(--accent-dim);
-        color: var(--accent);
-      }
-
-      /* ── Terminal window ───────────────────────────── */
-
-      .term-window {
-        width: 100%;
-        max-width: 600px;
-        background: var(--surface);
-        border: 1px solid var(--border-2);
-        border-radius: var(--radius);
-        overflow: hidden;
-        box-shadow:
-          0 0 0 1px rgba(34, 211, 238, 0.06),
-          0 0 80px rgba(34, 211, 238, 0.07),
-          0 32px 64px rgba(0, 0, 0, 0.5);
-        text-align: left;
-      }
-
-      .term-bar {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        padding: 0.7rem 1rem;
-        background: var(--surface-2);
-        border-bottom: 1px solid var(--border);
-      }
-
-      .dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-      .dr {
-        background: #ff5f57;
-      }
-      .dy {
-        background: #ffbd2e;
-      }
-      .dg {
-        background: #28c840;
-      }
-
-      .term-bar-title {
-        flex: 1;
-        text-align: center;
-        font-size: 0.73rem;
-        color: var(--text-muted);
-        font-family: var(--mono);
-      }
-
-      .term-body {
-        padding: 1.1rem 1.25rem;
-        font-family: var(--mono);
-        font-size: 0.83rem;
-        line-height: 1.9;
-      }
-
-      .tl {
-        display: flex;
-        align-items: baseline;
-        gap: 0.5rem;
-      }
-      .tp {
-        color: var(--accent);
-        user-select: none;
-        flex-shrink: 0;
-      }
-      .tc {
-        color: #e5e5e5;
-      }
-      .to {
-        color: #9ca3af;
-      }
-
-      /* ANSI colours */
-      .g {
-        color: var(--green);
-      }
-      .r {
-        color: var(--red);
-      }
-      .y {
-        color: var(--yellow);
-      }
-      .b {
-        color: var(--blue);
-      }
-      .c {
-        color: var(--accent);
-      }
-      .m {
-        color: var(--text-muted);
-      }
-      .w {
-        color: var(--text);
-      }
-      .dim {
-        color: var(--text-dim);
-        letter-spacing: -0.06em;
-      }
-
-      /* Inline badges */
-      .bd {
-        display: inline-block;
-        padding: 0.05em 0.45em;
-        border-radius: 3px;
-        font-size: 0.78em;
-        font-weight: 600;
-        vertical-align: baseline;
-      }
-      .bd-ok {
-        background: #14532d;
-        color: #4ade80;
-      }
-      .bd-err {
-        background: #7f1d1d;
-        color: #f87171;
-      }
-      .bd-wrn {
-        background: #78350f;
-        color: #fbbf24;
-      }
-      .bd-inf {
-        background: #1e3a5f;
-        color: #60a5fa;
-      }
-      .bd-mut {
-        background: #27272a;
-        color: #a1a1aa;
-      }
-      .bd-pri {
-        background: #0c4a6e;
-        color: #38bdf8;
-      }
-
-      /* Pills */
-      .pl {
-        display: inline-block;
-        padding: 0.05em 0.55em;
-        border-radius: 999px;
-        font-size: 0.78em;
-        font-weight: 600;
-        vertical-align: baseline;
-      }
-      .pl-ok {
-        background: #14532d;
-        color: #4ade80;
-      }
-      .pl-wrn {
-        background: #78350f;
-        color: #fbbf24;
-      }
-      .pl-mut {
-        background: #27272a;
-        color: #a1a1aa;
-      }
-      .pl-acc {
-        background: #164e63;
-        color: #22d3ee;
-      }
-
-      /* ── Layout ────────────────────────────────────── */
-
-      .container {
-        max-width: 1040px;
-        margin: 0 auto;
-      }
-
-      section {
-        padding: 6rem 1.5rem;
-      }
-
-      section[id] {
-        scroll-margin-top: 54px;
-      }
-
-      .lbl {
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.13em;
-        text-transform: uppercase;
-        color: var(--accent);
-        margin-bottom: 0.65rem;
-      }
-
-      .sh2 {
-        font-size: clamp(1.75rem, 4vw, 2.5rem);
-        font-weight: 700;
-        letter-spacing: -0.035em;
-        line-height: 1.15;
-        color: var(--text);
-        margin-bottom: 0.9rem;
-      }
-
-      .sdesc {
-        font-size: 1rem;
-        color: var(--text-muted);
-        max-width: 500px;
-        line-height: 1.7;
-      }
-
-      /* ── Features strip ────────────────────────────── */
-
-      .features {
-        padding: 0;
-        background: var(--surface);
-        border-top: 1px solid var(--border);
-        border-bottom: 1px solid var(--border);
-      }
-
-      .features-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .feat {
-        padding: 2.5rem 2rem;
-        border-right: 1px solid var(--border);
-      }
-      .feat:last-child {
-        border-right: none;
-      }
-
-      .feat-icon {
-        font-size: 1.4rem;
-        margin-bottom: 0.9rem;
-      }
-      .feat-title {
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: var(--text);
-        margin-bottom: 0.45rem;
-      }
-      .feat-desc {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        line-height: 1.65;
-      }
-      .feat-desc code {
-        font-family: var(--mono);
-        font-size: 0.82em;
-        color: var(--accent);
-      }
-
-      /* ── Component grid ────────────────────────────── */
-
-      .comp-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.25rem;
-        margin-top: 3rem;
-      }
-
-      .comp-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        overflow: hidden;
-        transition: border-color 0.2s;
-      }
-      .comp-card:hover {
-        border-color: var(--border-2);
-      }
-
-      .comp-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.8rem 1.1rem;
-        border-bottom: 1px solid var(--border);
-      }
-      .comp-name {
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: var(--text);
-      }
-      .comp-api {
-        font-size: 0.7rem;
-        font-family: var(--mono);
-        color: var(--text-muted);
-      }
-
-      pre.code-blk {
-        padding: 0.9rem 1.1rem;
-        background: #0d1117;
-        border-bottom: 1px solid var(--border);
-        font-family: var(--mono);
-        font-size: 0.77rem;
-        line-height: 1.75;
-        overflow-x: auto;
-        white-space: pre;
-      }
-
-      /* ANSI colour helpers for code blocks */
-      .ck {
-        color: #e5e5e5;
-      }
-      .ca {
-        color: var(--green);
-      }
-      .cf {
-        color: var(--blue);
-      }
-      .cs {
-        color: #4ade80;
-      }
-      .cc {
-        color: #6b7280;
-      }
-      .cp {
-        color: var(--purple);
-      }
-
-      .out-blk {
-        padding: 0.9rem 1.1rem;
-        font-family: var(--mono);
-        font-size: 0.8rem;
-        line-height: 1.85;
-      }
-
-      /* Terminal-style table */
-      .term-table {
-        border-collapse: collapse;
-        font-family: var(--mono);
-        font-size: 0.78rem;
-        width: 100%;
-      }
-      .term-table th,
-      .term-table td {
-        border: 1px solid #2e3540;
-        padding: 0.25em 0.65em;
-        text-align: left;
-        white-space: nowrap;
-      }
-      .term-table th {
-        color: #9ca3af;
-        font-weight: 600;
-        background: #0d1117;
-      }
-      .term-table td {
-        color: var(--text);
-      }
-
-      /* ── Themes section ────────────────────────────── */
-
-      .themes-bg {
-        background: var(--surface);
-        border-top: 1px solid var(--border);
-        border-bottom: 1px solid var(--border);
-      }
-
-      .themes-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1.1rem;
-        margin-top: 3rem;
-      }
-
-      .theme-card {
-        background: var(--surface-2);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        overflow: hidden;
-      }
-
-      .theme-head {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.7rem 1rem;
-        border-bottom: 1px solid var(--border);
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: var(--text);
-      }
-
-      .theme-tag {
-        font-size: 0.65rem;
-        font-weight: 600;
-        padding: 0.1em 0.45em;
-        border-radius: 4px;
-        background: var(--accent-dim);
-        color: var(--accent);
-        border: 1px solid rgba(34, 211, 238, 0.18);
-      }
-      .theme-tag.plain {
-        background: rgba(107, 114, 128, 0.08);
-        color: #6b7280;
-        border-color: rgba(107, 114, 128, 0.2);
-      }
-
-      .theme-body {
-        padding: 1rem;
-        font-family: var(--mono);
-        font-size: 0.78rem;
-        line-height: 1.9;
-      }
-      .theme-env {
-        font-size: 0.7rem;
-        color: var(--text-muted);
-        margin-bottom: 0.6rem;
-      }
-
-      .theme-combo {
-        margin-top: 2.5rem;
-        padding: 1.1rem 1.25rem;
-        background: var(--surface-2);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        font-family: var(--mono);
-        font-size: 0.82rem;
-        line-height: 1.85;
-      }
-
-      /* ── Install ───────────────────────────────────── */
-
-      .install-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 3rem;
-        margin-top: 3rem;
-        align-items: start;
-      }
-
-      .methods {
-        display: flex;
-        flex-direction: column;
-        gap: 0.65rem;
-      }
-
-      .method {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-sm);
-        overflow: hidden;
-      }
-      .method-label {
-        padding: 0.4rem 1rem;
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--text-muted);
-        border-bottom: 1px solid var(--border);
-        background: var(--surface-2);
-      }
-      .method-code {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 0.7rem 1rem;
-        font-family: var(--mono);
-        font-size: 0.8rem;
-        color: var(--text);
-      }
-
-      .qs-block {
-        background: #0d1117;
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 1.2rem 1.25rem;
-        font-family: var(--mono);
-        font-size: 0.8rem;
-        line-height: 1.95;
-      }
-
-      /* ── Footer ────────────────────────────────────── */
-
-      footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 2rem;
-        border-top: 1px solid var(--border);
-      }
-
-      .footer-left {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-      }
-      .footer-left strong {
-        color: var(--text);
-      }
-      .footer-left .c {
-        color: var(--accent);
-        -webkit-text-fill-color: var(--accent);
-      }
-
-      .footer-links {
-        display: flex;
-        gap: 1.75rem;
-      }
-      .footer-links a {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        text-decoration: none;
-        transition: color 0.15s;
-      }
-      .footer-links a:hover {
-        color: var(--text);
-      }
-
-      /* ── Responsive ────────────────────────────────── */
-
-      @media (max-width: 800px) {
-        .features-grid {
-          grid-template-columns: 1fr;
-        }
-        .feat {
-          border-right: none;
-          border-bottom: 1px solid var(--border);
-        }
-        .feat:last-child {
-          border-bottom: none;
-        }
-        .comp-grid {
-          grid-template-columns: 1fr;
-        }
-        .themes-grid {
-          grid-template-columns: 1fr;
-        }
-        .install-grid {
-          grid-template-columns: 1fr;
-        }
-        nav {
-          padding: 0 1rem;
-        }
-        .nav-links {
-          display: none;
-        }
-        footer {
-          flex-direction: column;
-          gap: 1.25rem;
-          text-align: center;
-        }
-        .footer-links {
-          justify-content: center;
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <!-- ── Nav ─────────────────────────────────────────── -->
-    <nav>
-      <a href="#" class="nav-logo">shui <span class="kanji">水</span></a>
-      <ul class="nav-links">
-        <li><a href="#components">Components</a></li>
-        <li><a href="#themes">Themes</a></li>
-        <li><a href="#install">Install</a></li>
-      </ul>
-      <a
-        href="https://github.com/kud/shui"
-        class="nav-gh"
-        target="_blank"
-        rel="noopener"
-      >
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 16 16"
-          fill="currentColor"
-          aria-hidden="true"
+    <nav id="nav">
+      <div class="nav-inner">
+        <a class="nav-logo" href="#">shui<span>·水</span></a>
+        <ul class="nav-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#quickstart">Quick Start</a></li>
+          <li><a href="#components">Components</a></li>
+          <li><a href="#config">Config</a></li>
+        </ul>
+        <a
+          class="nav-cta"
+          href="https://github.com/kud/shui"
+          target="_blank"
+          rel="noopener"
+          >GitHub ↗</a
         >
-          <path
-            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
-          />
-        </svg>
-        GitHub
-      </a>
+      </div>
     </nav>
 
-    <!-- ── Hero ────────────────────────────────────────── -->
-    <section class="hero">
-      <img
-        src="https://raw.githubusercontent.com/kud/shui/main/icon.png"
-        alt="shui"
-        class="hero-icon"
-      />
-      <h1 class="hero-title">shui · 水</h1>
-      <p class="hero-tagline">
-        Shell UI for Zsh. <strong>Fluid by design.</strong><br />Semantic
-        components, a token-based theme engine,<br />and a single consistent
-        API.
-      </p>
-      <div class="hero-install">
-        <span class="p">$</span>
-        <code>source ~/.shui/shui.zsh</code>
-        <button
-          class="copy-btn"
-          id="icopy"
-          onclick="copy('source ~/.shui/shui.zsh', 'icopy')"
-          title="Copy"
-          aria-label="Copy"
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <rect x="9" y="9" width="13" height="13" rx="2" />
-            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-          </svg>
-        </button>
-      </div>
-      <div class="hero-ctas">
-        <a
-          href="https://github.com/kud/shui"
-          class="btn btn-primary"
-          target="_blank"
-          rel="noopener"
-        >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-            <path
-              d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
-            />
-          </svg>
-          View on GitHub
-        </a>
-        <a href="#install" class="btn btn-ghost">Install →</a>
-      </div>
-      <div class="term-window">
-        <div class="term-bar">
-          <span class="dot dr"></span><span class="dot dy"></span
-          ><span class="dot dg"></span>
-          <span class="term-bar-title">zsh — demo.zsh</span>
-        </div>
-        <div class="term-body">
-          <div class="tl">
-            <span class="tp">$</span
-            ><span class="tc">SHUI_ICONS=emoji source ~/.shui/shui.zsh</span>
+    <main>
+      <!-- ── Hero ─────────────────────────────────── -->
+      <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-grid"></div>
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="hero-badge-dot"></span> v0.4.4 · MIT
           </div>
-          <div class="tl">
-            <span class="tp">$</span
-            ><span class="tc"
-              >shui success <span class="cs">"Deployment complete"</span></span
+          <h1>shui · 水</h1>
+          <p>
+            A Zsh design system. Semantic components, a token-based theme
+            engine, and one consistent API — no runtime dependencies.
+          </p>
+          <div class="hero-ctas">
+            <a
+              class="btn btn-primary"
+              href="https://github.com/kud/shui"
+              target="_blank"
+              rel="noopener"
+              >View on GitHub</a
             >
+            <a class="btn btn-ghost" href="#quickstart">Quick Start →</a>
           </div>
-          <div class="tl">
-            <span class="g">✅</span><span class="to">Deployment complete</span>
-          </div>
-          <div class="tl">
-            <span class="tp">$</span
-            ><span class="tc"
-              >shui warning
-              <span class="cs">"API key expires in 3 days"</span></span
+          <div class="hero-command code-block">
+            <code>git clone https://github.com/kud/shui.git</code>
+            <button
+              class="copy-btn"
+              data-copy="git clone https://github.com/kud/shui.git"
             >
+              Copy
+            </button>
           </div>
-          <div class="tl">
-            <span>⚠️</span><span class="y">API key expires in 3 days</span>
-          </div>
-          <div class="tl">
-            <span class="tp">$</span
-            ><span class="tc"
-              >shui progress 72 100 <span class="cf">--label=</span
-              ><span class="cs">"Syncing "</span></span
-            >
-          </div>
-          <div class="tl">
-            <span style="color: var(--accent); letter-spacing: -0.07em"
-              >████████████████████████████░░░░░░░░░░░░</span
-            ><span class="m"> 72%</span>
-          </div>
-          <div class="tl">
-            <span class="tp">$</span
-            ><span class="tc"
-              >shui box <span class="cf">--title=</span
-              ><span class="cs">"Status"</span>
-              <span class="cs"
-                >"$(shui badge success OK) All systems nominal"</span
-              ></span
-            >
-          </div>
-          <div
-            style="
-              color: #374151;
-              line-height: 1.5;
-              margin-top: 0.1rem;
-              font-family: var(--mono);
-              font-size: 0.83rem;
-            "
-          >
-            ┌────────────────
-            <span class="m">Status</span> ──────────────────┐<br />
-            │ <span class="bd bd-ok">OK</span>
-            <span class="to">All systems nominal</span
-            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br />
-            └───────────────────────────────────────────┘
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── Features ─────────────────────────────────────── -->
-    <div class="features">
-      <div class="container">
-        <div class="features-grid">
-          <div class="feat">
-            <div class="feat-icon">📄</div>
-            <div class="feat-title">One file to source</div>
-            <div class="feat-desc">
-              A single <code>source shui.zsh</code> bootstraps everything —
-              tokens, themes, icons, and all fifteen components.
+          <div class="stats">
+            <div class="stat">
+              <span class="stat-value">20+</span>
+              <div class="stat-label">Components</div>
             </div>
-          </div>
-          <div class="feat">
-            <div class="feat-icon">⚡</div>
-            <div class="feat-title">Zero dependencies</div>
-            <div class="feat-desc">
-              Pure Zsh. No npm, no Homebrew, no external packages. Works
-              wherever Zsh 5.0+ is installed.
+            <div class="stat-divider"></div>
+            <div class="stat">
+              <span class="stat-value">3</span>
+              <div class="stat-label">Themes</div>
             </div>
-          </div>
-          <div class="feat">
-            <div class="feat-icon">🎨</div>
-            <div class="feat-title">Semantic API</div>
-            <div class="feat-desc">
-              Write <code>shui success</code> and <code>shui error</code> — not
-              escape codes. Themes handle colour; you handle meaning.
+            <div class="stat-divider"></div>
+            <div class="stat">
+              <span class="stat-value">0</span>
+              <div class="stat-label">Dependencies</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat">
+              <span class="stat-value">MIT</span>
+              <div class="stat-label">Licence</div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
 
-    <!-- ── Components ───────────────────────────────────── -->
-    <section id="components">
-      <div class="container">
-        <div class="lbl">Components</div>
-        <h2 class="sh2">Everything you need to build beautiful CLIs</h2>
-        <p class="sdesc">
-          Fifteen production-ready components — from status messages to
-          interactive prompts — all consistently styled by a single token-based
-          theme.
-        </p>
-
-        <div class="comp-grid">
-          <!-- Messages -->
-          <div class="comp-card">
-            <div class="comp-head">
-              <span class="comp-name">Messages</span>
-              <span class="comp-api">shui success|error|warning|info</span>
+      <!-- ── Features ──────────────────────────────── -->
+      <section id="features">
+        <div class="section-inner">
+          <span class="section-eyebrow reveal">Why shui</span>
+          <h2 class="reveal">Built for real shell scripts</h2>
+          <p class="section-sub reveal">
+            Stop hard-coding ANSI escape sequences. shui gives your scripts a
+            consistent visual language with zero overhead.
+          </p>
+          <div class="features-grid">
+            <div class="feature-card reveal">
+              <div class="feature-icon">⚡</div>
+              <div class="feature-title">One file, instant source</div>
+              <p class="feature-desc">
+                Drop <code>source shui.zsh</code> at the top of any script.
+                Everything loads in a single pass — no package manager, no
+                install step.
+              </p>
             </div>
-            <pre
-              class="code-blk"
-            ><span class="ck">shui</span> <span class="ca">success</span> <span class="cs">"Deployment complete"</span>
-<span class="ck">shui</span> <span class="ca">error</span>   <span class="cs">"Build failed: config not found"</span>
-<span class="ck">shui</span> <span class="ca">warning</span> <span class="cs">"API key expires in 3 days"</span>
-<span class="ck">shui</span> <span class="ca">info</span>    <span class="cs">"Running in dry-run mode"</span></pre>
-            <div class="out-blk">
-              <div><span class="g">✅</span> Deployment complete</div>
-              <div>
-                <span class="r">❌</span>
-                <span class="r">Build failed: config not found</span>
-              </div>
-              <div>⚠️ <span class="y">API key expires in 3 days</span></div>
-              <div>ℹ️&nbsp; <span class="b">Running in dry-run mode</span></div>
+            <div class="feature-card reveal">
+              <div class="feature-icon">🎨</div>
+              <div class="feature-title">Token-based themes</div>
+              <p class="feature-desc">
+                Colours live in theme files, not components. Switch between
+                <code>default</code>, <code>minimal</code>, and
+                <code>plain</code> with one env var — or author your own.
+              </p>
             </div>
-          </div>
-
-          <!-- Layout -->
-          <div class="comp-card">
-            <div class="comp-head">
-              <span class="comp-name">Layout</span>
-              <span class="comp-api"
-                >shui section|subtitle|subsection|divider</span
-              >
+            <div class="feature-card reveal">
+              <div class="feature-icon">🔤</div>
+              <div class="feature-title">Three icon sets</div>
+              <p class="feature-desc">
+                Ship with Nerd Font glyphs, Unicode emoji, or plain ASCII. Set
+                <code>SHUI_ICONS=emoji</code> and every component adapts
+                automatically.
+              </p>
             </div>
-            <pre
-              class="code-blk"
-            ><span class="ck">shui</span> <span class="ca">section</span>    <span class="cs">"Setup"</span>
-<span class="ck">shui</span> <span class="ca">subtitle</span>   <span class="cs">"Installing packages"</span>
-<span class="ck">shui</span> <span class="ca">subsection</span> <span class="cs">"npm dependencies"</span>
-<span class="ck">shui</span> <span class="ca">divider</span></pre>
-            <div class="out-blk">
-              <div
-                style="font-weight: 700; color: #fff; letter-spacing: 0.01em"
-              >
-                Setup
-              </div>
-              <div><span class="c">◆</span> Installing packages</div>
-              <div>
-                <span class="m">•</span> <span class="m">npm dependencies</span>
-              </div>
-              <div style="color: var(--text-dim); letter-spacing: -0.06em">
-                ────────────────────────────────────────
-              </div>
+            <div class="feature-card reveal">
+              <div class="feature-icon">🧩</div>
+              <div class="feature-title">Semantic API</div>
+              <p class="feature-desc">
+                Every component speaks intent: <code>shui success</code>,
+                <code>shui warning</code>, <code>shui badge error EOL</code>. No
+                magic numbers, no raw escape codes.
+              </p>
             </div>
-          </div>
-
-          <!-- Badge & Pill -->
-          <div class="comp-card">
-            <div class="comp-head">
-              <span class="comp-name">Badge &amp; Pill</span>
-              <span class="comp-api"
-                >shui badge|pill &lt;type&gt; &lt;text&gt;</span
-              >
+            <div class="feature-card reveal">
+              <div class="feature-icon">♿</div>
+              <div class="feature-title">NO_COLOR aware</div>
+              <p class="feature-desc">
+                Respects the <code>NO_COLOR</code> environment variable spec out
+                of the box. CI pipelines and screen readers get clean plain-text
+                output automatically.
+              </p>
             </div>
-            <pre
-              class="code-blk"
-            ><span class="cc"># Solid background badges</span>
-<span class="cp">echo</span> <span class="cs">"$(</span><span class="ck">shui</span> <span class="ca">badge</span> success PASS<span class="cs">)"</span> <span class="cs">"$(</span><span class="ck">shui</span> <span class="ca">badge</span> error FAIL<span class="cs">)"</span>
-<span class="cc"># Rounded pills</span>
-<span class="cp">echo</span> <span class="cs">"$(</span><span class="ck">shui</span> <span class="ca">pill</span> warning beta<span class="cs">)"</span> <span class="cs">"$(</span><span class="ck">shui</span> <span class="ca">pill</span> muted deprecated<span class="cs">)"</span></pre>
-            <div class="out-blk">
-              <div style="margin-bottom: 0.4em">
-                <span class="bd bd-ok">PASS</span>&nbsp;
-                <span class="bd bd-err">FAIL</span>&nbsp;
-                <span class="bd bd-wrn">SKIP</span>&nbsp;
-                <span class="bd bd-mut">N/A</span>&nbsp;
-                <span class="bd bd-inf">INFO</span>
-              </div>
-              <div>
-                <span class="pl pl-wrn">beta</span>&nbsp;
-                <span class="pl pl-mut">deprecated</span>&nbsp;
-                <span class="pl pl-ok">stable</span>&nbsp;
-                <span class="pl pl-acc">v2.0</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Box -->
-          <div class="comp-card">
-            <div class="comp-head">
-              <span class="comp-name">Box</span>
-              <span class="comp-api">shui box [--title=&lt;title&gt;]</span>
-            </div>
-            <pre
-              class="code-blk"
-            ><span class="ck">shui</span> <span class="ca">box</span> <span class="cf">--title=</span><span class="cs">"Deployment Summary"</span> \
-  <span class="cs">"$(</span><span class="ck">shui</span> <span class="ca">badge</span> success <span class="cs">'3 installed'</span><span class="cs">)\n\</span>
-<span class="cs">$(</span><span class="ck">shui</span> <span class="ca">badge</span> warning <span class="cs">'1 skipped'</span><span class="cs">)\n\</span>
-<span class="cs">$(</span><span class="ck">shui</span> <span class="ca">badge</span> muted <span class="cs">'0 errors'</span><span class="cs">)"</span></pre>
-            <div class="out-blk" style="font-size: 0.77rem; line-height: 1.6">
-              <div style="color: var(--text-dim)">
-                ┌──────────────
-                <span style="color: #9ca3af">Deployment Summary</span>
-                ─────────┐
-              </div>
-              <div style="color: var(--text-dim)">
-                │&nbsp;
-                <span class="bd bd-ok">3 installed</span
-                >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│
-              </div>
-              <div style="color: var(--text-dim)">
-                │&nbsp;
-                <span class="bd bd-wrn">1 skipped</span
-                >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│
-              </div>
-              <div style="color: var(--text-dim)">
-                │&nbsp;
-                <span class="bd bd-mut">0 errors</span
-                >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│
-              </div>
-              <div style="color: var(--text-dim)">
-                └───────────────────────────────────────────────┘
-              </div>
-            </div>
-          </div>
-
-          <!-- Table -->
-          <div class="comp-card">
-            <div class="comp-head">
-              <span class="comp-name">Table</span>
-              <span class="comp-api">shui table "Col|Col" "val|val"</span>
-            </div>
-            <pre
-              class="code-blk"
-            ><span class="ck">shui</span> <span class="ca">table</span> \
-  <span class="cs">"Package|Version|Status"</span> \
-  <span class="cs">"node|20.11.0|$(</span><span class="ck">shui</span> <span class="ca">badge</span> success OK<span class="cs">)"</span> \
-  <span class="cs">"bun|1.1.3|$(</span><span class="ck">shui</span> <span class="ca">badge</span> success OK<span class="cs">)"</span> \
-  <span class="cs">"python|3.12.0|$(</span><span class="ck">shui</span> <span class="ca">badge</span> warning outdated<span class="cs">)"</span></pre>
-            <div class="out-blk" style="font-size: 0.75rem; line-height: 1.7">
-              <table class="term-table">
-                <thead>
-                  <tr>
-                    <th>Package</th>
-                    <th>Version</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>node</td>
-                    <td>20.11.0</td>
-                    <td><span class="bd bd-ok">OK</span></td>
-                  </tr>
-                  <tr>
-                    <td>bun</td>
-                    <td>1.1.3</td>
-                    <td><span class="bd bd-ok">OK</span></td>
-                  </tr>
-                  <tr>
-                    <td>python</td>
-                    <td>3.12.0</td>
-                    <td><span class="bd bd-wrn">outdated</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Progress -->
-          <div class="comp-card">
-            <div class="comp-head">
-              <span class="comp-name">Progress</span>
-              <span class="comp-api"
-                >shui progress &lt;value&gt; &lt;total&gt;</span
-              >
-            </div>
-            <pre
-              class="code-blk"
-            ><span class="ck">shui</span> <span class="ca">progress</span> 0   100; <span class="cp">echo</span>
-<span class="ck">shui</span> <span class="ca">progress</span> 35  100; <span class="cp">echo</span>
-<span class="ck">shui</span> <span class="ca">progress</span> 72  100; <span class="cp">echo</span>
-<span class="ck">shui</span> <span class="ca">progress</span> 100 100; <span class="cp">echo</span></pre>
-            <div class="out-blk" style="line-height: 2.1">
-              <div>
-                <span style="color: var(--text-dim); letter-spacing: -0.07em"
-                  >░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span
-                >
-                <span class="m"> 0%</span>
-              </div>
-              <div>
-                <span style="color: var(--accent); letter-spacing: -0.07em"
-                  >██████████████</span
-                ><span style="color: var(--text-dim); letter-spacing: -0.07em"
-                  >░░░░░░░░░░░░░░░░░░░░░░░░░░</span
-                >
-                <span class="m"> 35%</span>
-              </div>
-              <div>
-                <span style="color: var(--accent); letter-spacing: -0.07em"
-                  >████████████████████████████</span
-                ><span style="color: var(--text-dim); letter-spacing: -0.07em"
-                  >░░░░░░░░░░░░</span
-                >
-                <span class="m"> 72%</span>
-              </div>
-              <div>
-                <span style="color: var(--green); letter-spacing: -0.07em"
-                  >████████████████████████████████████████</span
-                >
-                <span class="m">100%</span>
-              </div>
+            <div class="feature-card reveal">
+              <div class="feature-icon">🎛️</div>
+              <div class="feature-title">Interactive prompts</div>
+              <p class="feature-desc">
+                <code>confirm</code>, <code>select</code>, and
+                <code>input</code> give your scripts a polished interactive
+                layer — with sensible defaults and keyboard navigation.
+              </p>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ── Themes ────────────────────────────────────────── -->
-    <section id="themes" class="themes-bg">
-      <div class="container">
-        <div class="lbl">Themes</div>
-        <h2 class="sh2">Three themes, one API</h2>
-        <p class="sdesc">
-          Switch themes with a single environment variable. Every component
-          adapts automatically — no code changes required.
-        </p>
+      <!-- ── Quick Start ────────────────────────────── -->
+      <section id="quickstart">
+        <div class="section-inner">
+          <span class="section-eyebrow reveal">Get going fast</span>
+          <h2 class="reveal">Quick Start</h2>
+          <p class="section-sub reveal">
+            Clone the repo, source the main file, and start using components
+            immediately.
+          </p>
+          <div class="code-block reveal">
+            <pre><code><span class="comment"># 1. Clone</span>
+<span class="cmd">git clone https://github.com/kud/shui.git ~/shui</span>
 
-        <div class="themes-grid">
-          <div class="theme-card">
-            <div class="theme-head">
-              default <span class="theme-tag">256-colour</span>
-            </div>
-            <div class="theme-body">
-              <div class="theme-env">SHUI_THEME=default</div>
-              <div><span class="g">✅</span> Deployment complete</div>
-              <div>
-                <span class="r">❌</span> <span class="r">Build failed</span>
-              </div>
-              <div>⚠️ <span class="y">API key expires</span></div>
-              <div>ℹ️&nbsp; <span class="b">Dry-run mode</span></div>
-              <div style="margin-top: 0.5rem">
-                <span class="bd bd-ok">OK</span>&nbsp;
-                <span class="bd bd-wrn">warn</span>&nbsp;
-                <span class="bd bd-err">fail</span>&nbsp;
-                <span class="bd bd-inf">info</span>
-              </div>
-            </div>
+<span class="comment"># 2. Source in your script</span>
+<span class="cmd">source ~/shui/shui.zsh</span>
+
+<span class="comment"># 3. Use components</span>
+<span class="cmd">shui section "Deploying to production"</span>
+<span class="cmd">shui info    "Pulling latest changes..."</span>
+<span class="cmd">shui success "Build complete"</span>
+<span class="cmd">shui warning "Restart required"</span>
+
+<span class="comment"># Switch theme and icon set</span>
+<span class="cmd">SHUI_THEME=minimal SHUI_ICONS=emoji source ~/shui/shui.zsh</span>
+<span class="cmd">shui success "Works in any terminal"</span></code></pre>
+            <button class="copy-btn" data-copy="source ~/shui/shui.zsh">
+              Copy
+            </button>
           </div>
+        </div>
+      </section>
 
-          <div class="theme-card">
-            <div class="theme-head">
-              minimal <span class="theme-tag">16-colour</span>
+      <!-- ── Components ─────────────────────────────── -->
+      <section id="components">
+        <div class="section-inner">
+          <span class="section-eyebrow reveal">Commands</span>
+          <h2 class="reveal">Component Reference</h2>
+          <p class="section-sub reveal">
+            Every component is invoked via <code>shui &lt;command&gt;</code>.
+            All components write to stderr, keeping stdout free for piping.
+          </p>
+          <div class="cli-list reveal">
+            <div class="cli-row">
+              <span class="cli-cmd">shui success "msg"</span>
+              <span class="cli-desc"
+                >Green success message with a checkmark icon</span
+              >
             </div>
-            <div class="theme-body">
-              <div class="theme-env">SHUI_THEME=minimal</div>
-              <div>
-                <span style="color: #86efac">✅</span> Deployment complete
-              </div>
-              <div>
-                <span style="color: #fca5a5">❌</span>
-                <span style="color: #fca5a5">Build failed</span>
-              </div>
-              <div>⚠️ <span style="color: #fde68a">API key expires</span></div>
-              <div>
-                ℹ️&nbsp; <span style="color: #93c5fd">Dry-run mode</span>
-              </div>
-              <div style="margin-top: 0.5rem">
-                <span class="bd" style="background: #14532d; color: #86efac"
-                  >OK</span
-                >&nbsp;
-                <span class="bd" style="background: #451a03; color: #fde68a"
-                  >warn</span
-                >&nbsp;
-                <span class="bd" style="background: #450a0a; color: #fca5a5"
-                  >fail</span
-                >&nbsp;
-                <span class="bd" style="background: #1e3a5f; color: #93c5fd"
-                  >info</span
-                >
-              </div>
+            <div class="cli-row">
+              <span class="cli-cmd">shui error "msg"</span>
+              <span class="cli-desc">Red error message with an × icon</span>
             </div>
-          </div>
-
-          <div class="theme-card">
-            <div class="theme-head">
-              plain <span class="theme-tag plain">no colour</span>
+            <div class="cli-row">
+              <span class="cli-cmd">shui warning "msg"</span>
+              <span class="cli-desc">Yellow warning message with a ⚠ icon</span>
             </div>
-            <div class="theme-body" style="color: #9ca3af">
-              <div class="theme-env">SHUI_THEME=plain</div>
-              <div>[ok] Deployment complete</div>
-              <div>[!!] Build failed</div>
-              <div>[**] API key expires</div>
-              <div>[..] Dry-run mode</div>
-              <div style="margin-top: 0.5rem">
-                <span class="bd bd-mut">[ok]</span>&nbsp;
-                <span class="bd bd-mut">[warn]</span>&nbsp;
-                <span class="bd bd-mut">[fail]</span>
-              </div>
+            <div class="cli-row">
+              <span class="cli-cmd">shui info "msg"</span>
+              <span class="cli-desc">Cyan info message with an ℹ icon</span>
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd"
+                >shui bold | dim | italic | underline "msg"</span
+              >
+              <span class="cli-desc"
+                >Text styling — combine with any message</span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd"
+                >shui text --color=&lt;semantic&gt; "msg"</span
+              >
+              <span class="cli-desc"
+                >Semantic colour:
+                <code
+                  >primary success warning error info muted accent</code
+                ></span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd">shui section "heading"</span>
+              <span class="cli-desc"
+                >Top-level section header in primary colour</span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd">shui subtitle "text"</span>
+              <span class="cli-desc"
+                >Bold sub-section heading in warning colour</span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd">shui subsection "text"</span>
+              <span class="cli-cmd"></span>
+              <span class="cli-desc">Bulleted item for nested content</span>
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd"
+                >shui divider [--color=&lt;c&gt;] [--char=&lt;ch&gt;]</span
+              >
+              <span class="cli-desc"
+                >Full-width horizontal rule; customisable char and colour</span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd">shui fence "label"</span>
+              <span class="cli-desc"
+                >Labelled divider: <code>── label ───────────────</code></span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd">shui spacer [n]</span>
+              <span class="cli-desc"
+                >Print <em>n</em> blank lines (default 1)</span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd">shui badge &lt;color&gt; "label"</span>
+              <span class="cli-desc"
+                >Solid-background inline badge — use inside
+                <code>echo "$(shui badge success OK)"</code></span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd">shui pill &lt;color&gt; "label"</span>
+              <span class="cli-desc"
+                >Rounded-edge inline pill tag — same colours as badge</span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd">shui box [--title="T"] "content"</span>
+              <span class="cli-desc"
+                >Bordered content block; supports <code>\n</code> in content and
+                inline badges</span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd">shui table "Col|Col" "row|row" …</span>
+              <span class="cli-desc"
+                >Auto-sized pipe-separated table; first arg is the header
+                row</span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd"
+                >shui progress &lt;val&gt; &lt;max&gt; [--width=N]
+                [--label="…"]</span
+              >
+              <span class="cli-desc"
+                >Inline progress bar; width defaults to terminal width</span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd">shui spinner &lt;cmd&gt; [args…]</span>
+              <span class="cli-desc"
+                >Animated spinner while a command runs; exits with the command's
+                exit code</span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd"
+                >shui loader [--style=dots|pulse|spinner]</span
+              >
+              <span class="cli-desc"
+                >Indeterminate looping indicator for long-running background
+                work</span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd">shui confirm "question?"</span>
+              <span class="cli-desc"
+                >Interactive yes/no prompt; returns exit code 0 for yes</span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd">shui select "prompt" opt1 opt2 …</span>
+              <span class="cli-desc"
+                >Arrow-key selection menu; prints chosen value to stdout</span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd">shui input [--default="val"] "prompt"</span>
+              <span class="cli-desc"
+                >Text input with optional default; prints entered value to
+                stdout</span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd"
+                >shui screen "heading" &lt;cmd&gt; [args…]</span
+              >
+              <span class="cli-desc"
+                >Full-screen section runner — prints header, runs command, shows
+                elapsed time</span
+              >
+            </div>
+            <div class="cli-row">
+              <span class="cli-cmd"
+                >shui animation typewriter|fade-in "text"</span
+              >
+              <span class="cli-desc"
+                >One-shot text effects for intro sequences or splash
+                screens</span
+              >
             </div>
           </div>
         </div>
+      </section>
 
-        <div class="theme-combo">
-          <span style="color: #6b7280"
-            ># Combine themes and icon sets freely</span
-          ><br />
-          <span class="c">SHUI_THEME</span>=minimal
-          <span class="c">SHUI_ICONS</span>=emoji source shui.zsh<br />
-          <span class="c">SHUI_THEME</span>=plain &nbsp;&nbsp;<span class="c"
-            >SHUI_ICONS</span
-          >=none source shui.zsh &nbsp;<span style="color: #6b7280"
-            ># fully plain</span
-          ><br />
-          <span class="c">SHUI_THEME</span>=default
-          <span class="c">SHUI_ICONS</span>=nerd source shui.zsh &nbsp;<span
-            style="color: #6b7280"
-            ># nerd font glyphs</span
-          >
-        </div>
-      </div>
-    </section>
-
-    <!-- ── Install ───────────────────────────────────────── -->
-    <section id="install">
-      <div class="container">
-        <div class="lbl">Install</div>
-        <h2 class="sh2">Up and running in seconds</h2>
-        <p class="sdesc">
-          Works with every major Zsh plugin manager — or just clone it manually.
-          No build step, no compilation.
-        </p>
-
-        <div class="install-grid">
-          <div class="methods">
-            <div class="method">
-              <div class="method-label">Manual</div>
-              <div class="method-code">
-                <span>git clone https://github.com/kud/shui ~/.shui</span>
-                <button
-                  class="copy-btn"
-                  id="c1"
-                  onclick="
-                    copy('git clone https://github.com/kud/shui ~/.shui', 'c1')
-                  "
-                  title="Copy"
-                  aria-label="Copy"
-                >
-                  <svg
-                    width="13"
-                    height="13"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <rect x="9" y="9" width="13" height="13" rx="2" />
-                    <path
-                      d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div class="method">
-              <div class="method-label">Antidote / .zsh_plugins.txt</div>
-              <div class="method-code">
-                <span>kud/shui</span>
-                <button
-                  class="copy-btn"
-                  id="c2"
-                  onclick="copy('kud/shui', 'c2')"
-                  title="Copy"
-                  aria-label="Copy"
-                >
-                  <svg
-                    width="13"
-                    height="13"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <rect x="9" y="9" width="13" height="13" rx="2" />
-                    <path
-                      d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div class="method">
-              <div class="method-label">Zinit</div>
-              <div class="method-code">
-                <span>zinit light kud/shui</span>
-                <button
-                  class="copy-btn"
-                  id="c3"
-                  onclick="copy('zinit light kud/shui', 'c3')"
-                  title="Copy"
-                  aria-label="Copy"
-                >
-                  <svg
-                    width="13"
-                    height="13"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <rect x="9" y="9" width="13" height="13" rx="2" />
-                    <path
-                      d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div class="method">
-              <div class="method-label">
-                Submodule (recommended for scripts)
-              </div>
-              <div class="method-code">
-                <span
-                  >git submodule add https://github.com/kud/shui lib/shui</span
-                >
-                <button
-                  class="copy-btn"
-                  id="c4"
-                  onclick="
-                    copy(
-                      'git submodule add https://github.com/kud/shui lib/shui',
-                      'c4',
-                    )
-                  "
-                  title="Copy"
-                  aria-label="Copy"
-                >
-                  <svg
-                    width="13"
-                    height="13"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <rect x="9" y="9" width="13" height="13" rx="2" />
-                    <path
-                      d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div class="method">
-              <div class="method-label">Oh My Zsh</div>
-              <div
-                class="method-code"
-                style="
-                  flex-direction: column;
-                  align-items: flex-start;
-                  gap: 0.4rem;
-                "
-              >
-                <span style="color: var(--text-muted); font-size: 0.72rem"
-                  >Clone into custom plugins, then add
-                  <code style="color: var(--accent)">shui</code> to the plugins
-                  array in ~/.zshrc</span
-                >
-                <a
-                  href="https://github.com/kud/shui#oh-my-zsh"
-                  target="_blank"
-                  rel="noopener"
-                  style="
-                    color: var(--accent);
-                    font-size: 0.78rem;
-                    text-decoration: none;
-                  "
-                  >View instructions →</a
-                >
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <div
-              style="
-                font-size: 0.72rem;
-                font-weight: 700;
-                letter-spacing: 0.1em;
-                text-transform: uppercase;
-                color: var(--text-muted);
-                margin-bottom: 0.75rem;
-              "
-            >
-              Quick start
-            </div>
-            <div class="qs-block">
-              <div>
-                <span style="color: #6b7280"
-                  ># Source at the top of any Zsh script</span
-                >
-              </div>
-              <div>
-                <span class="cp">source</span>
-                <span class="cs">"${0:A:h}/lib/shui/shui.zsh"</span>
-              </div>
-              <div>&nbsp;</div>
-              <div>
-                <span style="color: #6b7280"
-                  ># Then use components naturally</span
-                >
-              </div>
-              <div>
-                <span class="ck">shui</span> <span class="ca">success</span>
-                <span class="cs">"Deployment complete"</span>
-              </div>
-              <div>
-                <span class="ck">shui</span> <span class="ca">error</span>
-                <span class="cs">"Build failed"</span>
-              </div>
-              <div>
-                <span class="ck">shui</span> <span class="ca">warning</span>
-                <span class="cs">"Check your config"</span>
-              </div>
-              <div>
-                <span class="ck">shui</span> <span class="ca">info</span>
-                <span class="cs">"Dry-run mode enabled"</span>
-              </div>
-              <div>&nbsp;</div>
-              <div>
-                <span style="color: #6b7280"
-                  ># Opt into a theme or icon set</span
-                >
-              </div>
-              <div>
-                <span class="c">SHUI_THEME</span>=minimal
-                <span class="cp">source</span> shui.zsh
-              </div>
-              <div>
-                <span class="c">SHUI_ICONS</span>=emoji &nbsp;<span class="cp"
-                  >source</span
-                >
-                shui.zsh
-              </div>
-            </div>
-            <div
-              style="
-                margin-top: 1.5rem;
-                padding: 1rem 1.25rem;
-                background: var(--surface);
-                border: 1px solid var(--border);
-                border-radius: var(--radius);
-                font-size: 0.83rem;
-                color: var(--text-muted);
-                line-height: 1.7;
-              "
-            >
-              Requires <strong style="color: var(--text)">Zsh 5.0+</strong>. Use
-              <code
-                style="
-                  font-family: var(--mono);
-                  font-size: 0.82em;
-                  color: var(--accent);
-                "
-                >SHUI_ICONS=emoji</code
-              >
-              or
-              <code
-                style="
-                  font-family: var(--mono);
-                  font-size: 0.82em;
-                  color: var(--accent);
-                "
-                >none</code
-              >
-              if you don't have a Nerd Font installed.
-            </div>
+      <!-- ── Config ─────────────────────────────────── -->
+      <section id="config">
+        <div class="section-inner">
+          <span class="section-eyebrow reveal">Configuration</span>
+          <h2 class="reveal">Environment Variables</h2>
+          <p class="section-sub reveal">
+            Set these before sourcing <code>shui.zsh</code> to customise
+            behaviour across all components.
+          </p>
+          <div class="config-wrap reveal">
+            <table>
+              <thead>
+                <tr>
+                  <th>Variable</th>
+                  <th>Values</th>
+                  <th>Default</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code class="config-key">SHUI_THEME</code></td>
+                  <td>
+                    <code>default</code> <code>minimal</code> <code>plain</code>
+                  </td>
+                  <td><code class="config-default">default</code></td>
+                  <td>
+                    Active colour theme. <code>minimal</code> uses 16-colour
+                    ANSI; <code>plain</code> strips all colour and uses ASCII
+                    icons.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code class="config-key">SHUI_ICONS</code></td>
+                  <td>
+                    <code>nerd</code> <code>emoji</code> <code>none</code>
+                  </td>
+                  <td><code class="config-default">nerd</code></td>
+                  <td>
+                    Icon set. <code>nerd</code> requires a Nerd Font;
+                    <code>emoji</code> uses Unicode emoji; <code>none</code>
+                    disables icons entirely.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code class="config-key">NO_COLOR</code></td>
+                  <td>any non-empty value</td>
+                  <td><code class="config-default">unset</code></td>
+                  <td>
+                    Disables all colour output when set. Follows the
+                    <a
+                      href="https://no-color.org"
+                      target="_blank"
+                      rel="noopener"
+                      >no-color.org</a
+                    >
+                    spec.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code class="config-key">SHUI_DIR</code></td>
+                  <td>directory path</td>
+                  <td><code class="config-default">auto</code></td>
+                  <td>
+                    Root directory of the shui installation. Detected
+                    automatically from the sourced file path; override only if
+                    symlinked.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </main>
 
-    <!-- ── Footer ───────────────────────────────────────── -->
     <footer>
-      <div class="footer-left">
-        <strong>shui <span class="c">水</span></strong> &nbsp;·&nbsp; MIT
-        licence &nbsp;·&nbsp; Pure Zsh
-      </div>
-      <div class="footer-links">
-        <a href="https://github.com/kud/shui" target="_blank" rel="noopener"
-          >GitHub</a
-        >
-        <a
-          href="https://github.com/kud/shui/blob/main/README.md"
-          target="_blank"
-          rel="noopener"
-          >Docs</a
-        >
-        <a
-          href="https://github.com/kud/shui/issues"
-          target="_blank"
-          rel="noopener"
-          >Issues</a
-        >
+      <div class="footer-inner">
+        <span class="footer-name">shui · 水</span>
+        <nav class="footer-links">
+          <a href="https://github.com/kud/shui" target="_blank" rel="noopener"
+            >GitHub</a
+          >
+          <a
+            href="https://github.com/kud/shui/blob/main/CHANGELOG.md"
+            target="_blank"
+            rel="noopener"
+            >Changelog</a
+          >
+        </nav>
+        <span class="footer-copy">MIT Licence</span>
       </div>
     </footer>
 
     <script>
-      const copy = async (text, btnId) => {
-        try {
-          await navigator.clipboard.writeText(text)
-          const btn = document.getElementById(btnId)
-          btn.classList.add("copied")
-          btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
-          setTimeout(() => {
-            btn.classList.remove("copied")
-            btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`
-          }, 1800)
-        } catch {}
-      }
+      const nav = document.getElementById("nav")
+      const onScroll = () =>
+        nav.classList.toggle("scrolled", window.scrollY > 20)
+      window.addEventListener("scroll", onScroll, { passive: true })
+      onScroll()
+
+      document.querySelectorAll(".copy-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const text =
+            btn.dataset.copy ||
+            btn.closest(".hero-command")?.querySelector("code")?.textContent ||
+            btn.closest(".code-block")?.querySelector("code")?.textContent ||
+            ""
+          navigator.clipboard.writeText(text.trim()).then(() => {
+            btn.textContent = "Copied!"
+            btn.classList.add("copied")
+            setTimeout(() => {
+              btn.textContent = "Copy"
+              btn.classList.remove("copied")
+            }, 2000)
+          })
+        })
+      })
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("visible")
+              observer.unobserve(e.target)
+            }
+          })
+        },
+        { threshold: 0.1 },
+      )
+      document.querySelectorAll(".reveal").forEach((el) => observer.observe(el))
     </script>
   </body>
 </html>
