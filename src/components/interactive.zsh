@@ -63,17 +63,24 @@ _shui_radio() {
   local cursor=1
 
   _shui_radio_render() {
-    local i
+    local i label desc
     for (( i = 1; i <= n; i++ )); do
+      label="${options[$i]%%$'\t'*}"
+      desc="${options[$i]#*$'\t'}"
+      [[ "$desc" == "$label" ]] && desc=""
       printf '\033[2K\r'
       if (( i == cursor )); then
-        printf '  %s%s%s %s%s%s\n' \
+        printf '  %s%s%s %s%s%s' \
           "$SHUI_COLOR_PRIMARY" "$SHUI_ICON_CIRCLE" "$SHUI_RESET" \
-          "$SHUI_COLOR_PRIMARY" "${options[$i]}" "$SHUI_RESET"
+          "$SHUI_COLOR_PRIMARY" "$label" "$SHUI_RESET"
+        [[ -n "$desc" ]] && printf '  %s%s%s' "$SHUI_COLOR_MUTED" "$desc" "$SHUI_RESET"
+        printf '\n'
       else
-        printf '  %s%s%s %s\n' \
+        printf '  %s%s%s %s' \
           "$SHUI_COLOR_MUTED" "$SHUI_ICON_CIRCLE_EMPTY" "$SHUI_RESET" \
-          "${options[$i]}"
+          "$label"
+        [[ -n "$desc" ]] && printf '  %s%s%s' "$SHUI_COLOR_MUTED" "$desc" "$SHUI_RESET"
+        printf '\n'
       fi
     done
   }
@@ -106,7 +113,7 @@ _shui_radio() {
   [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty
   printf '\n' >&2
 
-  (( exit_code == 0 )) && printf '%s\n' "${options[$cursor]}"
+  (( exit_code == 0 )) && printf '%s\n' "${options[$cursor]%%$'\t'*}"
   return $exit_code
 }
 
