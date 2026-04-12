@@ -449,52 +449,17 @@ $(shui badge muted  0) errors"</code></pre>
                     <span class="term-dot y"></span>
                     <span class="term-dot g"></span>
                   </div>
-                  <div class="term-body">
-                    <div class="term-line">
-                      <span class="tc-gray"
-                        >┌────────────────────────────────────┐</span
-                      >
-                    </div>
-                    <div class="term-line">
-                      <span class="tc-gray">│</span>
-                      <span>Simple content inside a box</span>
-                      <span class="tc-gray">│</span>
-                    </div>
-                    <div class="term-line">
-                      <span class="tc-gray"
-                        >└────────────────────────────────────┘</span
-                      >
-                    </div>
-                    <div class="term-spacer"></div>
-                    <div class="term-line">
-                      <span class="tc-gray">┌──────── </span
-                      ><span class="tc-yellow tc-bold">Deployment Summary</span
-                      ><span class="tc-gray"> ────────┐</span>
-                    </div>
-                    <div class="term-line">
-                      <span class="tc-gray">│</span>
-                      <span class="tc-badge success">3</span>
-                      <span>installed</span>
-                      <span class="tc-gray">│</span>
-                    </div>
-                    <div class="term-line">
-                      <span class="tc-gray">│</span>
-                      <span class="tc-badge warning">1</span>
-                      <span>skipped</span>
-                      <span class="tc-gray" style="margin-left: 3px">│</span>
-                    </div>
-                    <div class="term-line">
-                      <span class="tc-gray">│</span>
-                      <span class="tc-badge muted">0</span>
-                      <span>errors</span>
-                      <span class="tc-gray" style="margin-left: 7px">│</span>
-                    </div>
-                    <div class="term-line">
-                      <span class="tc-gray"
-                        >└────────────────────────────────────┘</span
-                      >
-                    </div>
-                  </div>
+                  <pre
+                    class="term-body-pre"
+                  ><span class="tc-gray">┌──────────────────────────────────────┐
+│</span>  Simple content inside a box         <span class="tc-gray">│
+└──────────────────────────────────────┘</span>
+
+<span class="tc-gray">┌──────────</span> <span class="tc-yellow tc-bold">Deployment Summary</span> <span class="tc-gray">──────────┐
+│</span>  <span class="tc-green">3</span> installed                          <span class="tc-gray">│
+│</span>  <span class="tc-orange">1</span> skipped                            <span class="tc-gray">│
+│</span>  <span class="tc-gray">0</span> errors                             <span class="tc-gray">│
+└──────────────────────────────────────┘</span></pre>
                 </div>
               </div>
             </div>
@@ -517,76 +482,16 @@ $(shui badge muted  0) errors"</code></pre>
                     <span class="term-dot y"></span>
                     <span class="term-dot g"></span>
                   </div>
-                  <div class="term-body">
-                    <table class="tc-table">
-                      <thead>
-                        <tr>
-                          <td class="tc-table-border">
-                            ┌─────────┬──────────┬──────────┐
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="tc-table-border">│</td>
-                          <td class="tc-bold">Package</td>
-                          <td class="tc-table-border">│</td>
-                          <td class="tc-bold">Version</td>
-                          <td class="tc-table-border">│</td>
-                          <td class="tc-bold">Status</td>
-                          <td class="tc-table-border">│</td>
-                        </tr>
-                        <tr>
-                          <td class="tc-table-border">
-                            ├─────────┼──────────┼──────────┤
-                          </td>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td class="tc-table-border">│</td>
-                          <td>node</td>
-                          <td class="tc-table-border">│</td>
-                          <td>20.11.0</td>
-                          <td class="tc-table-border">│</td>
-                          <td><span class="tc-badge success">OK</span></td>
-                          <td class="tc-table-border">│</td>
-                        </tr>
-                        <tr>
-                          <td class="tc-table-border">│</td>
-                          <td>bun</td>
-                          <td class="tc-table-border">│</td>
-                          <td>1.1.3</td>
-                          <td class="tc-table-border">│</td>
-                          <td><span class="tc-badge success">OK</span></td>
-                          <td class="tc-table-border">│</td>
-                        </tr>
-                        <tr>
-                          <td class="tc-table-border">│</td>
-                          <td>python</td>
-                          <td class="tc-table-border">│</td>
-                          <td>3.12.0</td>
-                          <td class="tc-table-border">│</td>
-                          <td>
-                            <span class="tc-badge warning">outdated</span>
-                          </td>
-                          <td class="tc-table-border">│</td>
-                        </tr>
-                        <tr>
-                          <td class="tc-table-border">│</td>
-                          <td>ruby</td>
-                          <td class="tc-table-border">│</td>
-                          <td>2.7.0</td>
-                          <td class="tc-table-border">│</td>
-                          <td><span class="tc-badge error">EOL</span></td>
-                          <td class="tc-table-border">│</td>
-                        </tr>
-                        <tr>
-                          <td class="tc-table-border">
-                            └─────────┴──────────┴──────────┘
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                  <pre
+                    class="term-body-pre"
+                  ><span class="tc-gray">┌──────────┬───────────┬──────────┐
+│</span> <span class="tc-bold">Package</span>  <span class="tc-gray">│</span> <span class="tc-bold">Version</span>   <span class="tc-gray">│</span> <span class="tc-bold">Status</span>   <span class="tc-gray">│
+├──────────┼───────────┼──────────┤
+│</span> node     <span class="tc-gray">│</span> 20.11.0   <span class="tc-gray">│</span> <span class="tc-green">OK</span>       <span class="tc-gray">│
+│</span> bun      <span class="tc-gray">│</span> 1.1.3     <span class="tc-gray">│</span> <span class="tc-green">OK</span>       <span class="tc-gray">│
+│</span> python   <span class="tc-gray">│</span> 3.12.0    <span class="tc-gray">│</span> <span class="tc-orange">outdated</span> <span class="tc-gray">│
+│</span> ruby     <span class="tc-gray">│</span> 2.7.0     <span class="tc-gray">│</span> <span class="tc-red">EOL</span>      <span class="tc-gray">│
+└──────────┴───────────┴──────────┘</span></pre>
                 </div>
               </div>
             </div>
