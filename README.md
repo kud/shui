@@ -518,8 +518,16 @@ Prompt the user for confirmation, a selection, or free-form input.
 shui confirm "Deploy to production?"
 shui confirm --default=y "Continue?"
 
-# Select — prints the chosen option to stdout
+# Select — numbered list, prints the chosen option to stdout
 choice=$(shui select "Pick a profile:" work personal staging)
+
+# Radio — like select but with ○ radio button indicators
+env=$(shui radio "Target environment:" development staging production)
+
+# Multiselect — checkboxes, comma-separated input or "all"
+# Returns selected options newline-separated
+choices=$(shui multiselect "Which packages?" brew npm cargo)
+selected=("${(@f)choices}")
 
 # Input — prints the entered value to stdout
 name=$(shui input "Your name:")
@@ -533,6 +541,18 @@ name=$(shui input --default="world" "Your name:")
   1) work
   2) personal
   3) staging
+→
+
+ℹ️  Target environment:
+  1) ○ development
+  2) ○ staging
+  3) ○ production
+→
+
+ℹ️  Which packages? (comma-separated, or "all")
+  1) □ brew
+  2) □ npm
+  3) □ cargo
 →
 
 ℹ️  Your name: (world)

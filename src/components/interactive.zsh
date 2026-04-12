@@ -56,6 +56,82 @@ _shui_select() {
   fi
 }
 
+_shui_radio() {
+  local prompt="$1"; shift
+  local -a options=("$@")
+
+  printf '%s%s%s %s\n' \
+    "$SHUI_COLOR_INFO" "$SHUI_ICON_BULLET" "$SHUI_RESET" "$prompt" >&2
+
+  local i=1
+  for opt in "${options[@]}"; do
+    printf '  %s%d)%s %s %s\n' \
+      "$SHUI_COLOR_MUTED" "$i" "$SHUI_RESET" \
+      "$SHUI_ICON_CIRCLE_EMPTY" "$opt" >&2
+    (( i++ ))
+  done
+
+  printf '%s%s%s ' "$SHUI_COLOR_MUTED" "$SHUI_ICON_ARROW" "$SHUI_RESET" >&2
+
+  local choice
+  read -r choice </dev/tty
+
+  if [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= ${#options[@]} )); then
+    printf '%s\n' "${options[$choice]}"
+    return 0
+  else
+    printf 'shui: invalid selection "%s"\n' "$choice" >&2
+    return 1
+  fi
+}
+
+_shui_multiselect() {
+  local prompt="$1"; shift
+  local -a options=("$@")
+
+  printf '%s%s%s %s %s(comma-separated, or "all")%s\n' \
+    "$SHUI_COLOR_INFO" "$SHUI_ICON_BULLET" "$SHUI_RESET" \
+    "$prompt" "$SHUI_COLOR_MUTED" "$SHUI_RESET" >&2
+
+  local i=1
+  for opt in "${options[@]}"; do
+    printf '  %s%d)%s %s %s\n' \
+      "$SHUI_COLOR_MUTED" "$i" "$SHUI_RESET" \
+      "$SHUI_ICON_SQUARE_EMPTY" "$opt" >&2
+    (( i++ ))
+  done
+
+  printf '%s%s%s ' "$SHUI_COLOR_MUTED" "$SHUI_ICON_ARROW" "$SHUI_RESET" >&2
+
+  local raw
+  read -r raw </dev/tty
+
+  if [[ "$raw" == "all" ]]; then
+    printf '%s\n' "${options[@]}"
+    return 0
+  fi
+
+  local -a indices=("${(@s[,])raw}")
+  local -a chosen
+  local idx
+  for idx in "${indices[@]}"; do
+    idx="${idx// /}"
+    if [[ "$idx" =~ ^[0-9]+$ ]] && (( idx >= 1 && idx <= ${#options[@]} )); then
+      chosen+=("${options[$idx]}")
+    else
+      printf 'shui: invalid selection "%s"\n' "$idx" >&2
+      return 1
+    fi
+  done
+
+  if (( ${#chosen[@]} == 0 )); then
+    printf 'shui: no selection made\n' >&2
+    return 1
+  fi
+
+  printf '%s\n' "${chosen[@]}"
+}
+
 _shui_input() {
   local default=""
   local prompt="Input:"

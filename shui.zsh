@@ -173,6 +173,8 @@ DEBUG  (requires SHUI_DEBUG=true)
 INTERACTIVE
   shui confirm [--default=y|n] <prompt>
   shui select <prompt> <opt1> [opt2…]
+  shui radio <prompt> <opt1> [opt2…]
+  shui multiselect <prompt> <opt1> [opt2…]
   shui input [--default=<value>] <prompt>
 
 THEME
@@ -248,6 +250,12 @@ _shui_help_cmd() {
     select)
       echo "Usage: shui select <prompt> <opt1> [opt2…]"
       echo "Prints the chosen option to stdout." ;;
+    radio)
+      echo "Usage: shui radio <prompt> <opt1> [opt2…]"
+      echo "Like select but with ○ radio button indicators. Prints the chosen option to stdout." ;;
+    multiselect)
+      echo "Usage: shui multiselect <prompt> <opt1> [opt2…]"
+      echo "Checkbox selection. Enter comma-separated numbers or \"all\". Prints selected options newline-separated." ;;
     input)
       echo "Usage: shui input [--default=<value>] <prompt>"
       echo "Prints the entered value to stdout." ;;
@@ -305,9 +313,11 @@ shui() {
     debug-vars)    _shui_debug_vars    "$@" ;;
     debug-timing)  _shui_debug_timing  "$@" ;;
     debug-command) _shui_debug_command "$@" ;;
-    confirm)  _shui_confirm  "$@" ;;
-    select)   _shui_select   "$@" ;;
-    input)    _shui_input    "$@" ;;
+    confirm)     _shui_confirm     "$@" ;;
+    select)      _shui_select      "$@" ;;
+    radio)       _shui_radio       "$@" ;;
+    multiselect) _shui_multiselect "$@" ;;
+    input)       _shui_input       "$@" ;;
     theme)    _shui_theme_cmd "$@" ;;
     version|--version|-v) echo "shui $SHUI_VERSION" ;;
     help|--help|-h) _shui_help ;;

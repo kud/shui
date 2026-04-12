@@ -146,9 +146,9 @@
               <div class="feature-icon">🎛️</div>
               <div class="feature-title">Interactive prompts</div>
               <p class="feature-desc">
-                <code>confirm</code>, <code>select</code>, and
-                <code>input</code> give your scripts a polished interactive
-                layer with sensible defaults and keyboard navigation.
+                <code>confirm</code>, <code>select</code>, <code>radio</code>,
+                <code>multiselect</code>, and <code>input</code> give your
+                scripts a polished interactive layer with sensible defaults.
               </p>
             </div>
           </div>
@@ -615,16 +615,25 @@ $(shui badge muted  0) errors"</code></pre>
               <div class="example-group-label">Interactive</div>
               <div class="example-item">
                 <div class="code-block">
-                  <pre><code><span class="comment"># Confirm prompt</span>
+                  <pre><code><span class="comment"># Confirm — exits 0 for yes, 1 for no</span>
 <span class="cmd">if shui confirm</span> "Deploy to production?"; then
   <span class="cmd">shui success</span> "Confirmed!"
 <span class="cmd">fi</span>
 
-<span class="comment"># Selection menu</span>
+<span class="comment"># Select — numbered list</span>
 theme=$(<span class="cmd">shui select</span> "Pick a theme:" \
   default minimal plain)
 
-<span class="comment"># Text input</span>
+<span class="comment"># Radio — single choice with ○ indicators</span>
+env=$(<span class="cmd">shui radio</span> "Environment:" \
+  development staging production)
+
+<span class="comment"># Multiselect — checkboxes, comma-separated or "all"</span>
+choices=$(<span class="cmd">shui multiselect</span> "Which packages?" \
+  brew npm cargo)
+selected=("${(@f)choices}")
+
+<span class="comment"># Input — free text</span>
 name=$(<span class="cmd">shui input</span> --default="world" \
   "Enter your name:")</code></pre>
                 </div>
@@ -636,7 +645,7 @@ name=$(<span class="cmd">shui input</span> --default="world" \
                   </div>
                   <div class="term-body">
                     <div class="term-line">
-                      <span class="tc-yellow">?</span>
+                      <span class="tc-blue">ℹ</span>
                       <span>Deploy to production?</span>
                       <span class="tc-gray">[y/N]</span>
                       <span class="tc-green">y</span>
@@ -647,22 +656,65 @@ name=$(<span class="cmd">shui input</span> --default="world" \
                     </div>
                     <div class="term-spacer"></div>
                     <div class="term-line">
-                      <span class="tc-yellow">?</span>
+                      <span class="tc-blue">ℹ</span>
                       <span>Pick a theme:</span>
                     </div>
                     <div class="term-line">
-                      <span class="tc-cyan">▸</span>
-                      <span class="tc-bold">default</span>
+                      <span class="tc-gray">&nbsp;&nbsp;1)</span>
+                      <span>default</span>
                     </div>
                     <div class="term-line">
-                      <span>&nbsp;&nbsp;minimal</span>
+                      <span class="tc-gray">&nbsp;&nbsp;2)</span>
+                      <span>minimal</span>
                     </div>
                     <div class="term-line">
-                      <span>&nbsp;&nbsp;plain</span>
+                      <span class="tc-gray">&nbsp;&nbsp;3)</span>
+                      <span>plain</span>
                     </div>
                     <div class="term-spacer"></div>
                     <div class="term-line">
-                      <span class="tc-yellow">?</span>
+                      <span class="tc-blue">ℹ</span>
+                      <span>Environment:</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-gray">&nbsp;&nbsp;1)</span>
+                      <span class="tc-gray">○</span>
+                      <span>development</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-gray">&nbsp;&nbsp;2)</span>
+                      <span class="tc-gray">○</span>
+                      <span>staging</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-gray">&nbsp;&nbsp;3)</span>
+                      <span class="tc-gray">○</span>
+                      <span>production</span>
+                    </div>
+                    <div class="term-spacer"></div>
+                    <div class="term-line">
+                      <span class="tc-blue">ℹ</span>
+                      <span>Which packages?</span>
+                      <span class="tc-gray">(comma-separated, or "all")</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-gray">&nbsp;&nbsp;1)</span>
+                      <span class="tc-gray">□</span>
+                      <span>brew</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-gray">&nbsp;&nbsp;2)</span>
+                      <span class="tc-gray">□</span>
+                      <span>npm</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-gray">&nbsp;&nbsp;3)</span>
+                      <span class="tc-gray">□</span>
+                      <span>cargo</span>
+                    </div>
+                    <div class="term-spacer"></div>
+                    <div class="term-line">
+                      <span class="tc-blue">ℹ</span>
                       <span>Enter your name:</span>
                       <span class="tc-gray">(world)</span>
                       <span class="tc-input-cursor"></span>
