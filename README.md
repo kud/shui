@@ -521,11 +521,11 @@ shui confirm --default=y "Continue?"
 # Select — numbered list, prints the chosen option to stdout
 choice=$(shui select "Pick a profile:" work personal staging)
 
-# Radio — like select but with ○ radio button indicators
+# Radio — ↑↓ to move, Enter to confirm. Prints chosen option to stdout.
 env=$(shui radio "Target environment:" development staging production)
 
-# Multiselect — checkboxes, comma-separated input or "all"
-# Returns selected options newline-separated
+# Multiselect — ↑↓ to move, Space to toggle, Enter to confirm.
+# Returns selected options newline-separated to stdout.
 choices=$(shui multiselect "Which packages?" brew npm cargo)
 selected=("${(@f)choices}")
 
@@ -544,16 +544,14 @@ name=$(shui input --default="world" "Your name:")
 →
 
 ℹ️  Target environment:
-  1) ○ development
-  2) ○ staging
-  3) ○ production
-→
+  ○ development    ← cursor highlight
+  ● staging
+  ○ production
 
-ℹ️  Which packages? (comma-separated, or "all")
-  1) □ brew
-  2) □ npm
-  3) □ cargo
-→
+ℹ️  Which packages? ↑↓ navigate · space toggle · enter confirm
+  ■ brew           ← selected + cursor
+  □ npm
+  □ cargo
 
 ℹ️  Your name: (world)
 ```

@@ -620,15 +620,15 @@ $(shui badge muted  0) errors"</code></pre>
   <span class="cmd">shui success</span> "Confirmed!"
 <span class="cmd">fi</span>
 
-<span class="comment"># Select — numbered list</span>
+<span class="comment"># Select — numbered list, type to choose</span>
 theme=$(<span class="cmd">shui select</span> "Pick a theme:" \
   default minimal plain)
 
-<span class="comment"># Radio — single choice with ○ indicators</span>
+<span class="comment"># Radio — ↑↓ move · enter confirm</span>
 env=$(<span class="cmd">shui radio</span> "Environment:" \
   development staging production)
 
-<span class="comment"># Multiselect — checkboxes, comma-separated or "all"</span>
+<span class="comment"># Multiselect — ↑↓ move · space toggle · enter confirm</span>
 choices=$(<span class="cmd">shui multiselect</span> "Which packages?" \
   brew npm cargo)
 selected=("${(@f)choices}")
@@ -677,17 +677,17 @@ name=$(<span class="cmd">shui input</span> --default="world" \
                       <span>Environment:</span>
                     </div>
                     <div class="term-line">
-                      <span class="tc-gray">&nbsp;&nbsp;1)</span>
+                      <span class="tc-gray">&nbsp;&nbsp;</span>
                       <span class="tc-gray">○</span>
                       <span>development</span>
                     </div>
                     <div class="term-line">
-                      <span class="tc-gray">&nbsp;&nbsp;2)</span>
-                      <span class="tc-gray">○</span>
-                      <span>staging</span>
+                      <span class="tc-gray">&nbsp;&nbsp;</span>
+                      <span class="tc-yellow">●</span>
+                      <span class="tc-yellow tc-bold">staging</span>
                     </div>
                     <div class="term-line">
-                      <span class="tc-gray">&nbsp;&nbsp;3)</span>
+                      <span class="tc-gray">&nbsp;&nbsp;</span>
                       <span class="tc-gray">○</span>
                       <span>production</span>
                     </div>
@@ -695,20 +695,22 @@ name=$(<span class="cmd">shui input</span> --default="world" \
                     <div class="term-line">
                       <span class="tc-blue">ℹ</span>
                       <span>Which packages?</span>
-                      <span class="tc-gray">(comma-separated, or "all")</span>
+                      <span class="tc-gray"
+                        >↑↓ navigate · space toggle · enter confirm</span
+                      >
                     </div>
                     <div class="term-line">
-                      <span class="tc-gray">&nbsp;&nbsp;1)</span>
-                      <span class="tc-gray">□</span>
-                      <span>brew</span>
+                      <span class="tc-gray">&nbsp;&nbsp;</span>
+                      <span class="tc-green">■</span>
+                      <span class="tc-yellow tc-bold">brew</span>
                     </div>
                     <div class="term-line">
-                      <span class="tc-gray">&nbsp;&nbsp;2)</span>
+                      <span class="tc-gray">&nbsp;&nbsp;</span>
                       <span class="tc-gray">□</span>
                       <span>npm</span>
                     </div>
                     <div class="term-line">
-                      <span class="tc-gray">&nbsp;&nbsp;3)</span>
+                      <span class="tc-gray">&nbsp;&nbsp;</span>
                       <span class="tc-gray">□</span>
                       <span>cargo</span>
                     </div>

@@ -59,77 +59,119 @@ _shui_select() {
 _shui_radio() {
   local prompt="$1"; shift
   local -a options=("$@")
+  local n=${#options[@]}
+  local cursor=1
+
+  _shui_radio_render() {
+    local i
+    for (( i = 1; i <= n; i++ )); do
+      printf '\033[2K\r'
+      if (( i == cursor )); then
+        printf '  %s%s%s %s%s%s\n' \
+          "$SHUI_COLOR_PRIMARY" "$SHUI_ICON_CIRCLE" "$SHUI_RESET" \
+          "$SHUI_COLOR_PRIMARY" "${options[$i]}" "$SHUI_RESET"
+      else
+        printf '  %s%s%s %s\n' \
+          "$SHUI_COLOR_MUTED" "$SHUI_ICON_CIRCLE_EMPTY" "$SHUI_RESET" \
+          "${options[$i]}"
+      fi
+    done
+  }
 
   printf '%s%s%s %s\n' \
     "$SHUI_COLOR_INFO" "$SHUI_ICON_BULLET" "$SHUI_RESET" "$prompt" >&2
+  _shui_radio_render >&2
 
-  local i=1
-  for opt in "${options[@]}"; do
-    printf '  %s%d)%s %s %s\n' \
-      "$SHUI_COLOR_MUTED" "$i" "$SHUI_RESET" \
-      "$SHUI_ICON_CIRCLE_EMPTY" "$opt" >&2
-    (( i++ ))
+  local old_stty exit_code=0 char seq
+  old_stty=$(stty -g </dev/tty 2>/dev/null) || old_stty=""
+  [[ -n "$old_stty" ]] && stty -echo -icanon min 1 time 0 </dev/tty
+
+  while true; do
+    IFS= read -rk1 char </dev/tty
+    case "$char" in
+      $'\033')
+        IFS= read -rk2 seq </dev/tty
+        case "$seq" in
+          '[A') (( cursor > 1 )) && (( cursor-- )) ;;
+          '[B') (( cursor < n )) && (( cursor++ )) ;;
+        esac
+        ;;
+      $'\r'|$'\n') break ;;
+      $'\003') exit_code=130; break ;;
+    esac
+    printf '\033[%dA' "$n" >&2
+    _shui_radio_render >&2
   done
 
-  printf '%s%s%s ' "$SHUI_COLOR_MUTED" "$SHUI_ICON_ARROW" "$SHUI_RESET" >&2
+  [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty
+  printf '\n' >&2
 
-  local choice
-  read -r choice </dev/tty
-
-  if [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= ${#options[@]} )); then
-    printf '%s\n' "${options[$choice]}"
-    return 0
-  else
-    printf 'shui: invalid selection "%s"\n' "$choice" >&2
-    return 1
-  fi
+  (( exit_code == 0 )) && printf '%s\n' "${options[$cursor]}"
+  return $exit_code
 }
 
 _shui_multiselect() {
   local prompt="$1"; shift
   local -a options=("$@")
+  local n=${#options[@]}
+  local cursor=1
+  local -a selected
+  local i
+  for (( i = 1; i <= n; i++ )); do selected[$i]=0; done
 
-  printf '%s%s%s %s %s(comma-separated, or "all")%s\n' \
+  _shui_multiselect_render() {
+    local i check
+    for (( i = 1; i <= n; i++ )); do
+      printf '\033[2K\r'
+      if (( selected[$i] )); then
+        check="${SHUI_COLOR_SUCCESS}${SHUI_ICON_SQUARE}${SHUI_RESET}"
+      else
+        check="${SHUI_COLOR_MUTED}${SHUI_ICON_SQUARE_EMPTY}${SHUI_RESET}"
+      fi
+      if (( i == cursor )); then
+        printf '  %s %s%s%s\n' "$check" "$SHUI_COLOR_PRIMARY" "${options[$i]}" "$SHUI_RESET"
+      else
+        printf '  %s %s\n' "$check" "${options[$i]}"
+      fi
+    done
+  }
+
+  printf '%s%s%s %s %s↑↓ navigate · space toggle · enter confirm%s\n' \
     "$SHUI_COLOR_INFO" "$SHUI_ICON_BULLET" "$SHUI_RESET" \
     "$prompt" "$SHUI_COLOR_MUTED" "$SHUI_RESET" >&2
+  _shui_multiselect_render >&2
 
-  local i=1
-  for opt in "${options[@]}"; do
-    printf '  %s%d)%s %s %s\n' \
-      "$SHUI_COLOR_MUTED" "$i" "$SHUI_RESET" \
-      "$SHUI_ICON_SQUARE_EMPTY" "$opt" >&2
-    (( i++ ))
+  local old_stty exit_code=0 char seq
+  old_stty=$(stty -g </dev/tty 2>/dev/null) || old_stty=""
+  [[ -n "$old_stty" ]] && stty -echo -icanon min 1 time 0 </dev/tty
+
+  while true; do
+    IFS= read -rk1 char </dev/tty
+    case "$char" in
+      $'\033')
+        IFS= read -rk2 seq </dev/tty
+        case "$seq" in
+          '[A') (( cursor > 1 )) && (( cursor-- )) ;;
+          '[B') (( cursor < n )) && (( cursor++ )) ;;
+        esac
+        ;;
+      ' ') (( selected[$cursor] = !selected[$cursor] )) ;;
+      $'\r'|$'\n') break ;;
+      $'\003') exit_code=130; break ;;
+    esac
+    printf '\033[%dA' "$n" >&2
+    _shui_multiselect_render >&2
   done
 
-  printf '%s%s%s ' "$SHUI_COLOR_MUTED" "$SHUI_ICON_ARROW" "$SHUI_RESET" >&2
+  [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty
+  printf '\n' >&2
 
-  local raw
-  read -r raw </dev/tty
-
-  if [[ "$raw" == "all" ]]; then
-    printf '%s\n' "${options[@]}"
-    return 0
+  if (( exit_code == 0 )); then
+    for (( i = 1; i <= n; i++ )); do
+      (( selected[$i] )) && printf '%s\n' "${options[$i]}"
+    done
   fi
-
-  local -a indices=("${(@s[,])raw}")
-  local -a chosen
-  local idx
-  for idx in "${indices[@]}"; do
-    idx="${idx// /}"
-    if [[ "$idx" =~ ^[0-9]+$ ]] && (( idx >= 1 && idx <= ${#options[@]} )); then
-      chosen+=("${options[$idx]}")
-    else
-      printf 'shui: invalid selection "%s"\n' "$idx" >&2
-      return 1
-    fi
-  done
-
-  if (( ${#chosen[@]} == 0 )); then
-    printf 'shui: no selection made\n' >&2
-    return 1
-  fi
-
-  printf '%s\n' "${chosen[@]}"
+  return $exit_code
 }
 
 _shui_input() {
