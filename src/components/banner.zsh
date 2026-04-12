@@ -17,7 +17,7 @@ _shui_banner() {
   local first=true
   for line in "${content_lines[@]}"; do
     if $first; then
-      printf '%s  %s%s%s  %s%s%s\n' "$bar" "${color}${SHUI_BOLD}" "$icon" "${SHUI_RESET}" "${SHUI_BOLD}" "$line" "${SHUI_RESET}"
+      printf '%s  %s%s%s  %s\n' "$bar" "${color}${SHUI_BOLD}" "$icon" "${SHUI_RESET}" "$line"
       first=false
     else
       printf '%s     %s\n' "$bar" "$line"
