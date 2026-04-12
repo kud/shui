@@ -23,5 +23,5 @@ _shui_banner() {
       printf '%s     %s\n' "$bar" "$line"
     fi
   done
-  printf '%s\n' "$bar"
+  printf '%s\n\n' "$bar"
 }
