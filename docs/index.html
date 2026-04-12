@@ -17,7 +17,7 @@
         <ul class="nav-links">
           <li><a href="#features">Features</a></li>
           <li><a href="#quickstart">Quick Start</a></li>
-          <li><a href="#components">Components</a></li>
+          <li><a href="#examples">Examples</a></li>
           <li><a href="#config">Config</a></li>
         </ul>
         <a
@@ -42,7 +42,7 @@
           <h1>shui · 水</h1>
           <p>
             A Zsh design system. Semantic components, a token-based theme
-            engine, and one consistent API — no runtime dependencies.
+            engine, and one consistent API — zero runtime dependencies.
           </p>
           <div class="hero-ctas">
             <a
@@ -148,7 +148,7 @@
               <p class="feature-desc">
                 <code>confirm</code>, <code>select</code>, and
                 <code>input</code> give your scripts a polished interactive
-                layer — with sensible defaults and keyboard navigation.
+                layer with sensible defaults and keyboard navigation.
               </p>
             </div>
           </div>
@@ -178,187 +178,657 @@
 <span class="cmd">shui warning "Restart required"</span>
 
 <span class="comment"># Switch theme and icon set</span>
-<span class="cmd">SHUI_THEME=minimal SHUI_ICONS=emoji source ~/shui/shui.zsh</span>
-<span class="cmd">shui success "Works in any terminal"</span></code></pre>
-            <button class="copy-btn" data-copy="source ~/shui/shui.zsh">
+<span class="cmd">SHUI_THEME=minimal SHUI_ICONS=emoji source ~/shui/shui.zsh</span></code></pre>
+            <button
+              class="copy-btn"
+              data-copy="git clone https://github.com/kud/shui.git ~/shui && source ~/shui/shui.zsh"
+            >
               Copy
             </button>
           </div>
         </div>
       </section>
 
-      <!-- ── Components ─────────────────────────────── -->
-      <section id="components">
+      <!-- ── Examples ───────────────────────────────── -->
+      <section id="examples">
         <div class="section-inner">
-          <span class="section-eyebrow reveal">Commands</span>
-          <h2 class="reveal">Component Reference</h2>
+          <span class="section-eyebrow reveal">Live previews</span>
+          <h2 class="reveal">Component Examples</h2>
           <p class="section-sub reveal">
-            Every component is invoked via <code>shui &lt;command&gt;</code>.
-            All components write to stderr, keeping stdout free for piping.
+            Every component rendered exactly as it appears in your terminal.
           </p>
-          <div class="cli-list reveal">
-            <div class="cli-row">
-              <span class="cli-cmd">shui success "msg"</span>
-              <span class="cli-desc"
-                >Green success message with a checkmark icon</span
-              >
+
+          <div class="examples-stack">
+            <!-- Messages -->
+            <div class="reveal">
+              <div class="example-group-label">Messages</div>
+              <div class="example-item">
+                <div class="code-block">
+                  <pre><code><span class="cmd">shui success</span> "Operation completed"
+<span class="cmd">shui error</span>   "Something went wrong"
+<span class="cmd">shui warning</span> "This cannot be undone"
+<span class="cmd">shui info</span>    "Running in dry-run mode"</code></pre>
+                </div>
+                <div class="term-window">
+                  <div class="term-bar">
+                    <span class="term-dot r"></span>
+                    <span class="term-dot y"></span>
+                    <span class="term-dot g"></span>
+                  </div>
+                  <div class="term-body">
+                    <div class="term-line">
+                      <span class="tc-green tc-bold">✓</span>
+                      <span>Operation completed</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-red tc-bold">✗</span>
+                      <span>Something went wrong</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-orange tc-bold">⚠</span>
+                      <span>This cannot be undone</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-blue tc-bold">ℹ</span>
+                      <span>Running in dry-run mode</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="cli-row">
-              <span class="cli-cmd">shui error "msg"</span>
-              <span class="cli-desc">Red error message with an × icon</span>
+
+            <!-- Text styles -->
+            <div class="reveal">
+              <div class="example-group-label">Text Styles</div>
+              <div class="example-item">
+                <div class="code-block">
+                  <pre><code><span class="cmd">shui bold</span>      "Bold text"
+<span class="cmd">shui dim</span>       "Dimmed text"
+<span class="cmd">shui italic</span>    "Italic text"
+<span class="cmd">shui underline</span> "Underlined text"
+<span class="cmd">shui text</span> --color=primary "Primary"
+<span class="cmd">shui text</span> --color=success "Success"
+<span class="cmd">shui text</span> --color=warning "Warning"
+<span class="cmd">shui text</span> --color=error   "Error"
+<span class="cmd">shui text</span> --color=muted   "Muted"</code></pre>
+                </div>
+                <div class="term-window">
+                  <div class="term-bar">
+                    <span class="term-dot r"></span>
+                    <span class="term-dot y"></span>
+                    <span class="term-dot g"></span>
+                  </div>
+                  <div class="term-body">
+                    <div class="term-line">
+                      <span class="tc-bold">Bold text</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-dim">Dimmed text</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-italic">Italic text</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-under">Underlined text</span>
+                    </div>
+                    <div class="term-spacer"></div>
+                    <div class="term-line">
+                      <span class="tc-yellow">Primary</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-green">Success</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-orange">Warning</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-red">Error</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-gray">Muted</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="cli-row">
-              <span class="cli-cmd">shui warning "msg"</span>
-              <span class="cli-desc">Yellow warning message with a ⚠ icon</span>
+
+            <!-- Layout -->
+            <div class="reveal">
+              <div class="example-group-label">Layout</div>
+              <div class="example-item">
+                <div class="code-block">
+                  <pre><code><span class="cmd">shui section</span>    "Deploy pipeline"
+<span class="cmd">shui subtitle</span>   "Step 1: Build"
+<span class="cmd">shui subsection</span> "Compiling sources"
+<span class="cmd">shui spacer</span>
+<span class="cmd">shui divider</span>
+<span class="cmd">shui fence</span> "output"</code></pre>
+                </div>
+                <div class="term-window">
+                  <div class="term-bar">
+                    <span class="term-dot r"></span>
+                    <span class="term-dot y"></span>
+                    <span class="term-dot g"></span>
+                  </div>
+                  <div class="term-body">
+                    <div class="term-line">
+                      <span class="tc-yellow tc-bold">Deploy pipeline</span>
+                    </div>
+                    <div class="term-spacer"></div>
+                    <div class="term-line">
+                      <span class="tc-orange tc-bold">Step 1: Build</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-cyan">●</span>
+                      <span class="tc-bold">Compiling sources</span>
+                    </div>
+                    <div class="term-spacer"></div>
+                    <div class="term-line">
+                      <span class="tc-gray"
+                        >────────────────────────────────────────</span
+                      >
+                    </div>
+                    <div class="term-spacer"></div>
+                    <div class="term-line">
+                      <span class="tc-gray"
+                        >── output ───────────────────────────────</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="cli-row">
-              <span class="cli-cmd">shui info "msg"</span>
-              <span class="cli-desc">Cyan info message with an ℹ icon</span>
+
+            <!-- Badges -->
+            <div class="reveal">
+              <div class="example-group-label">Badges</div>
+              <div class="example-item">
+                <div class="code-block">
+                  <pre><code>echo "$(shui badge success SUCCESS) \
+     $(shui badge error ERROR) \
+     $(shui badge warning WARNING)"
+echo "$(shui badge info INFO) \
+     $(shui badge primary PRIMARY) \
+     $(shui badge muted MUTED)"</code></pre>
+                </div>
+                <div class="term-window">
+                  <div class="term-bar">
+                    <span class="term-dot r"></span>
+                    <span class="term-dot y"></span>
+                    <span class="term-dot g"></span>
+                  </div>
+                  <div class="term-body">
+                    <div class="term-line">
+                      <span class="tc-badge success">SUCCESS</span>
+                      <span class="tc-badge error">ERROR</span>
+                      <span class="tc-badge warning">WARNING</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-badge info">INFO</span>
+                      <span class="tc-badge primary">PRIMARY</span>
+                      <span class="tc-badge muted">MUTED</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="cli-row">
-              <span class="cli-cmd"
-                >shui bold | dim | italic | underline "msg"</span
-              >
-              <span class="cli-desc"
-                >Text styling — combine with any message</span
-              >
+
+            <!-- Pills -->
+            <div class="reveal">
+              <div class="example-group-label">Pills</div>
+              <div class="example-item">
+                <div class="code-block">
+                  <pre><code>echo "$(shui pill success done) \
+     $(shui pill error failed) \
+     $(shui pill warning skipped)"
+echo "$(shui pill info info) \
+     $(shui pill primary major) \
+     $(shui pill muted patch)"</code></pre>
+                </div>
+                <div class="term-window">
+                  <div class="term-bar">
+                    <span class="term-dot r"></span>
+                    <span class="term-dot y"></span>
+                    <span class="term-dot g"></span>
+                  </div>
+                  <div class="term-body">
+                    <div class="term-line">
+                      <span class="tc-pill success"
+                        ><span class="tc-pill-cap"></span
+                        ><span class="tc-pill-inner">done</span
+                        ><span class="tc-pill-cap"></span
+                      ></span>
+                      <span class="tc-pill error"
+                        ><span class="tc-pill-cap"></span
+                        ><span class="tc-pill-inner">failed</span
+                        ><span class="tc-pill-cap"></span
+                      ></span>
+                      <span class="tc-pill warning"
+                        ><span class="tc-pill-cap"></span
+                        ><span class="tc-pill-inner">skipped</span
+                        ><span class="tc-pill-cap"></span
+                      ></span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-pill info"
+                        ><span class="tc-pill-cap"></span
+                        ><span class="tc-pill-inner">info</span
+                        ><span class="tc-pill-cap"></span
+                      ></span>
+                      <span class="tc-pill primary"
+                        ><span class="tc-pill-cap"></span
+                        ><span class="tc-pill-inner">major</span
+                        ><span class="tc-pill-cap"></span
+                      ></span>
+                      <span class="tc-pill muted"
+                        ><span class="tc-pill-cap"></span
+                        ><span class="tc-pill-inner">patch</span
+                        ><span class="tc-pill-cap"></span
+                      ></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="cli-row">
-              <span class="cli-cmd"
-                >shui text --color=&lt;semantic&gt; "msg"</span
-              >
-              <span class="cli-desc"
-                >Semantic colour:
-                <code
-                  >primary success warning error info muted accent</code
-                ></span
-              >
+
+            <!-- Box -->
+            <div class="reveal">
+              <div class="example-group-label">Box</div>
+              <div class="example-item">
+                <div class="code-block">
+                  <pre><code><span class="cmd">shui box</span> "Simple content inside a box"
+
+<span class="cmd">shui box</span> --title="Deployment Summary" \
+  "$(shui badge success 3) installed
+$(shui badge warning 1) skipped
+$(shui badge muted  0) errors"</code></pre>
+                </div>
+                <div class="term-window">
+                  <div class="term-bar">
+                    <span class="term-dot r"></span>
+                    <span class="term-dot y"></span>
+                    <span class="term-dot g"></span>
+                  </div>
+                  <div class="term-body">
+                    <div class="term-line">
+                      <span class="tc-gray"
+                        >┌────────────────────────────────────┐</span
+                      >
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-gray">│</span>
+                      <span>Simple content inside a box</span>
+                      <span class="tc-gray">│</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-gray"
+                        >└────────────────────────────────────┘</span
+                      >
+                    </div>
+                    <div class="term-spacer"></div>
+                    <div class="term-line">
+                      <span class="tc-gray">┌──────── </span
+                      ><span class="tc-yellow tc-bold">Deployment Summary</span
+                      ><span class="tc-gray"> ────────┐</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-gray">│</span>
+                      <span class="tc-badge success">3</span>
+                      <span>installed</span>
+                      <span class="tc-gray">│</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-gray">│</span>
+                      <span class="tc-badge warning">1</span>
+                      <span>skipped</span>
+                      <span class="tc-gray" style="margin-left: 3px">│</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-gray">│</span>
+                      <span class="tc-badge muted">0</span>
+                      <span>errors</span>
+                      <span class="tc-gray" style="margin-left: 7px">│</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-gray"
+                        >└────────────────────────────────────┘</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="cli-row">
-              <span class="cli-cmd">shui section "heading"</span>
-              <span class="cli-desc"
-                >Top-level section header in primary colour</span
-              >
+
+            <!-- Table -->
+            <div class="reveal">
+              <div class="example-group-label">Table</div>
+              <div class="example-item">
+                <div class="code-block">
+                  <pre><code><span class="cmd">shui table</span> \
+  "Package|Version|Status" \
+  "node|20.11.0|$(shui badge success OK)" \
+  "bun|1.1.3|$(shui badge success OK)" \
+  "python|3.12.0|$(shui badge warning outdated)" \
+  "ruby|2.7.0|$(shui badge error EOL)"</code></pre>
+                </div>
+                <div class="term-window">
+                  <div class="term-bar">
+                    <span class="term-dot r"></span>
+                    <span class="term-dot y"></span>
+                    <span class="term-dot g"></span>
+                  </div>
+                  <div class="term-body">
+                    <table class="tc-table">
+                      <thead>
+                        <tr>
+                          <td class="tc-table-border">
+                            ┌─────────┬──────────┬──────────┐
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="tc-table-border">│</td>
+                          <td class="tc-bold">Package</td>
+                          <td class="tc-table-border">│</td>
+                          <td class="tc-bold">Version</td>
+                          <td class="tc-table-border">│</td>
+                          <td class="tc-bold">Status</td>
+                          <td class="tc-table-border">│</td>
+                        </tr>
+                        <tr>
+                          <td class="tc-table-border">
+                            ├─────────┼──────────┼──────────┤
+                          </td>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="tc-table-border">│</td>
+                          <td>node</td>
+                          <td class="tc-table-border">│</td>
+                          <td>20.11.0</td>
+                          <td class="tc-table-border">│</td>
+                          <td><span class="tc-badge success">OK</span></td>
+                          <td class="tc-table-border">│</td>
+                        </tr>
+                        <tr>
+                          <td class="tc-table-border">│</td>
+                          <td>bun</td>
+                          <td class="tc-table-border">│</td>
+                          <td>1.1.3</td>
+                          <td class="tc-table-border">│</td>
+                          <td><span class="tc-badge success">OK</span></td>
+                          <td class="tc-table-border">│</td>
+                        </tr>
+                        <tr>
+                          <td class="tc-table-border">│</td>
+                          <td>python</td>
+                          <td class="tc-table-border">│</td>
+                          <td>3.12.0</td>
+                          <td class="tc-table-border">│</td>
+                          <td>
+                            <span class="tc-badge warning">outdated</span>
+                          </td>
+                          <td class="tc-table-border">│</td>
+                        </tr>
+                        <tr>
+                          <td class="tc-table-border">│</td>
+                          <td>ruby</td>
+                          <td class="tc-table-border">│</td>
+                          <td>2.7.0</td>
+                          <td class="tc-table-border">│</td>
+                          <td><span class="tc-badge error">EOL</span></td>
+                          <td class="tc-table-border">│</td>
+                        </tr>
+                        <tr>
+                          <td class="tc-table-border">
+                            └─────────┴──────────┴──────────┘
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="cli-row">
-              <span class="cli-cmd">shui subtitle "text"</span>
-              <span class="cli-desc"
-                >Bold sub-section heading in warning colour</span
-              >
+
+            <!-- Progress -->
+            <div class="reveal">
+              <div class="example-group-label">Progress</div>
+              <div class="example-item">
+                <div class="code-block">
+                  <pre><code><span class="cmd">shui progress</span> 0   100; echo
+<span class="cmd">shui progress</span> 25  100; echo
+<span class="cmd">shui progress</span> 50  100; echo
+<span class="cmd">shui progress</span> 75  100; echo
+<span class="cmd">shui progress</span> 100 100; echo
+<span class="cmd">shui progress</span> 65 100 \
+  --width=20 --label="Downloading "</code></pre>
+                </div>
+                <div class="term-window">
+                  <div class="term-bar">
+                    <span class="term-dot r"></span>
+                    <span class="term-dot y"></span>
+                    <span class="term-dot g"></span>
+                  </div>
+                  <div class="term-body">
+                    <div class="term-line">
+                      <span class="tc-progress-empty"
+                        >░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span
+                      >
+                      <span class="tc-progress-pct">0%</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-progress-filled">██████████</span
+                      ><span class="tc-progress-empty"
+                        >░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span
+                      >
+                      <span class="tc-progress-pct">25%</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-progress-filled"
+                        >████████████████████</span
+                      ><span class="tc-progress-empty"
+                        >░░░░░░░░░░░░░░░░░░░░</span
+                      >
+                      <span class="tc-progress-pct">50%</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-progress-filled"
+                        >██████████████████████████████</span
+                      ><span class="tc-progress-empty">░░░░░░░░░░</span>
+                      <span class="tc-progress-pct">75%</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-progress-filled"
+                        >████████████████████████████████████████</span
+                      >
+                      <span class="tc-progress-pct">100%</span>
+                    </div>
+                    <div class="term-spacer"></div>
+                    <div class="term-line">
+                      <span>Downloading </span
+                      ><span class="tc-progress-filled">█████████████</span
+                      ><span class="tc-progress-empty">░░░░░░░</span>
+                      <span class="tc-progress-pct">65%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="cli-row">
-              <span class="cli-cmd">shui subsection "text"</span>
-              <span class="cli-cmd"></span>
-              <span class="cli-desc">Bulleted item for nested content</span>
+
+            <!-- Spinner & Loader -->
+            <div class="reveal">
+              <div class="example-group-label">Spinner &amp; Loader</div>
+              <div class="example-item">
+                <div class="code-block">
+                  <pre><code><span class="comment"># Wraps a command — spinner while it runs</span>
+<span class="cmd">shui spinner</span> npm install
+
+<span class="comment"># Indeterminate loader styles</span>
+<span class="cmd">shui loader</span> --style=dots
+<span class="cmd">shui loader</span> --style=pulse
+<span class="cmd">shui loader</span> --style=spinner</code></pre>
+                </div>
+                <div class="term-window">
+                  <div class="term-bar">
+                    <span class="term-dot r"></span>
+                    <span class="term-dot y"></span>
+                    <span class="term-dot g"></span>
+                  </div>
+                  <div class="term-body">
+                    <div class="term-line">
+                      <span
+                        class="tc-cyan"
+                        style="
+                          animation: spin 1s linear infinite;
+                          display: inline-block;
+                        "
+                        >⠙</span
+                      >
+                      <span class="tc-gray">npm install</span>
+                    </div>
+                    <div class="term-spacer"></div>
+                    <div class="term-line">
+                      <span class="tc-cyan">⣾</span>
+                      <span class="tc-gray">— dots</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-cyan">▓</span>
+                      <span class="tc-gray">— pulse</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-cyan">◐</span>
+                      <span class="tc-gray">— spinner</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="cli-row">
-              <span class="cli-cmd"
-                >shui divider [--color=&lt;c&gt;] [--char=&lt;ch&gt;]</span
-              >
-              <span class="cli-desc"
-                >Full-width horizontal rule; customisable char and colour</span
-              >
+
+            <!-- Interactive -->
+            <div class="reveal">
+              <div class="example-group-label">Interactive</div>
+              <div class="example-item">
+                <div class="code-block">
+                  <pre><code><span class="comment"># Confirm prompt</span>
+<span class="cmd">if shui confirm</span> "Deploy to production?"; then
+  <span class="cmd">shui success</span> "Confirmed!"
+<span class="cmd">fi</span>
+
+<span class="comment"># Selection menu</span>
+theme=$(<span class="cmd">shui select</span> "Pick a theme:" \
+  default minimal plain)
+
+<span class="comment"># Text input</span>
+name=$(<span class="cmd">shui input</span> --default="world" \
+  "Enter your name:")</code></pre>
+                </div>
+                <div class="term-window">
+                  <div class="term-bar">
+                    <span class="term-dot r"></span>
+                    <span class="term-dot y"></span>
+                    <span class="term-dot g"></span>
+                  </div>
+                  <div class="term-body">
+                    <div class="term-line">
+                      <span class="tc-yellow">?</span>
+                      <span>Deploy to production?</span>
+                      <span class="tc-gray">[y/N]</span>
+                      <span class="tc-green">y</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-green">✓</span>
+                      <span>Confirmed!</span>
+                    </div>
+                    <div class="term-spacer"></div>
+                    <div class="term-line">
+                      <span class="tc-yellow">?</span>
+                      <span>Pick a theme:</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-cyan">▸</span>
+                      <span class="tc-bold">default</span>
+                    </div>
+                    <div class="term-line">
+                      <span>&nbsp;&nbsp;minimal</span>
+                    </div>
+                    <div class="term-line">
+                      <span>&nbsp;&nbsp;plain</span>
+                    </div>
+                    <div class="term-spacer"></div>
+                    <div class="term-line">
+                      <span class="tc-yellow">?</span>
+                      <span>Enter your name:</span>
+                      <span class="tc-gray">(world)</span>
+                      <span class="tc-input-cursor"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="cli-row">
-              <span class="cli-cmd">shui fence "label"</span>
-              <span class="cli-desc"
-                >Labelled divider: <code>── label ───────────────</code></span
-              >
-            </div>
-            <div class="cli-row">
-              <span class="cli-cmd">shui spacer [n]</span>
-              <span class="cli-desc"
-                >Print <em>n</em> blank lines (default 1)</span
-              >
-            </div>
-            <div class="cli-row">
-              <span class="cli-cmd">shui badge &lt;color&gt; "label"</span>
-              <span class="cli-desc"
-                >Solid-background inline badge — use inside
-                <code>echo "$(shui badge success OK)"</code></span
-              >
-            </div>
-            <div class="cli-row">
-              <span class="cli-cmd">shui pill &lt;color&gt; "label"</span>
-              <span class="cli-desc"
-                >Rounded-edge inline pill tag — same colours as badge</span
-              >
-            </div>
-            <div class="cli-row">
-              <span class="cli-cmd">shui box [--title="T"] "content"</span>
-              <span class="cli-desc"
-                >Bordered content block; supports <code>\n</code> in content and
-                inline badges</span
-              >
-            </div>
-            <div class="cli-row">
-              <span class="cli-cmd">shui table "Col|Col" "row|row" …</span>
-              <span class="cli-desc"
-                >Auto-sized pipe-separated table; first arg is the header
-                row</span
-              >
-            </div>
-            <div class="cli-row">
-              <span class="cli-cmd"
-                >shui progress &lt;val&gt; &lt;max&gt; [--width=N]
-                [--label="…"]</span
-              >
-              <span class="cli-desc"
-                >Inline progress bar; width defaults to terminal width</span
-              >
-            </div>
-            <div class="cli-row">
-              <span class="cli-cmd">shui spinner &lt;cmd&gt; [args…]</span>
-              <span class="cli-desc"
-                >Animated spinner while a command runs; exits with the command's
-                exit code</span
-              >
-            </div>
-            <div class="cli-row">
-              <span class="cli-cmd"
-                >shui loader [--style=dots|pulse|spinner]</span
-              >
-              <span class="cli-desc"
-                >Indeterminate looping indicator for long-running background
-                work</span
-              >
-            </div>
-            <div class="cli-row">
-              <span class="cli-cmd">shui confirm "question?"</span>
-              <span class="cli-desc"
-                >Interactive yes/no prompt; returns exit code 0 for yes</span
-              >
-            </div>
-            <div class="cli-row">
-              <span class="cli-cmd">shui select "prompt" opt1 opt2 …</span>
-              <span class="cli-desc"
-                >Arrow-key selection menu; prints chosen value to stdout</span
-              >
-            </div>
-            <div class="cli-row">
-              <span class="cli-cmd">shui input [--default="val"] "prompt"</span>
-              <span class="cli-desc"
-                >Text input with optional default; prints entered value to
-                stdout</span
-              >
-            </div>
-            <div class="cli-row">
-              <span class="cli-cmd"
-                >shui screen "heading" &lt;cmd&gt; [args…]</span
-              >
-              <span class="cli-desc"
-                >Full-screen section runner — prints header, runs command, shows
-                elapsed time</span
-              >
-            </div>
-            <div class="cli-row">
-              <span class="cli-cmd"
-                >shui animation typewriter|fade-in "text"</span
-              >
-              <span class="cli-desc"
-                >One-shot text effects for intro sequences or splash
-                screens</span
-              >
+
+            <!-- Screen / Animation -->
+            <div class="reveal">
+              <div class="example-group-label">Screen &amp; Animation</div>
+              <div class="example-item">
+                <div class="code-block">
+                  <pre><code><span class="comment"># Full-screen runner with elapsed time</span>
+<span class="cmd">shui screen</span> "Running tests" npm test
+
+<span class="comment"># One-shot text effects</span>
+<span class="cmd">shui animation</span> typewriter "Hello, world"
+<span class="cmd">shui animation</span> fade-in    "Hello, world"</code></pre>
+                </div>
+                <div class="term-window">
+                  <div class="term-bar">
+                    <span class="term-dot r"></span>
+                    <span class="term-dot y"></span>
+                    <span class="term-dot g"></span>
+                  </div>
+                  <div class="term-body">
+                    <div class="term-line">
+                      <span class="tc-yellow tc-bold"
+                        >━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span
+                      >
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-yellow tc-bold"
+                        >&nbsp;&nbsp;Running tests</span
+                      >
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-yellow tc-bold"
+                        >━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span
+                      >
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-gray">…</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-green">✓</span>
+                      <span>Done</span>
+                      <span class="tc-gray">1.34s</span>
+                    </div>
+                    <div class="term-spacer"></div>
+                    <div class="term-line">
+                      <span
+                        style="
+                          overflow: hidden;
+                          white-space: nowrap;
+                          display: inline-block;
+                          animation: type 2s steps(13) infinite;
+                          width: 13ch;
+                        "
+                        >Hello, world</span
+                      >
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-dim">Hello, world</span>
+                      <span>Hello, world</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -387,7 +857,8 @@
                 <tr>
                   <td><code class="config-key">SHUI_THEME</code></td>
                   <td>
-                    <code>default</code> <code>minimal</code> <code>plain</code>
+                    <code>default</code> <code>minimal</code>
+                    <code>plain</code>
                   </td>
                   <td><code class="config-default">default</code></td>
                   <td>
@@ -469,7 +940,6 @@
         btn.addEventListener("click", () => {
           const text =
             btn.dataset.copy ||
-            btn.closest(".hero-command")?.querySelector("code")?.textContent ||
             btn.closest(".code-block")?.querySelector("code")?.textContent ||
             ""
           navigator.clipboard.writeText(text.trim()).then(() => {
@@ -492,9 +962,25 @@
             }
           })
         },
-        { threshold: 0.1 },
+        { threshold: 0.08 },
       )
       document.querySelectorAll(".reveal").forEach((el) => observer.observe(el))
     </script>
+
+    <style>
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes type {
+        from {
+          width: 0;
+        }
+        to {
+          width: 13ch;
+        }
+      }
+    </style>
   </body>
 </html>

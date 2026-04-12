@@ -600,6 +600,318 @@ code {
   font-size: 0.8rem;
 }
 
+/* ── Examples ────────────────────────────────── */
+
+.examples-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.example-group-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+
+.example-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.term-window {
+  background: #090909;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+.term-bar {
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 14px;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.term-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.term-dot.r {
+  background: #ff5f56;
+}
+
+.term-dot.y {
+  background: #ffbd2e;
+}
+
+.term-dot.g {
+  background: #27c93f;
+}
+
+.term-body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.term-line {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-height: 1.3em;
+}
+
+.term-sep {
+  height: 1px;
+  background: var(--border);
+  margin: 6px 0;
+  opacity: 0.5;
+}
+
+.term-spacer {
+  height: 0.6em;
+}
+
+.tc-green {
+  color: #4ade80;
+}
+
+.tc-red {
+  color: #f87171;
+}
+
+.tc-orange {
+  color: #fb923c;
+}
+
+.tc-blue {
+  color: #60a5fa;
+}
+
+.tc-yellow {
+  color: #fde047;
+}
+
+.tc-gray {
+  color: #6b7280;
+}
+
+.tc-cyan {
+  color: #22d3ee;
+}
+
+.tc-white {
+  color: #e2e8f0;
+}
+
+.tc-bold {
+  font-weight: 700;
+}
+
+.tc-dim {
+  opacity: 0.38;
+}
+
+.tc-italic {
+  font-style: italic;
+}
+
+.tc-under {
+  text-decoration: underline;
+}
+
+.tc-badge {
+  display: inline-block;
+  padding: 0 5px;
+  font-weight: 600;
+  font-size: 0.76rem;
+  border-radius: 2px;
+  line-height: 1.5;
+  flex-shrink: 0;
+}
+
+.tc-badge.success {
+  background: #4ade80;
+  color: #000;
+}
+
+.tc-badge.error {
+  background: #f87171;
+  color: #fff;
+}
+
+.tc-badge.warning {
+  background: #fb923c;
+  color: #000;
+}
+
+.tc-badge.info {
+  background: #60a5fa;
+  color: #fff;
+}
+
+.tc-badge.primary {
+  background: #fde047;
+  color: #000;
+}
+
+.tc-badge.muted {
+  background: #585858;
+  color: #fff;
+}
+
+.tc-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.76rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.tc-pill-cap {
+  opacity: 0.85;
+}
+
+.tc-pill-inner {
+  display: inline-block;
+  padding: 0 4px;
+}
+
+.tc-pill.success .tc-pill-cap {
+  color: #4ade80;
+}
+
+.tc-pill.success .tc-pill-inner {
+  background: #4ade80;
+  color: #000;
+}
+
+.tc-pill.error .tc-pill-cap {
+  color: #f87171;
+}
+
+.tc-pill.error .tc-pill-inner {
+  background: #f87171;
+  color: #fff;
+}
+
+.tc-pill.warning .tc-pill-cap {
+  color: #fb923c;
+}
+
+.tc-pill.warning .tc-pill-inner {
+  background: #fb923c;
+  color: #000;
+}
+
+.tc-pill.info .tc-pill-cap {
+  color: #60a5fa;
+}
+
+.tc-pill.info .tc-pill-inner {
+  background: #60a5fa;
+  color: #fff;
+}
+
+.tc-pill.primary .tc-pill-cap {
+  color: #fde047;
+}
+
+.tc-pill.primary .tc-pill-inner {
+  background: #fde047;
+  color: #000;
+}
+
+.tc-pill.muted .tc-pill-cap {
+  color: #585858;
+}
+
+.tc-pill.muted .tc-pill-inner {
+  background: #585858;
+  color: #fff;
+}
+
+.tc-progress-filled {
+  color: #22d3ee;
+}
+
+.tc-progress-empty {
+  color: #374151;
+}
+
+.tc-progress-pct {
+  color: #6b7280;
+  margin-left: 6px;
+}
+
+.tc-table {
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+.tc-table td {
+  padding: 2px 10px;
+  white-space: nowrap;
+}
+
+.tc-table td:first-child {
+  padding-left: 0;
+}
+
+.tc-table .tc-table-border {
+  color: #6b7280;
+  padding: 0;
+  user-select: none;
+}
+
+.tc-table thead td {
+  font-weight: 700;
+}
+
+.tc-input-cursor {
+  display: inline-block;
+  width: 7px;
+  height: 1.1em;
+  background: var(--text);
+  opacity: 0.8;
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom;
+  margin-left: 1px;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .example-item {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Footer ──────────────────────────────────── */
 
 footer {
