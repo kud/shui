@@ -4,22 +4,6 @@ All notable changes to this project are documented here.
 
 ---
 
-## [Unreleased] — 2026-04-18
-
-### 🐛 Bug Fixes
-
-- Prevent copy button overlap on code blocks ([#6c84c5f](https://github.com/kud/shui/commit/6c84c5f))
-- Restore accidentally emptied docs/index.html with version placeholder ([#2d6d3ef](https://github.com/kud/shui/commit/2d6d3ef))
-
-<details>
-<summary>🔧 Internal changes (1 commit)</summary>
-
-- build(pages): add VERSION file and version injection with release trigger ([#65f9786](https://github.com/kud/shui/commit/65f9786))
-
-</details>
-
----
-
 ## [v0.4.13] — 2026-04-12
 
 <details>
