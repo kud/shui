@@ -14,6 +14,15 @@ _shui_message() {
   echo -e "${color}${icon}${SHUI_RESET} ${msg}"
 }
 
+_shui_message_dispatch() {
+  local type="$1"
+  shift
+  case "$type" in
+    success|error|warning|info|muted) _shui_message_simple "$type" "$@" ;;
+    *) echo "shui: unknown message type '${type}'" >&2; return 1 ;;
+  esac
+}
+
 _shui_message_simple() {
   local type="$1" msg="$2" lines_before="${3:-0}"
   local icon color

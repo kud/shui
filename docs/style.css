@@ -363,9 +363,14 @@ a:hover {
   opacity: 0;
 }
 
-.code-block:hover .copy-btn,
-.hero-command .copy-btn {
+.code-block:hover .copy-btn {
   opacity: 1;
+}
+
+.hero-command .copy-btn {
+  position: static;
+  opacity: 1;
+  flex-shrink: 0;
 }
 
 .copy-btn:hover {
@@ -928,6 +933,51 @@ code {
   .example-item {
     grid-template-columns: 1fr;
   }
+}
+
+/* ── API note callout ────────────────────────── */
+
+.api-note {
+  margin-top: 32px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary-light);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+}
+
+.api-note-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--primary-light);
+  margin-bottom: 10px;
+}
+
+.api-note-title code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+}
+
+.api-note p {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 0;
+}
+
+.api-note-sub {
+  margin-top: 14px !important;
+  font-size: 0.82rem !important;
+  color: var(--text-dim) !important;
+  background: var(--surface-2);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+
+.api-note-sub code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  color: var(--text-muted);
 }
 
 /* ── Footer ──────────────────────────────────── */

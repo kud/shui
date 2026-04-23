@@ -4,6 +4,18 @@ All notable changes to this project are documented here.
 
 ---
 
+## [Unreleased] — 2026-04-23
+
+### ✨ Features
+
+- Add unified `shui message <type> <text>` API for inline messages
+
+### ⚠️ Deprecations
+
+- Deprecate `info-simple`, `warning-simple`, `success-simple`, `error-simple` in favour of `shui message` — legacy functions still work but print migration warning to stderr
+
+---
+
 ## [v0.4.13] — 2026-04-12
 
 <details>

@@ -37,7 +37,7 @@
         <div class="hero-grid"></div>
         <div class="hero-content">
           <div class="hero-badge">
-            <span class="hero-badge-dot"></span> __VERSION__ · MIT
+            <span class="hero-badge-dot"></span> v0.4.4 · MIT
           </div>
           <h1>shui · 水</h1>
           <p>
@@ -173,9 +173,9 @@
 
 <span class="comment"># 3. Use components</span>
 <span class="cmd">shui section "Deploying to production"</span>
-<span class="cmd">shui info    "Pulling latest changes..."</span>
-<span class="cmd">shui success "Build complete"</span>
-<span class="cmd">shui warning "Restart required"</span>
+<span class="cmd">shui message info    "Pulling latest changes..."</span>
+<span class="cmd">shui message success "Build complete"</span>
+<span class="cmd">shui message warning "Restart required"</span>
 
 <span class="comment"># Switch theme and icon set</span>
 <span class="cmd">SHUI_THEME=minimal SHUI_ICONS=emoji source ~/shui/shui.zsh</span></code></pre>
@@ -185,6 +185,36 @@
             >
               Copy
             </button>
+          </div>
+
+          <div class="api-note reveal">
+            <div class="api-note-title">
+              New in 0.4.4 — unified <code>message</code> command
+            </div>
+            <p>
+              The five message types are now exposed through a single entry
+              point:
+            </p>
+            <div class="code-block" style="margin-top: 12px">
+              <pre><code><span class="cmd">shui message success</span> "Deployment complete"
+<span class="cmd">shui message error</span>   "Build failed"
+<span class="cmd">shui message warning</span> "Deprecated flag used"
+<span class="cmd">shui message info</span>    "Running in dry-run mode"
+<span class="cmd">shui message muted</span>   "Skipping optional step"</code></pre>
+              <button
+                class="copy-btn"
+                data-copy='shui message success "Deployment complete"'
+              >
+                Copy
+              </button>
+            </div>
+            <p class="api-note-sub">
+              The old shorthand commands (<code>shui success</code>,
+              <code>shui error</code>, <code>shui warning</code>,
+              <code>shui info</code>, <code>shui error-simple</code>, etc.)
+              still work but print a migration warning — update scripts to use
+              <code>shui message &lt;type&gt; &lt;text&gt;</code>.
+            </p>
           </div>
         </div>
       </section>
@@ -204,10 +234,11 @@
               <div class="example-group-label">Messages</div>
               <div class="example-item">
                 <div class="code-block">
-                  <pre><code><span class="cmd">shui success</span> "Operation completed"
-<span class="cmd">shui error</span>   "Something went wrong"
-<span class="cmd">shui warning</span> "This cannot be undone"
-<span class="cmd">shui info</span>    "Running in dry-run mode"</code></pre>
+                  <pre><code><span class="cmd">shui message success</span> "Operation completed"
+<span class="cmd">shui message error</span>   "Something went wrong"
+<span class="cmd">shui message warning</span> "This cannot be undone"
+<span class="cmd">shui message info</span>    "Running in dry-run mode"
+<span class="cmd">shui message muted</span>   "Skipping optional step"</code></pre>
                 </div>
                 <div class="term-window">
                   <div class="term-bar">
@@ -231,6 +262,10 @@
                     <div class="term-line">
                       <span class="tc-blue tc-bold">ℹ</span>
                       <span>Running in dry-run mode</span>
+                    </div>
+                    <div class="term-line">
+                      <span class="tc-gray">·</span>
+                      <span class="tc-gray">Skipping optional step</span>
                     </div>
                   </div>
                 </div>

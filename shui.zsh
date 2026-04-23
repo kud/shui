@@ -285,7 +285,10 @@ shui() {
   case "$cmd" in
     bold|dim|italic|underline|text)                            _shui_text    "$cmd" "$@" ;;
     success|error|warning|info)                                _shui_message "$cmd" "$@" ;;
-    success-simple|error-simple|warning-simple|info-simple)    _shui_message_simple "${cmd%-simple}" "$@" ;;
+    message)                                                   _shui_message_dispatch "$@" ;;
+    success-simple|error-simple|warning-simple|info-simple)
+      echo -e "\e[33m⚠ shui: '${cmd}' is deprecated — use 'shui message ${cmd%-simple}' instead\e[0m" >&2
+      _shui_message_simple "${cmd%-simple}" "$@" ;;
     muted)                                                     _shui_message_simple "muted" "$@" ;;
     section|subtitle|subsection|divider|hr|spacer|center-text|fence) _shui_layout  "$cmd" "$@" ;;
     screen)       _shui_screen      "$@" ;;
