@@ -4,6 +4,14 @@ All notable changes to this project are documented here.
 
 ---
 
+## [Unreleased] — 2026-04-25
+
+### 🐛 Bug Fixes
+
+- Restore cursor visibility in radio and multiselect ([#be8a5cc](https://github.com/kud/shui/commit/be8a5cc))
+
+---
+
 ## [1.0.0] — 2026-04-24
 
 ### ✨ Features
