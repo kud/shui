@@ -99,6 +99,7 @@ _shui_radio() {
   local old_stty exit_code=0 char seq
   old_stty=$(stty -g </dev/tty 2>/dev/null) || old_stty=""
   [[ -n "$old_stty" ]] && stty -echo -icanon min 1 time 0 </dev/tty
+  _shui_cursor hide-cursor >&2
 
   while true; do
     IFS= read -rk1 char </dev/tty
@@ -118,6 +119,7 @@ _shui_radio() {
   done
 
   [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty
+  _shui_cursor show-cursor >&2
   printf '\n' >&2
 
   (( exit_code == 0 )) && printf '%s\n' "${options[$cursor]%%$'\t'*}"
@@ -158,6 +160,7 @@ _shui_multiselect() {
   local old_stty exit_code=0 char seq
   old_stty=$(stty -g </dev/tty 2>/dev/null) || old_stty=""
   [[ -n "$old_stty" ]] && stty -echo -icanon min 1 time 0 </dev/tty
+  _shui_cursor hide-cursor >&2
 
   while true; do
     IFS= read -rk1 char </dev/tty
@@ -178,6 +181,7 @@ _shui_multiselect() {
   done
 
   [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty
+  _shui_cursor show-cursor >&2
   printf '\n' >&2
 
   if (( exit_code == 0 )); then
