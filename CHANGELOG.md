@@ -4,6 +4,14 @@ All notable changes to this project are documented here.
 
 ---
 
+## [1.0.2] — 2026-06-17
+
+### 🐛 Bug Fixes
+
+- Remove double-dim on radio/multiselect description rendering ([#818642d](https://github.com/kud/shui/commit/818642d))
+
+---
+
 ## [1.0.1] — 2026-04-25
 
 ### 🐛 Bug Fixes
