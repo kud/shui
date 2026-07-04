@@ -33,8 +33,8 @@ _shui_select() {
   local prompt="$1"; shift
   local -a options=("$@")
 
-  printf '%s%s%s %s\n' \
-    "$SHUI_COLOR_INFO" "$SHUI_ICON_BULLET" "$SHUI_RESET" "$prompt" >&2
+  printf '%s%s%s %s%s%s\n' \
+    "$SHUI_COLOR_INFO$SHUI_BOLD" "$SHUI_ICON_BULLET" "$SHUI_RESET" "$SHUI_BOLD" "$prompt" "$SHUI_RESET" >&2
 
   local i=1
   for opt in "${options[@]}"; do
@@ -93,8 +93,8 @@ _shui_radio() {
     done
   }
 
-  printf '%s%s%s %s\n' \
-    "$SHUI_COLOR_INFO" "$SHUI_ICON_BULLET" "$SHUI_RESET" "$prompt" >&2
+  printf '%s%s%s %s%s%s\n' \
+    "$SHUI_COLOR_INFO$SHUI_BOLD" "$SHUI_ICON_BULLET" "$SHUI_RESET" "$SHUI_BOLD" "$prompt" "$SHUI_RESET" >&2
   _shui_radio_render >&2
 
   local old_stty exit_code=0 char seq
@@ -153,9 +153,9 @@ _shui_multiselect() {
     done
   }
 
-  printf '%s%s%s %s %s↑↓ navigate · space toggle · enter confirm%s\n' \
-    "$SHUI_COLOR_INFO" "$SHUI_ICON_BULLET" "$SHUI_RESET" \
-    "$prompt" "$SHUI_COLOR_MUTED" "$SHUI_RESET" >&2
+  printf '%s%s%s %s%s%s %s↑↓ navigate · space toggle · enter confirm%s\n' \
+    "$SHUI_COLOR_INFO$SHUI_BOLD" "$SHUI_ICON_BULLET" "$SHUI_RESET" \
+    "$SHUI_BOLD" "$prompt" "$SHUI_RESET" "$SHUI_COLOR_MUTED" "$SHUI_RESET" >&2
   _shui_multiselect_render >&2
 
   local old_stty exit_code=0 char seq
@@ -207,9 +207,9 @@ _shui_input() {
   local hint=""
   [[ -n "$default" ]] && hint=" ${SHUI_COLOR_MUTED}(${default})${SHUI_RESET}"
 
-  printf '%s%s%s %s%s ' \
-    "$SHUI_COLOR_INFO" "$SHUI_ICON_BULLET" "$SHUI_RESET" \
-    "$prompt" "$hint" >&2
+  printf '%s%s%s %s%s%s%s ' \
+    "$SHUI_COLOR_INFO$SHUI_BOLD" "$SHUI_ICON_BULLET" "$SHUI_RESET" \
+    "$SHUI_BOLD" "$prompt" "$SHUI_RESET" "$hint" >&2
 
   local value
   read -r value </dev/tty
