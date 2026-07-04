@@ -33,8 +33,8 @@ _shui_select() {
   local prompt="$1"; shift
   local -a options=("$@")
 
-  printf '%s%s%s %s%s%s\n' \
-    "$SHUI_COLOR_INFO$SHUI_BOLD" "$SHUI_ICON_BULLET" "$SHUI_RESET" "$SHUI_BOLD" "$prompt" "$SHUI_RESET" >&2
+  printf '%s%s%s\n' \
+    "$SHUI_BOLD" "$prompt" "$SHUI_RESET" >&2
 
   local i=1
   for opt in "${options[@]}"; do
@@ -93,8 +93,9 @@ _shui_radio() {
     done
   }
 
-  printf '%s%s%s %s%s%s\n' \
-    "$SHUI_COLOR_INFO$SHUI_BOLD" "$SHUI_ICON_BULLET" "$SHUI_RESET" "$SHUI_BOLD" "$prompt" "$SHUI_RESET" >&2
+  printf '%s%s%s %s↑↓/jk move · g/G first/last · enter select · q cancel%s\n' \
+    "$SHUI_BOLD" "$prompt" "$SHUI_RESET" \
+    "$SHUI_COLOR_MUTED" "$SHUI_RESET" >&2
   _shui_radio_render >&2
 
   local old_stty exit_code=0 char seq
@@ -106,14 +107,21 @@ _shui_radio() {
     IFS= read -rk1 char </dev/tty
     case "$char" in
       $'\033')
-        IFS= read -rk2 seq </dev/tty
-        case "$seq" in
-          '[A') (( cursor > 1 )) && (( cursor-- )) ;;
-          '[B') (( cursor < n )) && (( cursor++ )) ;;
-        esac
+        if IFS= read -rk2 -t 0.4 seq </dev/tty; then
+          case "$seq" in
+            '[A') (( cursor > 1 )) && (( cursor-- )) ;;
+            '[B') (( cursor < n )) && (( cursor++ )) ;;
+          esac
+        else
+          exit_code=130; break
+        fi
         ;;
+      k) (( cursor > 1 )) && (( cursor-- )) ;;
+      j) (( cursor < n )) && (( cursor++ )) ;;
+      g) cursor=1 ;;
+      G) cursor=$n ;;
       $'\r'|$'\n') break ;;
-      $'\003') exit_code=130; break ;;
+      q|Q|$'\003') exit_code=130; break ;;
     esac
     printf '\033[%dA' "$n" >&2
     _shui_radio_render >&2
@@ -153,9 +161,9 @@ _shui_multiselect() {
     done
   }
 
-  printf '%s%s%s %s%s%s %s↑↓ navigate · space toggle · enter confirm%s\n' \
-    "$SHUI_COLOR_INFO$SHUI_BOLD" "$SHUI_ICON_BULLET" "$SHUI_RESET" \
-    "$SHUI_BOLD" "$prompt" "$SHUI_RESET" "$SHUI_COLOR_MUTED" "$SHUI_RESET" >&2
+  printf '%s%s%s %s↑↓/jk move · space toggle · a all · enter confirm · q cancel%s\n' \
+    "$SHUI_BOLD" "$prompt" "$SHUI_RESET" \
+    "$SHUI_COLOR_MUTED" "$SHUI_RESET" >&2
   _shui_multiselect_render >&2
 
   local old_stty exit_code=0 char seq
@@ -167,15 +175,27 @@ _shui_multiselect() {
     IFS= read -rk1 char </dev/tty
     case "$char" in
       $'\033')
-        IFS= read -rk2 seq </dev/tty
-        case "$seq" in
-          '[A') (( cursor > 1 )) && (( cursor-- )) ;;
-          '[B') (( cursor < n )) && (( cursor++ )) ;;
-        esac
+        if IFS= read -rk2 -t 0.4 seq </dev/tty; then
+          case "$seq" in
+            '[A') (( cursor > 1 )) && (( cursor-- )) ;;
+            '[B') (( cursor < n )) && (( cursor++ )) ;;
+          esac
+        else
+          exit_code=130; break
+        fi
         ;;
-      ' ') (( selected[$cursor] = !selected[$cursor] )) ;;
+      ' ') selected[$cursor]=$(( ! selected[$cursor] )) ;;
+      k) (( cursor > 1 )) && (( cursor-- )) ;;
+      j) (( cursor < n )) && (( cursor++ )) ;;
+      g) cursor=1 ;;
+      G) cursor=$n ;;
+      a|A)
+        local all=1 idx
+        for (( idx = 1; idx <= n; idx++ )); do (( selected[$idx] )) || { all=0; break; }; done
+        for (( idx = 1; idx <= n; idx++ )); do selected[$idx]=$(( all ? 0 : 1 )); done
+        ;;
       $'\r'|$'\n') break ;;
-      $'\003') exit_code=130; break ;;
+      q|Q|$'\003') exit_code=130; break ;;
     esac
     printf '\033[%dA' "$n" >&2
     _shui_multiselect_render >&2
@@ -207,8 +227,7 @@ _shui_input() {
   local hint=""
   [[ -n "$default" ]] && hint=" ${SHUI_COLOR_MUTED}(${default})${SHUI_RESET}"
 
-  printf '%s%s%s %s%s%s%s ' \
-    "$SHUI_COLOR_INFO$SHUI_BOLD" "$SHUI_ICON_BULLET" "$SHUI_RESET" \
+  printf '%s%s%s%s ' \
     "$SHUI_BOLD" "$prompt" "$SHUI_RESET" "$hint" >&2
 
   local value
