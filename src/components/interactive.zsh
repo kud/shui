@@ -64,8 +64,8 @@ _shui_radio() {
 
   _shui_radio_render() {
     local i label desc max_len=0 pad
-    local pointer="$SHUI_ICON_POINTER" blank
-    blank="${(l:${#pointer}:: :)}"
+    local pointer="$SHUI_ICON_POINTER" _blank_src=""
+    local blank="${(l:${#pointer}:)_blank_src}"
     for (( i = 1; i <= n; i++ )); do
       label="${options[$i]%%$'\t'*}"
       (( ${#label} > max_len )) && max_len=${#label}
