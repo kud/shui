@@ -64,6 +64,8 @@ _shui_radio() {
 
   _shui_radio_render() {
     local i label desc max_len=0 pad
+    local pointer="$SHUI_ICON_POINTER" blank
+    blank="${(l:${#pointer}:: :)}"
     for (( i = 1; i <= n; i++ )); do
       label="${options[$i]%%$'\t'*}"
       (( ${#label} > max_len )) && max_len=${#label}
@@ -77,16 +79,15 @@ _shui_radio() {
       printf '\033[2K\r'
       if (( i == cursor )); then
         printf '  %s%s%s %s%s%s%*s' \
-          "$SHUI_COLOR_PRIMARY" "$SHUI_ICON_CIRCLE" "$SHUI_RESET" \
+          "$SHUI_COLOR_PRIMARY" "$pointer" "$SHUI_RESET" \
           "$SHUI_COLOR_PRIMARY" "$label" "$SHUI_RESET" \
           "$pad" ""
-        [[ -n "$desc" ]] && printf '%s%s%s' "$SHUI_COLOR_MUTED" "$desc" "$SHUI_RESET"
+        [[ -n "$desc" ]] && printf '%s%s%s' "$SHUI_COLOR_SECONDARY" "$desc" "$SHUI_RESET"
         printf '\n'
       else
-        printf '  %s%s%s %s%*s' \
-          "$SHUI_COLOR_MUTED" "$SHUI_ICON_CIRCLE_EMPTY" "$SHUI_RESET" \
-          "$label" "$pad" ""
-        [[ -n "$desc" ]] && printf '%s%s%s' "$SHUI_COLOR_MUTED" "$desc" "$SHUI_RESET"
+        printf '  %s %s%*s' \
+          "$blank" "$label" "$pad" ""
+        [[ -n "$desc" ]] && printf '%s%s%s' "$SHUI_COLOR_SECONDARY" "$desc" "$SHUI_RESET"
         printf '\n'
       fi
     done

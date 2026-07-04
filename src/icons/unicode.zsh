@@ -8,6 +8,7 @@
 SHUI_ICON_BULLET="›"            # U+203A  single right-pointing angle quotation mark
 SHUI_ICON_CIRCLE="●"            # U+25CF  black circle
 SHUI_ICON_CIRCLE_EMPTY="○"      # U+25CB  white circle
+SHUI_ICON_POINTER="❯"           # U+276F  heavy right-pointing angle quotation mark ornament
 SHUI_ICON_SQUARE="■"            # U+25A0  black square
 SHUI_ICON_SQUARE_EMPTY="□"      # U+25A1  white square
 SHUI_ICON_TRIANGLE="▲"          # U+25B2  black up-pointing triangle
