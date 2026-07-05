@@ -57,7 +57,11 @@ _escaped_count=$(grep -c "SHUI_ICON_.*=\$'" "$_nerd_src")
 
 # Count icon assignments that have a raw non-ASCII byte between the quotes
 # (raw PUA glyph stored as UTF-8 = bytes in range 0xEE–0xEF for BMP PUA)
-_raw_count=$(grep -cP 'SHUI_ICON_.*="[^\x00-\x7F]' "$_nerd_src" 2>/dev/null || echo 0)
+# Note: `grep -c` prints "0" AND exits 1 when there are no matches, so a naive
+# `|| echo 0` fallback double-counts to "0\n0". Use `|| true` and default an
+# empty result (e.g. BSD grep lacking -P) to 0.
+_raw_count=$(grep -cP 'SHUI_ICON_.*="[^\x00-\x7F]' "$_nerd_src" 2>/dev/null || true)
+_raw_count=${_raw_count:-0}
 
 assert_not_empty "nerd.zsh has at least one \$'\\UXXXX' assignment" "$_escaped_count"
 assert_eq "nerd.zsh has zero raw non-ASCII glyphs in assignments" "0" "$_raw_count"
