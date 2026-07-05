@@ -6,7 +6,8 @@
 # Format: $'\UXXXXXXXX' escape assigned to variable, codepoint in comment.
 # Raw glyphs are forbidden here (enforced by tests/test-icons.zsh) — the escape
 # form keeps the source pure ASCII and portable.
-# To add a new entry: SHUI_ICON_NAME=$'\U0001F600'  # U+1F600  description
+# To add a new entry, assign the escape with the codepoint noted in a comment:
+#   SHUI_ICON_<NAME>=$'\U0001F600'  # U+1F600  description
 
 # ── Status ──────────────────────────────────────────────────────────────────────
 SHUI_ICON_SUCCESS=$'\U0000F00C'         # U+F00C  nf-fa-check
