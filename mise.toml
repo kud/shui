@@ -1,6 +1,6 @@
 [tasks.test]
 description = "Run all test suites"
-run = "for f in tests/*.zsh; do zsh \"$f\"; done"
+run = "for f in tests/*.zsh; do zsh \"$f\" || exit 1; done"
 
 [tasks.lint]
 description = "Syntax-check all Zsh source files"

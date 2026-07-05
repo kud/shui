@@ -90,3 +90,21 @@ SHUI_ICON_DOCKER="🐳"
 SHUI_ICON_AWS="☁️"
 SHUI_ICON_BUN="🥟"
 
+
+# ── Geometric ──
+SHUI_ICON_CIRCLE="🔵"
+SHUI_ICON_CIRCLE_EMPTY="⚪"
+SHUI_ICON_SQUARE="🟦"
+SHUI_ICON_SQUARE_EMPTY="⬜"
+SHUI_ICON_TRIANGLE="🔺"
+SHUI_ICON_DIAMOND="🔶"
+
+# ── Selection / parity ──
+# Powerline dividers have no emoji equivalent — kept empty so the token set stays
+# in parity with the nerd set.
+SHUI_ICON_POINTER="👉"
+SHUI_ICON_NPM="📦"
+SHUI_ICON_PL_ARROW_RIGHT=""
+SHUI_ICON_PL_ARROW_LEFT=""
+SHUI_ICON_PL_CAP_RIGHT=""
+SHUI_ICON_PL_CAP_LEFT=""
