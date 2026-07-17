@@ -237,6 +237,12 @@ _shui_help_cmd() {
       echo "Usage: shui table [--sep=<char>] <header> [<row>…]"
       echo "Pipe-separated columns by default. Use --sep to change delimiter."
       echo "Example: shui table --sep=, \"Name,Age\" \"Alice,30\"" ;;
+    row)
+      echo "Usage: shui row [--tag-width=N] [--name-width=N] <variant> <tag> <name> [<detail>]"
+      echo "A streaming status row: coloured tag, white name, muted detail."
+      echo "Variants: success error warning info muted"
+      echo "Unlike table, rows print as they happen — for reporting item by item."
+      echo "Example: shui row success added GITHUB_TOKEN \"stored in the vault\"" ;;
     progress)
       echo "Usage: shui progress <current> <total> [--width=N] [--label=<text>] [--filled-char=X] [--empty-char=Y] [--inline] [--iterm=<state>]"
       echo "Adds a newline by default. Use --inline for loop-based updates."
@@ -299,6 +305,7 @@ shui() {
     box)          _shui_box         "$@" ;;
     banner)       _shui_banner      "$@" ;;
     table)        _shui_table       "$@" ;;
+    row)          _shui_row         "$@" ;;
     progress)     _shui_progress    "$@" ;;
     spinner)      _shui_spinner     "$@" ;;
     spinner-tick) _shui_spinner_tick "$@" ;;
