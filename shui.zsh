@@ -4,7 +4,7 @@
 # https://github.com/kud/shui
 #
 
-SHUI_VERSION="1.1.0"
+SHUI_VERSION="1.1.1"
 SHUI_DIR="${0:A:h}"
 
 [[ -n "${_SHUI_LOADED:-}" ]] && return 0

@@ -41,9 +41,12 @@ _shui_row() {
     *) echo "shui: unknown row variant '${variant}'" >&2; return 1 ;;
   esac
 
-  # The tag column must be wider than the longest tag, never equal to it: a tag
-  # that exactly fills its width pads to nothing and collides with the name.
-  printf '  %s%-*s%s%s%-*s%s %s%s%s\n' \
+  # Every column ends with a literal space, not merely padding. Padding alone
+  # collapses to nothing the moment a value exactly fills its width — an 8-char
+  # tag in an 8-wide column renders "attachedid_ed25519" — and a value that
+  # overflows the width would run on regardless of how wide it is set. Widths
+  # align the common case; the space is what guarantees the columns stay columns.
+  printf '  %s%-*s%s %s%-*s%s %s%s%s\n' \
     "$color" "$tag_width" "$tag" "$SHUI_RESET" \
     "$SHUI_COLOR_BOLD_WHITE" "$name_width" "$name" "$SHUI_RESET" \
     "$SHUI_COLOR_MUTED" "$detail" "$SHUI_RESET"

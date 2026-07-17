@@ -4,6 +4,23 @@ All notable changes to this project are documented here.
 
 ---
 
+## [1.1.1] — 2026-07-17
+
+### 🐛 Bug Fixes
+
+- `shui row` now emits a literal separator after each column instead of relying on width padding alone — padding collapses to nothing the moment a value exactly fills its column (an 8-char tag like `attached` in the 8-wide default rendered `attachedid_ed25519`), and does nothing at all once a value overflows. Columns now stay columns for any input.
+- `shui version` had been reporting `0.1.0` while the git tag said `1.1.0` — `git lzv` was tagging releases without ever writing `SHUI_VERSION` or `VERSION`. Both are now synced from the tag before every release, closing the gap for good ([#0fc19e1](https://github.com/kud/shui/commit/0fc19e11dc8f8ab87ccd0d3de18e2b5ab3886ad3)).
+- `shui row` is now listed in the main `shui help` output — it previously only had its own per-command help and was easy to miss.
+
+<details>
+<summary>🔧 Internal changes (1 commit)</summary>
+
+- Add `bin/release.sh`, which syncs `SHUI_VERSION`/`VERSION` from the tag before handing off to `git lzv`; `--sync` repairs existing drift without cutting a release, `--dry-run` previews the target version. `CLAUDE.md` now documents it as the required release path ([#0fc19e1](https://github.com/kud/shui/commit/0fc19e11dc8f8ab87ccd0d3de18e2b5ab3886ad3)).
+
+</details>
+
+---
+
 ## [1.1.0] — 2026-07-17
 
 ### ✨ Features
