@@ -109,11 +109,31 @@ for (const line of readFileSync('src/icons/nerd.zsh', 'utf8').split('\n')) {
 
 ## Versioning
 
+Release through `bin/release.sh` — **not** `git lzv` directly.
+
 ```zsh
-git lzv patch   # bug fixes
-git lzv minor   # new features
-git lzv major   # breaking changes
+bin/release.sh patch   # bug fixes
+bin/release.sh minor   # new features
+bin/release.sh major   # breaking changes
+bin/release.sh --sync  # repair drift: write the current tag into both strings
 ```
+
+Each of the first three syncs the version strings, then hands off to `git lzv`
+(commit + tag + push). Add `--dry-run` to any of them to see the target first.
+
+**Why not `git lzv` directly.** It syncs a version into `package.json` and
+nothing else. shui has none, so it tags and stops — leaving the two places the
+version is actually written untouched:
+
+- `shui.zsh` → `SHUI_VERSION` — what `shui version` tells a user
+- `VERSION` — read by the test suite
+
+Nothing in the generic flow writes those, so every direct `git lzv` widened the
+gap silently. By v1.1.0 the tag said `1.1.0`, `VERSION` said `0.4.4`, and users
+were told `0.1.0`. A version that lies is worse than no version at all.
+
+`k-release` picks `bin/release.sh` up automatically while it stays executable
+(its Step 0.5) — so the drift cannot return by someone forgetting.
 
 ## Syntax checking
 

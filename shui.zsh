@@ -4,7 +4,7 @@
 # https://github.com/kud/shui
 #
 
-SHUI_VERSION="0.1.0"
+SHUI_VERSION="1.1.0"
 SHUI_DIR="${0:A:h}"
 
 [[ -n "${_SHUI_LOADED:-}" ]] && return 0
@@ -118,6 +118,7 @@ BLOCKS
   shui box [--title=<title>] <content>
   shui banner <type> <title> [content]
   shui table [--sep=<char>] <header> [<row>…]
+  shui row [--tag-width=N] [--name-width=N] <variant> <tag> <name> [<detail>]
 
 PROGRESS
   shui progress <current> <total> [--width=N] [--label=<text>] [--filled-char=X] [--empty-char=Y] [--inline] [--iterm=normal|success|error|warning|indeterminate|clear]
