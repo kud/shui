@@ -4,6 +4,36 @@ All notable changes to this project are documented here.
 
 ---
 
+## [1.1.0] — 2026-07-17
+
+### ✨ Features
+
+- Add a new `row` streaming status-row component for reporting items one at a time as they happen, without buffering all input first the way `table` does ([#aa130b8](https://github.com/kud/shui/commit/aa130b86e8ee54b1ae2c747ad5d2e5c6d10d2a6d))
+- Add geometric (bullet, circle, square, triangle, diamond), pointer, and npm icon tokens across every icon set (nerd, emoji, none), a new `_shui_prompt()` component, and a CI workflow running `mise lint` + `mise test` on every push and PR ([#0a83dfa](https://github.com/kud/shui/commit/0a83dfafa9182a2f8a3359447e7c6ea9ce2c3170))
+- Interactive components (`select`, `radio`, `multiselect`) gained vim-style navigation — `j`/`k` to move, `g`/`G` to jump to first/last, `q`/`Q` to cancel — plus a fix for the escape-key ambiguity that could misfire on fast keypresses ([#ffb4d89](https://github.com/kud/shui/commit/ffb4d89443293330e992910b5c02126181889e02))
+- Redesign `radio` visuals: a pointer (❯) icon replaces the circle for the selected option, unselected options use blank space instead of an empty circle, and descriptions move to a higher-contrast colour ([#c9ef362](https://github.com/kud/shui/commit/c9ef3625e68abf370d1a02cadf8c76713c3b62e2))
+
+### 🐛 Bug Fixes
+
+- Fix a padding bug in interactive prompts where multi-byte or Nerd Font pointer glyphs threw off column alignment ([#96209e0](https://github.com/kud/shui/commit/96209e0bf583703dd6961bf0ec11b3f3952d6164))
+- Prompt labels in `select`, `radio`, `multiselect`, and `input` now render bold, matching the visual weight of the rest of the UI ([#faf2166](https://github.com/kud/shui/commit/faf2166067717f33ac016f4983b674c907f4a062))
+- Fix a `grep` false-positive that could corrupt the raw-glyph count check on icon definitions ([#bed67aa](https://github.com/kud/shui/commit/bed67aa1ea0a8b7c8492cf44889f1a78e776f49b))
+
+### 📝 Documentation
+
+- Slim the README down to a GitHub front page aligned with the canonical kud-site shape, with full docs living on kud.io ([#606a0c0](https://github.com/kud/shui/commit/606a0c04dc651d7b85c918945adce4e78c02b136))
+- Reframe shui as a design system on the landing page — component showcase, theme engine — with emoji headings for easier scanning ([#e4706f7](https://github.com/kud/shui/commit/e4706f726affeab091d1526ab96540f21f801254))
+
+<details>
+<summary>🔧 Internal changes (2 commits)</summary>
+
+- refactor(icons): replace raw glyph bytes with `$'\UXXXX'` escape sequences in icon definitions, keeping the source ASCII-safe and diff-friendly, enforced by new icon tests ([#5409ce7](https://github.com/kud/shui/commit/5409ce78d4e4152d7a9d89cbf52c49a09638b420))
+- chore: remove the obsolete GitHub Pages workflow now that docs live on kud.io/projects ([#1fc8335](https://github.com/kud/shui/commit/1fc8335be3d626718a54272d22843b4e9abc8983))
+
+</details>
+
+---
+
 ## [1.0.2] — 2026-06-17
 
 ### 🐛 Bug Fixes
