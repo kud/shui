@@ -38,6 +38,7 @@ SHUI_ICON_SETTINGS=$'\U0000F013'        # U+F013  nf-fa-cog
 SHUI_ICON_REFRESH=$'\U0000F021'         # U+F021  nf-fa-refresh
 SHUI_ICON_LOCK=$'\U0000F023'            # U+F023  nf-fa-lock
 SHUI_ICON_UNLOCK=$'\U0000F09C'          # U+F09C  nf-fa-unlock
+SHUI_ICON_KEY=$'\U0000F084'             # U+F084  nf-fa-key
 
 # ── UI ──────────────────────────────────────────────────────────────────────────
 SHUI_ICON_TOOLS=$'\U0000F0AD'           # U+F0AD  nf-fa-wrench
@@ -74,6 +75,7 @@ SHUI_ICON_ROBOT=$'\U0000E28C'           # U+E28C  nf-mdi-robot
 SHUI_ICON_APPLE=$'\U0000F179'           # U+F179  nf-fa-apple
 SHUI_ICON_GIT=$'\U0000F1D3'             # U+F1D3  nf-fa-git
 SHUI_ICON_FOLDER=$'\U0000F07B'          # U+F07B  nf-fa-folder
+SHUI_ICON_FILE=$'\U0000F15B'            # U+F15B  nf-fa-file
 SHUI_ICON_LINK=$'\U0000F0C1'            # U+F0C1  nf-fa-link
 SHUI_ICON_CLOUD=$'\U0000F0C2'           # U+F0C2  nf-fa-cloud
 SHUI_ICON_BREW=$'\UF0FC'      # U+F0FC  nf-fa-beer
