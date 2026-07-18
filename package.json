@@ -1,8 +1,5 @@
 {
-  "name": "@kud/shui",
-  "version": "0.0.0",
-  "private": true,
-  "description": "Dev toolchain for shui — generates the icon sets from @kud/glyphs. Not published; shui itself is a pure-Zsh library with no runtime dependencies.",
+  "description": "Local dev tooling for shui (a pure-Zsh library) — installs @kud/glyphs to regenerate the icon sets. shui ships as a zsh library via git, not npm.",
   "type": "module",
   "scripts": {
     "generate:icons": "node scripts/generate-icons.mjs"
