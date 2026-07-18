@@ -1,9 +1,9 @@
 #!/usr/bin/env zsh
 #
 # unicode icon set — standard Unicode symbols, no special font required
-# GENERATED from @kud/glyphs by scripts/generate-icons.mjs — do not edit by hand.
-# Change the glyph upstream in @kud/glyphs, then `npm run generate:icons`.
-# Thin base layer, always sourced first; nerd/emoji/none override per set.
+# GENERATED from @kud/glyphs v0.3.0 by scripts/sync-icons.zsh — do not edit.
+# Change the glyph upstream in @kud/glyphs, bump GLYPHS_VERSION, and re-run the sync.
+# Thin base layer, sourced first; nerd/emoji/none override per set.
 #
 
 SHUI_ICON_BULLET=$'\U0000203A'

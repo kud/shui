@@ -1,8 +1,8 @@
 #!/usr/bin/env zsh
 #
 # none icon set — no icons (text-only fallback)
-# GENERATED from @kud/glyphs by scripts/generate-icons.mjs — do not edit by hand.
-# Change the glyph upstream in @kud/glyphs, then `npm run generate:icons`.
+# GENERATED from @kud/glyphs v0.3.0 by scripts/sync-icons.zsh — do not edit.
+# Change the glyph upstream in @kud/glyphs, bump GLYPHS_VERSION, and re-run the sync.
 #
 
 SHUI_ICON_APPLE=''

@@ -1,8 +1,8 @@
 #!/usr/bin/env zsh
 #
 # emoji icon set — Unicode emoji, no special font required
-# GENERATED from @kud/glyphs by scripts/generate-icons.mjs — do not edit by hand.
-# Change the glyph upstream in @kud/glyphs, then `npm run generate:icons`.
+# GENERATED from @kud/glyphs v0.3.0 by scripts/sync-icons.zsh — do not edit.
+# Change the glyph upstream in @kud/glyphs, bump GLYPHS_VERSION, and re-run the sync.
 #
 
 SHUI_ICON_APPLE=$'\U0001F34E'

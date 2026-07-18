@@ -85,27 +85,21 @@ After regenerating SVGs, commit `assets/` alongside any code changes.
 
 ## Icon files (`src/icons/`)
 
-Nerd Font glyphs are invisible in Claude's environment (PUA codepoints render as empty). See the global `CLAUDE.md` for the general inspection pattern.
+**The four `src/icons/*.zsh` files are GENERATED from [@kud/glyphs](https://github.com/kud/glyphs)** — the shared source of truth for terminal glyphs. Do not hand-edit them. To change or add an icon:
 
-Rules specific to this project:
+1. Edit `glyphs.json` in @kud/glyphs and release a new version.
+2. Bump `GLYPHS_VERSION` in `scripts/sync-icons.zsh`.
+3. Run `zsh scripts/sync-icons.zsh` and commit the regenerated files.
 
-- `unicode.zsh` — standard Unicode only (no PUA bytes). Always sourced first as the base layer.
-- **Every icon set (`nerd.zsh`, `emoji.zsh`, `none.zsh`) declares the complete token set independently.** `tests/test-icons.zsh` enforces cross-set parity — all three must define exactly the same `SHUI_ICON_*` variables, including the geometric shapes and the `SHUI_ICON_PL_*` powerline caps. A set with no meaningful glyph for a token still declares it (empty in `none.zsh`; a best-effort glyph elsewhere). Note: the grep-based parity check scans the whole file, so never write a literal `SHUI_ICON_<UPPERCASE>` token in a comment — it will be counted as a phantom definition.
-- `nerd.zsh` — Nerd Font glyphs. All assignments **must** use `$'\UXXXX'` escape sequences — never raw bytes (enforced by the test; raw PUA bytes are invisible in editors and unportable). Geometric shapes use plain non-PUA Unicode, which render in a Nerd Font too.
-- `emoji.zsh` uses emoji; `none.zsh` leaves icons empty (text-only). Components using `SHUI_ICON_PL_*` should still degrade gracefully where those are blank.
-- Run `mise test` to verify — `tests/test-icons.zsh` checks non-empty values, escape syntax, and cross-set parity.
+The sync fetches @kud/glyphs' escape-safe `ICON_*` zsh files and text-substitutes the prefix into shui's namespace (`sed 's/^ICON_/SHUI_ICON_/'`). **No node, no runtime dependency** — the generated files are plain literal assignments shui sources directly at load time.
 
-To inspect current codepoints:
+Invariants (produced upstream by @kud/glyphs, still enforced by `tests/test-icons.zsh`):
 
-```js
-node -e "
-import { readFileSync } from 'fs';
-for (const line of readFileSync('src/icons/nerd.zsh', 'utf8').split('\n')) {
-  const m = line.match(/^(SHUI_ICON_\w+)=\\\$'(.*?)'/);
-  if (m) console.log(m[1] + ': U+' + parseInt(m[2].replace(/\\\\U/, ''), 16).toString(16).toUpperCase().padStart(4, '0'));
-}
-"
-```
+- **Parity** — `nerd.zsh`, `emoji.zsh`, `none.zsh` declare the identical `SHUI_ICON_*` token set (geometrics and the `SHUI_ICON_PL_*` powerline caps included). A set with no glyph for a token still declares it empty. `unicode.zsh` is the thin base layer (geometric shapes only), sourced first.
+- **Escape-safe** — `nerd.zsh` uses `$'\UXXXX'` escapes, never raw PUA bytes. Guaranteed by construction upstream, not by hand.
+- Never write a literal `SHUI_ICON_<UPPERCASE>` token in a comment inside an icon file — the grep-based parity check counts it as a phantom definition.
+
+Run `mise test` to verify (`tests/test-icons.zsh` checks non-empty values, escape syntax, and parity). To inspect codepoints, see @kud/glyphs' `glyphs.json` — the authoritative `name → { nerd, unicode?, emoji? }` map.
 
 ## Versioning
 
