@@ -90,9 +90,9 @@ Nerd Font glyphs are invisible in Claude's environment (PUA codepoints render as
 Rules specific to this project:
 
 - `unicode.zsh` — standard Unicode only (no PUA bytes). Always sourced first as the base layer.
-- `nerd.zsh` — Nerd Font PUA glyphs only. All assignments **must** use `$'\UXXXX'` escape sequences — never raw bytes. Does not redefine geometric symbols (those come from `unicode.zsh`).
-- `emoji.zsh` and `none.zsh` must define the exact same set of variables as `nerd.zsh` (parity). `unicode.zsh` variables are inherited and do not need repeating unless the set wants to override them.
-- `SHUI_ICON_PL_*` (powerline caps) are defined only in `nerd.zsh` — no fallback in other sets. Components that use them must degrade gracefully when they are unset.
+- **Every icon set (`nerd.zsh`, `emoji.zsh`, `none.zsh`) declares the complete token set independently.** `tests/test-icons.zsh` enforces cross-set parity — all three must define exactly the same `SHUI_ICON_*` variables, including the geometric shapes and the `SHUI_ICON_PL_*` powerline caps. A set with no meaningful glyph for a token still declares it (empty in `none.zsh`; a best-effort glyph elsewhere). Note: the grep-based parity check scans the whole file, so never write a literal `SHUI_ICON_<UPPERCASE>` token in a comment — it will be counted as a phantom definition.
+- `nerd.zsh` — Nerd Font glyphs. All assignments **must** use `$'\UXXXX'` escape sequences — never raw bytes (enforced by the test; raw PUA bytes are invisible in editors and unportable). Geometric shapes use plain non-PUA Unicode, which render in a Nerd Font too.
+- `emoji.zsh` uses emoji; `none.zsh` leaves icons empty (text-only). Components using `SHUI_ICON_PL_*` should still degrade gracefully where those are blank.
 - Run `mise test` to verify — `tests/test-icons.zsh` checks non-empty values, escape syntax, and cross-set parity.
 
 To inspect current codepoints:
