@@ -1,10 +1,10 @@
 #!/usr/bin/env zsh
 #
-# shui demo — run with: zsh demo.zsh
-# Add --interactive to test confirm, select, and input
+# shui demo — run with: mise run demo  (or: zsh scripts/demo.zsh)
+# Add --interactive to test confirm, input, password, select, radio, multiselect, tabs
 #
 
-source "${0:A:h}/shui.zsh"
+source "${0:A:h}/../shui.zsh"
 
 shui section "shui · 水  —  component demo"
 
@@ -103,17 +103,47 @@ if [[ "${1}" == "--interactive" ]]; then
 
   shui spacer
 
-  local choice
+  name=$(shui input --default="world" "Enter your name:")
+  shui success "Hello, ${name}!"
+
+  shui spacer
+
+  email=$(shui input --validate=email "Enter your email:")
+  shui info "Email: ${email}"
+
+  shui spacer
+
+  secret=$(shui password "Enter a password:")
+  shui info "Captured ${#secret} character(s)."
+
+  shui spacer
+
   choice=$(shui select "Pick a theme:" default minimal plain)
   shui info "You selected: ${choice}"
 
   shui spacer
 
-  local name
-  name=$(shui input --default="world" "Enter your name:")
-  shui success "Hello, ${name}!"
+  variant=$(shui radio "Pick a variant:" \
+    "default"$'\t'"256-colour with 16-colour fallback" \
+    "minimal"$'\t'"16-colour ANSI" \
+    "plain"$'\t'"no colour, ASCII icons")
+  shui info "Variant: ${variant}"
+
+  shui spacer
+
+  features=$(shui multiselect "Choose features:" colours icons themes components)
+  shui info "Features: ${${features//$'\n'/, }:-none}"
+
+  shui spacer
+
+  action=$(shui tabs "shui ›" \
+    "build"$'\t'"scaffold"$'\t'"Create a new project" \
+    "build"$'\t'"feature"$'\t'"Add a component" \
+    "ship"$'\t'"release"$'\t'"Bump, tag, push" \
+    "ship"$'\t'"docs"$'\t'"Refresh the README")
+  shui info "Action: ${action}"
 else
-  shui info "Run with --interactive to test confirm, select, and input"
+  shui info "Run with --interactive to test confirm, input, password, select, radio, multiselect, and tabs"
 fi
 
 shui spacer

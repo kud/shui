@@ -8,4 +8,4 @@ run = "zsh -n shui.zsh && zsh -n src/**/*.zsh && echo 'OK'"
 
 [tasks.demo]
 description = "Run the visual component demo"
-run = "zsh demo.zsh"
+run = "zsh scripts/demo.zsh"

@@ -176,7 +176,9 @@ INTERACTIVE
   shui select <prompt> <opt1> [opt2…]
   shui radio <prompt> <opt1> [opt2…]
   shui multiselect <prompt> <opt1> [opt2…]
-  shui input [--default=<value>] <prompt>
+  shui tabs <prompt> <tab⇥label[⇥desc]>…
+  shui input [--default=<value>] [--validate=email|url|number|<regex>] <prompt>
+  shui password [<prompt>]
 
 THEME
   shui theme list
@@ -263,9 +265,18 @@ _shui_help_cmd() {
     multiselect)
       echo "Usage: shui multiselect <prompt> <opt1> [opt2…]"
       echo "Checkbox selection. Enter comma-separated numbers or \"all\". Prints selected options newline-separated." ;;
+    tabs)
+      echo "Usage: shui tabs <prompt> <tab⇥label[⇥desc]>…"
+      echo "Interactive tabbed selector. Each option is tab-separated: tab, label, optional desc."
+      echo "←/→ or h/l switch tabs · ↑/↓ or j/k move · enter select · q cancel."
+      echo "Prints the chosen item's label to stdout." ;;
     input)
-      echo "Usage: shui input [--default=<value>] <prompt>"
-      echo "Prints the entered value to stdout." ;;
+      echo "Usage: shui input [--default=<value>] [--validate=<rule>] <prompt>"
+      echo "Prints the entered value to stdout."
+      echo "--validate rules: email, url, number, or any regex. Re-prompts until valid." ;;
+    password)
+      echo "Usage: shui password [<prompt>]"
+      echo "Masked text entry — echoes '*' per keystroke. Prints the raw value to stdout." ;;
     theme)
       echo "Usage: shui theme list|create|validate"
       echo "  list      — list available themes"
@@ -328,7 +339,9 @@ shui() {
     select)      _shui_select      "$@" ;;
     radio)       _shui_radio       "$@" ;;
     multiselect) _shui_multiselect "$@" ;;
+    tabs)        _shui_tabs        "$@" ;;
     input)       _shui_input       "$@" ;;
+    password)    _shui_password    "$@" ;;
     theme)    _shui_theme_cmd "$@" ;;
     version|--version|-v) echo "shui $SHUI_VERSION" ;;
     help|--help|-h) _shui_help ;;

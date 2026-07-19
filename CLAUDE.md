@@ -36,9 +36,12 @@ src/
     loader.zsh            # indeterminate loader — looping indicator (--style=dots|pulse|spinner)
     animation.zsh         # one-shot text effects — typewriter, fade-in
     screen.zsh            # section header + command runner with elapsed time; also timer-start/timer-end for per-step timing
-    interactive.zsh       # confirm, select, radio, multiselect, input
+    tabs.zsh              # interactive tabbed selector — items grouped into ←/→ tabs
+    interactive.zsh       # confirm, select, radio, multiselect, input (--validate=email|url|number|<regex>), password (masked)
 assets/                   # SVG screenshots embedded in README
-demo.zsh                  # visual showcase of all components
+scripts/
+  demo.zsh                # visual showcase of all components (--interactive for form fields)
+  sync-icons.zsh          # regenerate src/icons/*.zsh from @kud/glyphs
 ```
 
 ---
