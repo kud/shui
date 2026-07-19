@@ -39,6 +39,8 @@ src/
     tabs.zsh              # interactive tabbed selector — items grouped into ←/→ tabs
     interactive.zsh       # confirm, select, radio, multiselect, input (--validate=email|url|number|<regex>), password (masked)
 assets/                   # SVG screenshots embedded in README
+completions/
+  _shui                   # zsh completion — kept in parity with the dispatcher by tests/test-completion.zsh
 scripts/
   demo.zsh                # visual showcase of all components (--interactive for form fields)
   sync-icons.zsh          # regenerate src/icons/*.zsh from @kud/glyphs

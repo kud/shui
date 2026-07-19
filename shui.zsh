@@ -40,6 +40,15 @@ for _shui_f in "${SHUI_DIR}"/src/components/*.zsh; do
 done
 unset _shui_f
 
+# Opportunistic completion registration. The canonical route is adding
+# completions/ to $fpath before compinit; this branch covers sourcing shui.zsh
+# after compinit has already run, so `shui <TAB>` works with no extra config.
+# Gated on an interactive shell, so script/test sourcing is unaffected.
+if [[ -o interactive ]] && (( $+functions[compdef] )); then
+  fpath=("${SHUI_DIR}/completions" $fpath)
+  autoload -Uz _shui && compdef _shui shui 2>/dev/null
+fi
+
 _shui_theme_cmd() {
   local subcmd="${1:-list}"; shift 2>/dev/null || true
 

@@ -1,0 +1,164 @@
+#compdef shui
+#
+# Zsh completion for shui · 水.
+#
+# The command list below is kept in parity with the shui() dispatcher by
+# tests/test-completion.zsh — when you add a command to shui.zsh, add it here
+# too (or the test goes red). Load it by putting this directory on $fpath
+# before compinit, e.g.  fpath+=(~/.shui/completions)  — sourcing shui.zsh in
+# an interactive shell also registers it opportunistically.
+
+_shui() {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  # Colour/style types accepted by text, badge, pill, message, --color=.
+  local -a types=(success error warning info primary muted accent secondary danger)
+
+  local -a commands=(
+    # text
+    'bold:bold text'
+    'dim:dimmed text'
+    'italic:italic text'
+    'underline:underlined text'
+    'text:coloured/styled text'
+    # messages
+    'success:success message with icon'
+    'error:error message with icon'
+    'warning:warning message with icon'
+    'info:info message with icon'
+    'message:dispatch a message by type'
+    'muted:muted one-line message'
+    # layout
+    'section:section heading'
+    'subtitle:subtitle heading'
+    'subsection:subsection heading'
+    'divider:full-width horizontal rule'
+    'hr:horizontal rule'
+    'spacer:blank lines'
+    'center-text:centre text in the terminal'
+    'fence:labelled fence line'
+    'screen:header + run a command with elapsed time'
+    'timer-start:begin a step timer'
+    'timer-end:end a step timer'
+    # inline blocks
+    'badge:inline solid-background label'
+    'pill:inline rounded-edge tag'
+    'box:bordered content block'
+    'banner:titled banner block'
+    'table:pipe-separated column table'
+    'row:streaming status row'
+    # progress
+    'progress:render a progress bar'
+    'spinner:run a command under a spinner'
+    'spinner-tick:advance the spinner one frame'
+    'spinner-clear:clear the spinner line'
+    # task / title / step
+    'task-start:start a task line'
+    'task-done:finish a task line'
+    'final-success:final success line'
+    'final-fail:final failure line'
+    'title:print a title'
+    'title-action:action title'
+    'title-install:install title'
+    'title-update:update title'
+    'set-total-steps:set the step total'
+    'next-step:advance to the next step'
+    # loader / animation
+    'loader:indeterminate looping loader'
+    'typewriter:typewriter text effect'
+    'fade-in:fade-in text effect'
+    # cursor
+    'hide-cursor:hide the cursor'
+    'show-cursor:show the cursor'
+    'save-cursor:save cursor position'
+    'restore-cursor:restore cursor position'
+    'move-cursor:move cursor to row/col'
+    'clear-line:clear the current line'
+    'cleanup:restore terminal state'
+    # links / util
+    'hyperlink:OSC-8 hyperlink'
+    'print-link:print a labelled link'
+    'terminal-size:print terminal dimensions'
+    # debug
+    'debug:debug message'
+    'debug-vars:dump variables'
+    'debug-timing:report elapsed time'
+    'debug-command:run a command with debug output'
+    # interactive
+    'confirm:yes/no prompt'
+    'select:numbered menu'
+    'radio:arrow-key single select'
+    'multiselect:checkbox multi select'
+    'tabs:interactive tabbed selector'
+    'input:text entry (--default, --validate)'
+    'password:masked text entry'
+    # meta
+    'theme:list/create/validate themes'
+    'version:print the shui version'
+    'help:show help'
+  )
+
+  _arguments -C \
+    '1: :->command' \
+    '*:: :->args'
+
+  case $state in
+    command)
+      _describe -t commands 'shui command' commands
+      ;;
+    args)
+      case ${line[1]} in
+        text|badge|pill|message)
+          _describe -t types 'type' types ;;
+        theme)
+          local -a subs=(
+            'list:list available themes'
+            'create:scaffold a new theme'
+            'validate:check required tokens'
+          )
+          _describe -t subcommands 'theme subcommand' subs ;;
+        input)
+          _arguments \
+            '--default=[default value]:value:' \
+            '--validate=[validation rule]:rule:(email url number)' \
+            '*:prompt:' ;;
+        confirm)
+          _arguments \
+            '--default=[default answer]:default:(y n)' \
+            '*:prompt:' ;;
+        loader)
+          _arguments \
+            '--style=[loader style]:style:(dots pulse spinner)' \
+            '--duration=[seconds]:seconds:' \
+            '*:message:' ;;
+        divider)
+          _arguments \
+            '--char=[fill character]:char:' \
+            '--width=[width]:width:' \
+            "--color=[colour]:colour:(${types})" ;;
+        progress)
+          _arguments \
+            '--width=[bar width]:n:' \
+            '--label=[label]:text:' \
+            '--inline[loop-update mode]' \
+            '--iterm=[iTerm badge state]:state:(normal success error warning indeterminate clear)' \
+            '*:current then total:' ;;
+        typewriter|fade-in)
+          _arguments \
+            '--delay=[frame delay]:seconds:' \
+            '--steps=[fade steps]:n:' \
+            "--color=[colour]:colour:(${types})" \
+            '*:text:' ;;
+        spinner)
+          _arguments \
+            '--success=[success message]:text:' \
+            '--fail=[failure message]:text:' \
+            '*:message then -- command:' ;;
+        *) ;;
+      esac
+      ;;
+  esac
+}
+
+_shui "$@"
