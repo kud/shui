@@ -36,7 +36,7 @@ src/
     loader.zsh            # indeterminate loader — looping indicator (--style=dots|pulse|spinner)
     animation.zsh         # one-shot text effects — typewriter, fade-in
     screen.zsh            # section header + command runner with elapsed time; also timer-start/timer-end for per-step timing
-    tabs.zsh              # interactive tabbed selector — items grouped into ←/→ tabs
+    tabs.zsh              # live horizontal tab bar — ←/→/1-9 move, enter confirms
     interactive.zsh       # confirm, select, radio, multiselect, input (--validate=email|url|number|<regex>), password (masked)
 assets/                   # SVG screenshots embedded in README
 completions/

@@ -185,7 +185,7 @@ INTERACTIVE
   shui select <prompt> <opt1> [opt2…]
   shui radio <prompt> <opt1> [opt2…]
   shui multiselect <prompt> <opt1> [opt2…]
-  shui tabs <prompt> <tab⇥label[⇥desc]>…
+  shui tabs <prompt> <label[⇥desc]>…
   shui input [--default=<value>] [--validate=email|url|number|<regex>] <prompt>
   shui password [<prompt>]
 
@@ -280,10 +280,10 @@ _shui_help_cmd() {
       echo "Usage: shui multiselect <prompt> <opt1> [opt2…]"
       echo "Checkbox selection. Enter comma-separated numbers or \"all\". Prints selected options newline-separated." ;;
     tabs)
-      echo "Usage: shui tabs <prompt> <tab⇥label[⇥desc]>…"
-      echo "Interactive tabbed selector. Each option is tab-separated: tab, label, optional desc."
-      echo "←/→ or h/l switch tabs · ↑/↓ or j/k move · enter select · q cancel."
-      echo "Prints the chosen item's label to stdout." ;;
+      echo "Usage: shui tabs <prompt> <label[⇥desc]>…"
+      echo "Live horizontal tab bar. Each arg is a tab label, optionally label⇥desc."
+      echo "←/→ or h/l or Tab move · 1-9 jump · enter confirm · q cancel."
+      echo "Prints the chosen tab's label to stdout." ;;
     input)
       echo "Usage: shui input [--default=<value>] [--validate=<rule>] <prompt>"
       echo "Prints the entered value to stdout."

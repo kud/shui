@@ -137,10 +137,9 @@ if [[ "${1}" == "--interactive" ]]; then
   shui spacer
 
   action=$(shui tabs "shui ›" \
-    "build"$'\t'"scaffold"$'\t'"Create a new project" \
-    "build"$'\t'"feature"$'\t'"Add a component" \
-    "ship"$'\t'"release"$'\t'"Bump, tag, push" \
-    "ship"$'\t'"docs"$'\t'"Refresh the README")
+    "Build"$'\t'"Scaffold a project or add a component" \
+    "Ship"$'\t'"Bump, tag, and push a release" \
+    "Docs"$'\t'"Refresh the README and site")
   shui info "Action: ${action}"
 else
   shui info "Run with --interactive to test confirm, input, password, select, radio, multiselect, and tabs"
