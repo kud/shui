@@ -4,7 +4,7 @@
 # https://github.com/kud/shui
 #
 
-SHUI_VERSION="1.1.1"
+SHUI_VERSION="1.2.0"
 SHUI_DIR="${0:A:h}"
 
 [[ -n "${_SHUI_LOADED:-}" ]] && return 0
@@ -113,7 +113,7 @@ LAYOUT
   shui subtitle <title>
   shui subsection <title>
   shui divider [--char=C] [--width=N] [--color=<type>]
-  shui fence [label]
+  shui fence [label] [--char=C] [--color=<type>]
   shui hr
   shui center-text <text> [--width=N]
   shui spacer [n]
@@ -230,6 +230,11 @@ _shui_help_cmd() {
     divider)
       echo "Usage: shui divider"
       echo "Prints a full-width horizontal rule." ;;
+    fence)
+      echo "Usage: shui fence [label] [--char=C] [--color=<type>]"
+      echo "Prints a labelled rule: ── label ─────────────"
+      echo "--color tints the label only; the rule stays muted."
+      echo "Types: success error warning info primary muted accent" ;;
     spacer)
       echo "Usage: shui spacer [n]"
       echo "Prints n blank lines (default: 1)." ;;

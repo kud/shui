@@ -43,13 +43,39 @@ _shui_layout() {
       printf '%s\n' "${SHUI_RESET}"
       ;;
     fence)
-      local label="${1:-}" char="─" color="$SHUI_COLOR_MUTED"
+      # A labelled rule: ── label ─────────────────────
+      #
+      # --color= tints the LABEL only; the rule always stays muted. The label is
+      # the signal, the rule is structure — colouring both makes the divider
+      # shout louder than the thing it introduces. Mirrors ink-ui's Header,
+      # which pairs a bold title with a dim subtitle.
+      local label="" char="─" color="$SHUI_COLOR_MUTED" label_color=""
+      while [[ $# -gt 0 ]]; do
+        case "$1" in
+          --char=*)  char="${1#--char=}";  shift ;;
+          --color=*)
+            case "${1#--color=}" in
+              success) label_color="$SHUI_COLOR_SUCCESS" ;;
+              error)   label_color="$SHUI_COLOR_ERROR"   ;;
+              warning) label_color="$SHUI_COLOR_WARNING" ;;
+              info)    label_color="$SHUI_COLOR_INFO"    ;;
+              primary) label_color="$SHUI_COLOR_PRIMARY" ;;
+              accent)  label_color="$SHUI_COLOR_ACCENT"  ;;
+              muted)   label_color="$SHUI_COLOR_MUTED"   ;;
+            esac
+            shift ;;
+          *) [[ -z "$label" ]] && label="$1"; shift ;;
+        esac
+      done
+
       if [[ -n "$label" ]]; then
-        local prefix="── ${label} "
         local prefix_len=$(( ${#label} + 4 ))
         local trail_len=$(( _SHUI_TERMINAL_WIDTH - prefix_len ))
         [[ $trail_len -lt 2 ]] && trail_len=2
-        printf '%s%s%s%s\n' "$color" "$prefix" "$(_shui_repeat "$char" $trail_len)" "$SHUI_RESET"
+        printf '%s%s %s%s%s%s %s%s%s\n' \
+          "$color" "$(_shui_repeat "$char" 2)" \
+          "${label_color:-$color}" "${label_color:+$SHUI_BOLD}" "$label" "$SHUI_RESET" \
+          "$color" "$(_shui_repeat "$char" $trail_len)" "$SHUI_RESET"
       else
         printf '%s' "$color"
         _shui_repeat "$char" "$_SHUI_TERMINAL_WIDTH"

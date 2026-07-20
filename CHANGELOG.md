@@ -4,6 +4,22 @@ All notable changes to this project are documented here.
 
 ---
 
+## Unreleased
+
+### ✨ Features
+
+- `shui fence` gained `--color=<type>` and `--char=C`, bringing it in line with `divider`, which had both already. The colour tints the **label only** — the rule stays muted, so a section header reads as a heading rather than a stripe of colour across the terminal. It mirrors ink-ui's `Header`, which pairs a bold title with a dim subtitle. `shui fence "keys" --color=error` now gives `── keys ─────────────` with a red bold label, which is what a labelled rule wanted to be all along.
+
+<details>
+<summary>🔧 Internal changes</summary>
+
+- New `tests/test-fence.zsh` (13 assertions) pins the two properties that are easy to break and invisible in review: every render is exactly `$_SHUI_TERMINAL_WIDTH` visible columns whatever the label length, and `--color` never leaks into the rule. The width assertions count **characters, not bytes** — the rule uses U+2500 at 3 bytes each, so a byte-based length reads triple and would hide real overflow.
+- `shui fence --help` and the main `shui help` listing now document both flags.
+
+</details>
+
+---
+
 ## [1.1.1] — 2026-07-17
 
 ### 🐛 Bug Fixes
