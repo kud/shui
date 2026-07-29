@@ -55,9 +55,12 @@ _shui_tabs() {
     "$SHUI_BOLD" "$prompt" "$SHUI_RESET" "$SHUI_COLOR_MUTED" "$SHUI_RESET" >&2
   _shui_tabs_render >&2
 
+  # Both streams on the tty — see the note in interactive.zsh. With stdin alone
+  # redirected, a caller piping its stdout to a log gets an stty warning printed
+  # into that log on every prompt.
   local old_stty exit_code=0 char seq
   old_stty=$(stty -g </dev/tty 2>/dev/null) || old_stty=""
-  [[ -n "$old_stty" ]] && stty -echo -icanon min 1 time 0 </dev/tty
+  [[ -n "$old_stty" ]] && stty -echo -icanon min 1 time 0 </dev/tty >/dev/tty
   _shui_cursor hide-cursor >&2
 
   while true; do
@@ -84,7 +87,7 @@ _shui_tabs() {
     _shui_tabs_render >&2
   done
 
-  [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty
+  [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty >/dev/tty
   _shui_cursor show-cursor >&2
   printf '\n' >&2
 

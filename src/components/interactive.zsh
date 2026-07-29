@@ -98,9 +98,15 @@ _shui_radio() {
     "$SHUI_COLOR_MUTED" "$SHUI_RESET" >&2
   _shui_radio_render >&2
 
+  # Both streams must point at the tty, here and at every other stty call in this
+  # file. With only stdin redirected, a caller whose stdout is a pipe
+  # ("ambre install | tee log") gives stty a tty stdin and a redirected stdout,
+  # and it writes "stdout appears redirected, but stdin is the control
+  # descriptor" into the log at every prompt. The -g read below escapes that only
+  # by silencing stderr, which is why it never showed the problem.
   local old_stty exit_code=0 char seq
   old_stty=$(stty -g </dev/tty 2>/dev/null) || old_stty=""
-  [[ -n "$old_stty" ]] && stty -echo -icanon min 1 time 0 </dev/tty
+  [[ -n "$old_stty" ]] && stty -echo -icanon min 1 time 0 </dev/tty >/dev/tty
   _shui_cursor hide-cursor >&2
 
   while true; do
@@ -127,7 +133,7 @@ _shui_radio() {
     _shui_radio_render >&2
   done
 
-  [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty
+  [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty >/dev/tty
   _shui_cursor show-cursor >&2
   printf '\n' >&2
 
@@ -168,7 +174,7 @@ _shui_multiselect() {
 
   local old_stty exit_code=0 char seq
   old_stty=$(stty -g </dev/tty 2>/dev/null) || old_stty=""
-  [[ -n "$old_stty" ]] && stty -echo -icanon min 1 time 0 </dev/tty
+  [[ -n "$old_stty" ]] && stty -echo -icanon min 1 time 0 </dev/tty >/dev/tty
   _shui_cursor hide-cursor >&2
 
   while true; do
@@ -201,7 +207,7 @@ _shui_multiselect() {
     _shui_multiselect_render >&2
   done
 
-  [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty
+  [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty >/dev/tty
   _shui_cursor show-cursor >&2
   printf '\n' >&2
 
@@ -278,13 +284,13 @@ _shui_password() {
 
   local old_stty value="" char seq
   old_stty=$(stty -g </dev/tty 2>/dev/null) || old_stty=""
-  [[ -n "$old_stty" ]] && stty -echo -icanon min 1 time 0 </dev/tty
+  [[ -n "$old_stty" ]] && stty -echo -icanon min 1 time 0 </dev/tty >/dev/tty
 
   while IFS= read -rk1 char </dev/tty; do
     case "$char" in
       $'\r'|$'\n') break ;;
       $'\003')                                    # ctrl-c — cancel
-        [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty
+        [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty >/dev/tty
         printf '\n' >&2
         return 130
         ;;
@@ -302,7 +308,7 @@ _shui_password() {
     esac
   done
 
-  [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty
+  [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty >/dev/tty
   printf '\n' >&2
   printf '%s\n' "$value"
 }
