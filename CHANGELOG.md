@@ -6,15 +6,35 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+### 🐛 Bug Fixes
+
+- Interactive prompts (`confirm`, `select`, `radio`, `multiselect`, `input`, `password`) and the tabs bar now redirect **stdout**, not just stdin, to `/dev/tty` when putting the terminal into raw mode via `stty`. Previously, piping shui's output to a log file left stdin still pointed at the real terminal while stdout went elsewhere — GNU `stty` treats that as a mismatch and prints "stdout appears redirected, but stdin is the control descriptor" into the log on every single prompt. BSD `stty` never raised it, so the noise was invisible locally and only showed up on hosts where GNU coreutils comes first on `PATH`. ([176094d](https://github.com/kud/shui/commit/176094ddb0f4eba492c2a33d7ff3b32806d668ec))
+
+---
+
+## [1.2.1] — 2026-07-20
+
+### 💥 Breaking Changes
+
+- `shui tabs` was reshaped from a two-level picker into a live horizontal tab bar — ←/→ or 1-9 move between tabs, enter confirms. Callers written against the old two-level flow need updating. ([354ae1b](https://github.com/kud/shui/commit/354ae1b))
+
+---
+
+## [1.2.0] — 2026-07-20
+
 ### ✨ Features
 
-- `shui fence` gained `--color=<type>` and `--char=C`, bringing it in line with `divider`, which had both already. The colour tints the **label only** — the rule stays muted, so a section header reads as a heading rather than a stripe of colour across the terminal. It mirrors ink-ui's `Header`, which pairs a bold title with a dim subtitle. `shui fence "keys" --color=error` now gives `── keys ─────────────` with a red bold label, which is what a labelled rule wanted to be all along.
+- `shui fence` gained `--color=<type>` and `--char=C`, bringing it in line with `divider`, which had both already. The colour tints the **label only** — the rule stays muted, so a section header reads as a heading rather than a stripe of colour across the terminal. It mirrors ink-ui's `Header`, which pairs a bold title with a dim subtitle. `shui fence "keys" --color=error` now gives `── keys ─────────────` with a red bold label, which is what a labelled rule wanted to be all along. ([d565a60](https://github.com/kud/shui/commit/d565a60))
+- New interactive components: `tabs`, a masked `password` field, and `--validate=email|url|number|<regex>` on `input`. ([02d3261](https://github.com/kud/shui/commit/02d3261))
+- Zsh completion for `shui`, kept in parity with the dispatcher by `tests/test-completion.zsh`. ([a53d2a5](https://github.com/kud/shui/commit/a53d2a5))
+- `SHUI_ICON_KEY` and `SHUI_ICON_FILE` added across all icon sets. ([01d0023](https://github.com/kud/shui/commit/01d0023))
 
 <details>
 <summary>🔧 Internal changes</summary>
 
 - New `tests/test-fence.zsh` (13 assertions) pins the two properties that are easy to break and invisible in review: every render is exactly `$_SHUI_TERMINAL_WIDTH` visible columns whatever the label length, and `--color` never leaks into the rule. The width assertions count **characters, not bytes** — the rule uses U+2500 at 3 bytes each, so a byte-based length reads triple and would hide real overflow.
 - `shui fence --help` and the main `shui help` listing now document both flags.
+- The icon generator moved from a node script to a zsh sync script, removing the last runtime dependency from the toolchain. ([398da5e](https://github.com/kud/shui/commit/398da5e), [86d34f9](https://github.com/kud/shui/commit/86d34f9))
 
 </details>
 
