@@ -20,6 +20,35 @@ _shui_repeat() {
   printf '%s' "$result"
 }
 
+# How many COLUMNS a string occupies once its escapes are stripped — the number
+# every component pads against.
+#
+# This counted BYTES until now (`wc -c`), so any multi-byte character made the
+# caller pad short by bytes-minus-characters: a table cell holding an em dash
+# came out two columns narrow and walked the right-hand border off the grid, and
+# a box or row with non-ASCII content drifted the same way. Nothing looked wrong
+# in the callers — their padding maths was correct and the measurement was not,
+# which is how it survived every table anyone had drawn with it.
+#
+# Three fixes in the same three lines:
+#
+#   · characters, not bytes — ${#s} under MULTIBYTE, which zsh sets by default;
+#   · no `echo` — it expands backslash escapes in zsh, so a value carrying a
+#     literal \t or \n was measured after mangling rather than as written;
+#   · no forks — this ran echo | sed | wc | tr for EVERY cell of every table.
+#
+# Astral-plane emoji are then counted twice, because they occupy two columns and
+# shui ships an emoji icon set. Nerd Font glyphs deliberately are NOT in that
+# range: they live in the private use area and render single-width.
 _shui_visible_len() {
-  echo -n "$1" | sed 's/\x1b\[[0-9;]*[mK]//g' | wc -c | tr -d ' '
+  emulate -L zsh
+  setopt extended_glob
+
+  local s="${1//$'\e'\[[0-9;]#[a-zA-Z]/}"
+  local -i len=${#s}
+
+  local wide="${s//[^$'\U1F300'-$'\U1FAFF']/}"
+  (( len += ${#wide} ))
+
+  print -r -- "$len"
 }
