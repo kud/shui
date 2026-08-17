@@ -4,10 +4,12 @@ All notable changes to this project are documented here.
 
 ---
 
-## Unreleased
+## [1.2.3] — 2026-08-17
 
 ### 🐛 Bug Fixes
 
+- `_shui_visible_len` now measures **characters**, not bytes. It counted bytes (`wc -c`), so every multi-byte character made its caller pad short by bytes-minus-characters: a table cell holding an em dash came out two columns narrow and walked the right-hand border off the grid, and boxes and rows drifted the same way. The padding maths in the callers was correct throughout — only the measurement was wrong, which is why it survived every table anyone had drawn with it. Astral-plane emoji now count as two columns to match the emoji icon set, while Nerd Font PUA glyphs stay single-width. ([5d261d1](https://github.com/kud/shui/commit/5d261d1))
+- The same function no longer shells out. It ran `echo | sed | wc | tr` — four forks — for **every cell of every table**, which on a machine with an endpoint-security agent inspecting each `exec` cost roughly 235ms per call: a 230-row table took 47 seconds to measure. It is now pure zsh parameter expansion, ~3600x faster on that workload, and dropping `echo` also stops a value containing a literal `\t` or `\n` being mangled before it is measured. ([5d261d1](https://github.com/kud/shui/commit/5d261d1))
 - Interactive prompts (`confirm`, `select`, `radio`, `multiselect`, `input`, `password`) and the tabs bar now redirect **stdout**, not just stdin, to `/dev/tty` when putting the terminal into raw mode via `stty`. Previously, piping shui's output to a log file left stdin still pointed at the real terminal while stdout went elsewhere — GNU `stty` treats that as a mismatch and prints "stdout appears redirected, but stdin is the control descriptor" into the log on every single prompt. BSD `stty` never raised it, so the noise was invisible locally and only showed up on hosts where GNU coreutils comes first on `PATH`. ([176094d](https://github.com/kud/shui/commit/176094ddb0f4eba492c2a33d7ff3b32806d668ec))
 
 ---
