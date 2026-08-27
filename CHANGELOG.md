@@ -4,6 +4,14 @@ All notable changes to this project are documented here.
 
 ---
 
+## [1.2.4] — 2026-08-27
+
+### 🐛 Bug Fixes
+
+- `shui loader --duration=N` could hang forever when called from a script, because `EPOCHSECONDS` was never populated — that parameter comes from the `zsh/datetime` module, which an interactive profile generally loads and a plain `zsh script.zsh` never does. Unset, it reads as empty in arithmetic, so `(( EPOCHSECONDS < end ))` evaluated as `0 < N` and stayed true forever: the loader spun until killed, across all three styles (`dots`, `pulse`, `spinner`). It worked flawlessly when tried by hand in a terminal, which is exactly why it went unnoticed — the failure only shows up in the one shape nobody sits and watches. `shui debug-timing` hit the same gap more quietly, reporting every operation as `0s`. `shui.zsh` now calls `zmodload zsh/datetime` at load time, so every component gets it rather than whichever one happened to need it next. A new regression test, `tests/test-loader.zsh`, pins the fix — it first proves the hang is real by unloading the module and watching the loader spin, so the termination checks that follow aren't passing by finding nothing. ([8cb4dcf](https://github.com/kud/shui/commit/8cb4dcf))
+
+---
+
 ## [1.2.3] — 2026-08-17
 
 ### 🐛 Bug Fixes
