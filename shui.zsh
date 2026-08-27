@@ -10,6 +10,13 @@ SHUI_DIR="${0:A:h}"
 [[ -n "${_SHUI_LOADED:-}" ]] && return 0
 typeset -g _SHUI_LOADED=1
 
+# EPOCHSECONDS comes from zsh/datetime, which an interactive profile usually
+# loads and a plain `zsh script.zsh` never does. Without it the parameter is
+# empty, reads as 0 in arithmetic, and `shui loader --duration=N` spins forever
+# on `(( EPOCHSECONDS < end ))` — a hung terminal in every non-interactive
+# caller, while the same call works by hand.
+zmodload zsh/datetime
+
 source "${SHUI_DIR}/src/tokens/colors.zsh"
 source "${SHUI_DIR}/src/tokens/contract.zsh"
 
