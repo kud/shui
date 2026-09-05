@@ -18,7 +18,7 @@
 # still reads with colour stripped, piped, or unseen. Colour only reinforces.
 
 _shui_row() {
-  local tag_width=8 name_width=28
+  local tag_width=9 name_width=28
   local -a args=()
 
   while [[ $# -gt 0 ]]; do

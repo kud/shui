@@ -46,10 +46,10 @@ assert_not_contains "7-char tag does not touch the name" "updatedATLASSIAN" "$ou
 out="$(strip_ansi "$(shui row warning differs NEO4J_QA_URI 'y')")"
 assert_not_contains "differs does not touch the name" "differsNEO4J" "$out"
 
-# Exactly the default width (8) — the case that collapses under padding alone.
-out="$(strip_ansi "$(shui row success attached id_ed25519 'in the vault')")"
-assert_not_contains "8-char tag (== default width) does not touch the name" "attachedid_ed25519" "$out"
-assert_contains     "8-char tag is separated"                               "attached id_ed25519" "$out"
+# Exactly the default width (9) — the case that collapses under padding alone.
+out="$(strip_ansi "$(shui row muted untracked id_ed25519 'not in the vault')")"
+assert_not_contains "9-char tag (== default width) does not touch the name" "untrackedid_ed25519" "$out"
+assert_contains     "9-char tag is separated"                               "untracked id_ed25519" "$out"
 
 # Beyond the width — no width setting can rescue this; only the separator can.
 out="$(strip_ansi "$(shui row error CATASTROPHE id_ed25519 'boom')")"
@@ -63,7 +63,7 @@ assert_not_contains "over-long name does not touch the detail" "012detail" "$out
 # Every tag in real use across `my`, short and long — none may touch the name.
 # The invariant is separation, not a fixed gap: a short tag is padded out to the
 # column and then separated, so the gap varies while "never touching" does not.
-for t in same added new update updated differs skip FAILED attach attached restored write; do
+for t in same added new update updated differs skip FAILED attach attached restored write snapshots unchanged untracked; do
   out="$(strip_ansi "$(shui row muted "$t" SOME_KEY 'detail')")"
   assert_not_contains "tag '$t' never touches the name" "${t}SOME_KEY" "$out"
 done
