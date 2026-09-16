@@ -3,7 +3,7 @@
 _shui_badge() {
   local type="$1" text="$2"
 
-  [[ -n "${NO_COLOR:-}" ]] && { printf '[%s]' "$text"; return; }
+  { [[ -n "${NO_COLOR:-}" ]] || (( _SHUI_COLOR_DEPTH == 0 )) } && { printf '[%s]' "$text"; return; }
 
   local bg fg
 

@@ -207,8 +207,12 @@ ICONS
 QUIET
   SHUI_QUIET=1               suppress all output
 
+COLOUR
+  NO_COLOR=1                 no escapes at all; also the default when stdout is not a terminal
+  FORCE_COLOR=1              colour even when piped (outranks NO_COLOR)
+
 TYPES
-  success  error  warning  info  primary  muted  accent  secondary  danger
+  success  error  warning  info  primary  muted  accent  secondary  group  danger
 
 VERSION
   shui version

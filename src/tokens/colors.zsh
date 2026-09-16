@@ -1,15 +1,33 @@
 #!/usr/bin/env zsh
 
+# Colour depth 0 means "emit nothing": NO_COLOR set, or stdout not a terminal.
+# FORCE_COLOR wins over both, the same precedence chalk gives @kud/ink-ui, so a
+# script piped through `less -R` or a test harness can ask for colour back.
+# Decided once at source time, as the reference does, and the `-t 1` test has to
+# sit here rather than inside a `$(...)` — a command substitution's stdout is the
+# capture pipe, so from inside one stdout is never a terminal.
 _SHUI_COLOR_DEPTH=$(tput colors 2>/dev/null || echo 8)
+if [[ -n "${FORCE_COLOR:-}" && "${FORCE_COLOR}" != 0 ]]; then
+  :
+elif [[ -n "${NO_COLOR:-}" || ! -t 1 ]]; then
+  _SHUI_COLOR_DEPTH=0
+fi
 _SHUI_TERMINAL_WIDTH=$(tput cols 2>/dev/null || echo 80)
+
+_shui_sgr() {
+  (( _SHUI_COLOR_DEPTH == 0 )) && return
+  printf '\033[%sm' "$1"
+}
 
 _shui_color() {
   local c256="$1" c16="$2"
+  (( _SHUI_COLOR_DEPTH == 0 )) && return
   [[ $_SHUI_COLOR_DEPTH -ge 256 ]] && printf '\033[%sm' "$c256" || printf '\033[%sm' "$c16"
 }
 
 _shui_bg_color() {
   local c256="$1" c16="$2"
+  (( _SHUI_COLOR_DEPTH == 0 )) && return
   [[ $_SHUI_COLOR_DEPTH -ge 256 ]] && printf '\033[%sm' "$c256" || printf '\033[%sm' "$c16"
 }
 

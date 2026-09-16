@@ -38,7 +38,7 @@ _shui_message_simple() {
   local i
   for ((i=0; i<lines_before; i++)); do echo; done
   if [[ "$type" == "muted" ]]; then
-    echo -e "${SHUI_ITALIC}${color}${msg}${SHUI_RESET}"
+    echo -e "${color}${msg}${SHUI_RESET}"
   else
     echo -e "${color}${icon}${SHUI_RESET} ${msg}"
   fi

@@ -5,7 +5,7 @@ _shui_layout() {
 
   case "$type" in
     section)
-      echo -e "\n${SHUI_BOLD}${SHUI_COLOR_PRIMARY}${*}${SHUI_RESET}"
+      echo -e "\n${SHUI_BOLD}${*}${SHUI_RESET}"
       ;;
     subtitle)
       echo -e "\n${SHUI_COLOR_WARNING}${SHUI_BOLD}${*}${SHUI_RESET}"

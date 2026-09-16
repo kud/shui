@@ -4,6 +4,10 @@
 # Provides: assert_*, strip_ansi, _t_section, _t_title, _t_results
 #
 
+# Tests run piped, which the colour gate reads as "no colour"; FORCE_COLOR keeps
+# every colour path under test. Cases for the gate itself unset it explicitly.
+export FORCE_COLOR=1
+
 _T_RESET=$'\033[0m'
 _T_BOLD=$'\033[1m'
 _T_DIM=$'\033[2m'
