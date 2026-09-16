@@ -4,6 +4,19 @@ All notable changes to this project are documented here.
 
 ---
 
+## [1.3.0] — 2026-09-16
+
+### ✨ Features
+
+- shui is one of two renderers of the same terminal design system — `@kud/ink-ui` is the reference — and this release is the first slice of converging on it ([kud/plans#87](https://github.com/kud/plans/issues/87)). Colour now goes through one gate instead of two: `NO_COLOR` and a non-TTY stdout strip every escape sequence, across every theme and every component, not just `badge` and `pill` as before — previously piping `shui table`, `shui section`, or almost anything else through `less` or a log file left raw ANSI in the output, because only those two components checked `NO_COLOR` themselves. `FORCE_COLOR` outranks both, the same precedence chalk gives ink-ui, so a script piped through `less -R` or a test harness can ask for colour back. The check happens once at source time using `tput` and `-t 1` against real stdout, deliberately outside any command substitution — a `$(...)` capture pipe is never a terminal, so testing inside one would always read as "no colour". ([b202a2f](https://github.com/kud/shui/commit/b202a2f4ba015aef37963f90496f53f6bc1d8f12))
+- The default theme now carries `@kud/ink-ui`'s own token values instead of a 256-colour approximation of them. Semantic colours ink-ui names by ANSI colour (`green`, `yellow`, `cyan`, `red`, `magenta`) now follow the terminal's own palette instead of being pinned to fixed 256-colour cells; `primary` is ink-ui's accent `#FF8C00` and `secondary` is `#999999`, both taking the nearest 256-colour cell. `warning` moves from orange to yellow and `info` from blue to cyan to match. A new `group` token (magenta) joins the semantic set. Muted text is now SGR 2 (dim) — exactly what ink-ui's `dimColor` emits — replacing italic on a fixed grey 240: a fixed grey reads as body text on light themes and drops below the floor on very dark ones, and terminal italic's actual failure mode is reverse video, which inverts the emphasis it was meant to lower. `shui section` headings drop primary-yellow entirely and render bold in the default foreground instead — a heading is structure, not a claim, and primary-yellow reads as a warning in ink-ui's own vocabulary. The `minimal` theme's colour literals go through the same gate as everything else, help text gains a COLOUR block documenting `NO_COLOR`/`FORCE_COLOR`, and a new `tests/test-color-gate.zsh` pins the precedence and the one-shot semantic rulings — the test harness now exports `FORCE_COLOR=1` so existing colour-dependent coverage keeps testing real escape sequences under the piped test run instead of silently degrading to plain text. Not in this release, deliberately: the default icon set stays `nerd` — moving it to unicode waits on `@kud/glyphs` gaining a `unicode` variant for the status glyphs. ([b202a2f](https://github.com/kud/shui/commit/b202a2f4ba015aef37963f90496f53f6bc1d8f12))
+
+### 🐛 Bug Fixes
+
+- `shui row`'s default tag column widens from 8 to 9 characters, so common real-world tags like `untracked` and `snapshots` pad correctly instead of falling into the overflow path; test coverage grows to cover them. ([2dccb65](https://github.com/kud/shui/commit/2dccb650cb933bab8761ede34317ddb5091f3754))
+
+---
+
 ## [1.2.4] — 2026-08-27
 
 ### 🐛 Bug Fixes
