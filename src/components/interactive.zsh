@@ -151,9 +151,20 @@ _shui_multiselect() {
   local i
   for (( i = 1; i <= n; i++ )); do selected[$i]=0; done
 
+  # "label<TAB>hint", as in radio: the hint is drawn as an aligned grey column and
+  # never returned, so a caller gets back only the labels it can act on.
   _shui_multiselect_render() {
-    local i check
+    local i check label desc max_len=0 pad
     for (( i = 1; i <= n; i++ )); do
+      label="${options[$i]%%$'\t'*}"
+      (( ${#label} > max_len )) && max_len=${#label}
+    done
+
+    for (( i = 1; i <= n; i++ )); do
+      label="${options[$i]%%$'\t'*}"
+      desc="${options[$i]#*$'\t'}"
+      [[ "$desc" == "$label" ]] && desc=""
+      pad=$(( max_len - ${#label} + 2 ))
       printf '\033[2K\r'
       if (( selected[$i] )); then
         check="${SHUI_COLOR_SUCCESS}${SHUI_ICON_SQUARE}${SHUI_RESET}"
@@ -161,10 +172,12 @@ _shui_multiselect() {
         check="${SHUI_COLOR_MUTED}${SHUI_ICON_SQUARE_EMPTY}${SHUI_RESET}"
       fi
       if (( i == cursor )); then
-        printf '  %s %s%s%s\n' "$check" "$SHUI_COLOR_PRIMARY" "${options[$i]}" "$SHUI_RESET"
+        printf '  %s %s%s%s%*s' "$check" "$SHUI_COLOR_PRIMARY" "$label" "$SHUI_RESET" "$pad" ""
       else
-        printf '  %s %s\n' "$check" "${options[$i]}"
+        printf '  %s %s%*s' "$check" "$label" "$pad" ""
       fi
+      [[ -n "$desc" ]] && printf '%s%s%s' "$SHUI_COLOR_SECONDARY" "$desc" "$SHUI_RESET"
+      printf '\n'
     done
   }
 
@@ -214,7 +227,7 @@ _shui_multiselect() {
 
   if (( exit_code == 0 )); then
     for (( i = 1; i <= n; i++ )); do
-      (( selected[$i] )) && printf '%s\n' "${options[$i]}"
+      (( selected[$i] )) && printf '%s\n' "${options[$i]%%$'\t'*}"
     done
   fi
   return $exit_code
