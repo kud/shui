@@ -4,6 +4,14 @@ All notable changes to this project are documented here.
 
 ---
 
+## [1.3.1] — 2026-09-30
+
+### 🐛 Bug Fixes
+
+- Every interactive list (`select`, `radio`, `multiselect`) no longer redraws one row too low. Each component ran `stty … </dev/tty >/dev/tty` to enter raw mode, and on macOS's own `/bin/stty` that exact combination prints "stdout appears redirected, but stdin is the control descriptor" to stderr. The line landed between a list's first draw and its first redraw, so the cursor-up arithmetic was out by one from then on: in `shui multiselect` the top option appeared twice as soon as you moved the cursor (seen in `ambre brew builds`). The earlier fix in 1.2.3 ([176094d](https://github.com/kud/shui/commit/176094ddb0f4eba492c2a33d7ff3b32806d668ec)) pointed stdout at `/dev/tty` to keep piped logs clean, but on macOS that target triggers the warning too. `stty`'s stdout now goes to `/dev/null`, which is quiet at a terminal and when piped. The same change covers `confirm`, `input`, `password` and the `tabs` bar. ([59b0497](https://github.com/kud/shui/commit/59b0497783de831fa22db88d0c5b09fd09ae6124))
+
+---
+
 ## [1.3.0] — 2026-09-16
 
 ### ✨ Features
