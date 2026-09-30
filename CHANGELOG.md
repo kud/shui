@@ -4,6 +4,14 @@ All notable changes to this project are documented here.
 
 ---
 
+## [1.4.0] — 2026-09-30
+
+### ✨ Features
+
+- `shui multiselect` now takes options as `label<TAB>hint`, the same convention `radio` already had. Hints show as an aligned column in the secondary grey, and only the chosen labels are printed. Options without a tab behave as before. ([59808ab](https://github.com/kud/shui/commit/59808abdb0fe99ffccf39a5de7c1c7ea11045df5))
+
+---
+
 ## [1.3.1] — 2026-09-30
 
 ### 🐛 Bug Fixes
