@@ -24,7 +24,7 @@ source "${SHUI_DIR}/src/icons/unicode.zsh"
 
 _SHUI_ICONS="${SHUI_ICONS:-nerd}"
 
-if [[ -f "${SHUI_DIR}/src/icons/${_SHUI_ICONS}.zsh" ]]; then
+if [[ $_SHUI_ICONS != unicode && -f "${SHUI_DIR}/src/icons/${_SHUI_ICONS}.zsh" ]]; then
   source "${SHUI_DIR}/src/icons/${_SHUI_ICONS}.zsh"
 else
   echo "shui: icon set '${_SHUI_ICONS}' not found, falling back to nerd" >&2
