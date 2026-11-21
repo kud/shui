@@ -269,6 +269,8 @@ assert_contains "a right-aligned column"            "   2.0.0 -> 3.0.0  MAJOR" "
 assert_not_contains "no markup reaches the screen"  "{success:" "$_out"
 assert_not_contains "ids are never drawn"           "pkg-" "$_out"
 assert_eq "no line wider than the terminal" "1" "$(( $(_widest "$_out") <= 79 ))"
+# 6 for pointer and box, 1, the 29-column name, 16, 7, and three gaps of 2.
+assert_eq "the flexible column stops at its widest cell" "65" "$(_widest "${_out%%<<*}" )"
 
 _pty 12 40 "$_mc" "$_HIDE" j $'\n'
 _out=${${_PTY#*$_HIDE}%%<<rc=*}

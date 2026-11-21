@@ -125,10 +125,12 @@ ids=$(shui multiselect \
 - **Rows** are `id⇥cell⇥cell…`. The id is never drawn; it is what comes back
   for each ticked row, one per line.
 - **`--columns`** takes one `align:width:drop` entry per cell: `l` or `r`; a
-  width, or `*` for the one flexible column (at least 12 wide, `*N` for a
-  larger minimum); and a drop number. When a row does not fit, the column with
-  the highest drop number goes first, then the next; `0` never goes. Widths
-  come from you, not from the cells, so nothing shifts as the list scrolls.
+  width, or `*` for the one flexible column, which takes the room left up to
+  its widest cell (at least 12 wide, `*N` for a larger minimum); and a drop
+  number. When a row does not fit, the column with the highest drop number goes
+  first, then the next; `0` never goes. Fixed widths come from you and the
+  flexible one is measured once over every row, so nothing shifts as the list
+  scrolls.
 - **`--header`** is a row of cells with no id, drawn muted above the list.
 - **`--keys`** replaces the key hint, so the words can match what enter does.
 - **`--details`** names an array with one element per row. Its lines are joined

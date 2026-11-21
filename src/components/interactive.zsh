@@ -488,18 +488,31 @@ _shui_multiselect() {
 # then hands the loop the column renderer.
 _shui_multiselect_columns() {
   local col_spec_text="$_shui_columns" col_header="$_shui_header" col_footer=""
-  local -a col_rows col_details
-  local -i col_pane_h=0 col_head_rows=3 col_has_footer=0 k
+  local -a col_rows col_details cells
+  local -i col_pane_h=0 col_head_rows=3 col_has_footer=0 col_flex_natural=0 k flex_at=0
   local opt on_tick="" REPLY
   local -a reply
 
-  for opt in "${options[@]}"; do
+  # The flexible column takes what is left, but no more than its widest cell:
+  # a short name followed by fifty columns of nothing reads as two lists. All
+  # rows are measured once, so the width holds while the list scrolls.
+  _shui_columns_parse "$col_spec_text"
+  for (( k = 1; k <= ${#reply}; k++ )); do
+    [[ "${reply[k]}" == ?' 0 '* ]] && flex_at=$k
+  done
+  for opt in "${options[@]}" $'\t'"$col_header"; do
     if [[ "$opt" == *$'\t'* ]]; then
       col_rows+=("${opt#*$'\t'}")
     else
       col_rows+=("")
     fi
+    if (( flex_at )); then
+      cells=("${(@ps:\t:)col_rows[-1]}")
+      _shui_markup "${cells[flex_at]:-}"
+      (( reply[2] > col_flex_natural )) && col_flex_natural=${reply[2]}
+    fi
   done
+  col_rows[-1]=()
 
   if (( _shui_has_details )); then
     col_details=("${_shui_details[@]}")

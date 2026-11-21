@@ -273,9 +273,10 @@ _shui_columns_line() {
 # the footer. The prompt and key lines above it are drawn once, by the caller.
 #
 # Reads the caller's n, cursor, selected, col_spec_text, col_rows (the cells of
-# each row, tab-joined), col_header, col_head_rows (rows taken by the lines above
-# the frame), col_details, col_pane_h, col_footer and col_has_footer; updates
-# top, page and drawn, as _shui_list_render does.
+# each row, tab-joined), col_flex_natural (the widest flexible cell), col_header,
+# col_head_rows (rows taken by the lines above the frame), col_details,
+# col_pane_h, col_footer and col_has_footer; updates top, page and drawn, as
+# _shui_list_render does.
 #
 # Too short a terminal gives up the pane first, then the header, so the list
 # keeps room to move in: the rows already carry what the pane repeats.
@@ -297,6 +298,7 @@ _shui_list_render_columns() {
   _shui_columns_fit $(( limit - prefix_w )) "$col_spec_text"
   col_flex=${reply[1]}
   col_show=("${reply[@]:1}")
+  (( ${col_flex_natural:-0} > 0 && col_flex > col_flex_natural )) && col_flex=$col_flex_natural
 
   local -i show_header=$(( ${#col_header} > 0 ))
   local -i pane_rows=$(( col_pane_h > 0 ? col_pane_h + 1 : 0 ))
