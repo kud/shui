@@ -6,8 +6,17 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+---
+
+## [1.5.0] — 2026-11-21
+
+### ✨ Features
+
+- Icons follow @kud/glyphs 0.4: thin powerline caps (`SHUI_ICON_PL_CAP_*_THIN`) and keyboard-key glyphs (`SHUI_ICON_KEY_*`) in every icon set, and the unicode set gains the state glyphs ✓ ✗ ⚠ ℹ →.
+
 ### 🐛 Bug Fixes
 
+- shui loads under a non-UTF-8 locale (a bare `C` or `POSIX`) instead of failing with "character not in range" and a broken theme.
 - Prompts no longer answer for a user who is not there. `confirm`, `select`, `radio`, `multiselect`, `input`, `password` and `tabs` read from `/dev/tty`, and with no controlling terminal (cron, CI, a detached `setsid`, an agent's subprocess) that open failed: `shui confirm --default=y` then returned yes, consent nobody gave, after leaking "no such device or address: /dev/tty"; `--default=n` returned 1, which a caller could not tell from a real "no"; `input` returned its default; and `radio`, `multiselect` and `tabs` spun forever, redrawing on every failed read. Each prompt now checks for a terminal before drawing anything, and without one prints `shui: no terminal to ask; pass --yes` to stderr and exits 2.
 - `shui error` and `shui warning` print to stderr, so `x=$(cmd)` or `cmd | jq` no longer captures a diagnostic as data. `success`, `info` and `muted` stay on stdout, and callers that already add `>&2` are unaffected.
 - `shui print-link` and `shui hyperlink` follow the colour gate: on a pipe or under `NO_COLOR` they print plain text — `text (url)`, or the URL alone when it is the text — instead of raw OSC 8 escapes. `FORCE_COLOR` brings the escapes back.
