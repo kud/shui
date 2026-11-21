@@ -8,13 +8,15 @@ _shui_layout() {
       echo -e "\n${SHUI_BOLD}${*}${SHUI_RESET}"
       ;;
     subtitle)
-      echo -e "\n${SHUI_COLOR_WARNING}${SHUI_BOLD}${*}${SHUI_RESET}"
+      echo -e "\n${SHUI_BOLD}${*}${SHUI_RESET}"
       ;;
     subsection)
-      echo -e "${SHUI_COLOR_ACCENT}${SHUI_BOLD}${SHUI_ICON_BULLET} ${*}${SHUI_RESET}"
+      # Headers are bold in the default foreground: the accent marks names and
+      # the current item only, and warning is never a header colour.
+      echo -e "${SHUI_BOLD}${SHUI_ICON_BULLET} ${*}${SHUI_RESET}"
       ;;
     divider)
-      local char="─" width="$_SHUI_TERMINAL_WIDTH" color="$SHUI_COLOR_MUTED"
+      local char="─" width="$_SHUI_TERMINAL_WIDTH" color="$SHUI_COLOR_MUTED" mark=""
       while [[ $# -gt 0 ]]; do
         case "$1" in
           --char=*)  char="${1#--char=}";  shift ;;
@@ -23,22 +25,21 @@ _shui_layout() {
             case "${1#--color=}" in
               success) color="$SHUI_COLOR_SUCCESS" ;;
               error)   color="$SHUI_COLOR_ERROR"   ;;
-              warning) color="$SHUI_COLOR_WARNING" ;;
+              warning) color="$SHUI_COLOR_WARNING"; mark="$(_shui_warn_text '')" ;;
               info)    color="$SHUI_COLOR_INFO"    ;;
-              primary) color="$SHUI_COLOR_PRIMARY" ;;
-              accent)  color="$SHUI_COLOR_ACCENT"  ;;
+              accent|primary) color="$SHUI_COLOR_ACCENT" ;;  # primary: deprecated alias
               muted)   color="$SHUI_COLOR_MUTED"   ;;
             esac
             shift ;;
           *) shift ;;
         esac
       done
-      printf '%s' "$color"
-      _shui_repeat "$char" "$width"
+      printf '%s%s' "$color" "$mark"
+      _shui_repeat "$char" $(( width - $(_shui_visible_len "$mark") ))
       printf '%s\n' "${SHUI_RESET}"
       ;;
     hr)
-      printf '%s' "${SHUI_COLOR_PRIMARY}"
+      printf '%s' "${SHUI_COLOR_ACCENT}"
       _shui_repeat "─" 40
       printf '%s\n' "${SHUI_RESET}"
       ;;
@@ -49,7 +50,7 @@ _shui_layout() {
       # the signal, the rule is structure — colouring both makes the divider
       # shout louder than the thing it introduces. Mirrors ink-ui's Header,
       # which pairs a bold title with a dim subtitle.
-      local label="" char="─" color="$SHUI_COLOR_MUTED" label_color=""
+      local label="" char="─" color="$SHUI_COLOR_MUTED" label_color="" warn=""
       while [[ $# -gt 0 ]]; do
         case "$1" in
           --char=*)  char="${1#--char=}";  shift ;;
@@ -57,10 +58,9 @@ _shui_layout() {
             case "${1#--color=}" in
               success) label_color="$SHUI_COLOR_SUCCESS" ;;
               error)   label_color="$SHUI_COLOR_ERROR"   ;;
-              warning) label_color="$SHUI_COLOR_WARNING" ;;
+              warning) label_color="$SHUI_COLOR_WARNING"; warn=1 ;;
               info)    label_color="$SHUI_COLOR_INFO"    ;;
-              primary) label_color="$SHUI_COLOR_PRIMARY" ;;
-              accent)  label_color="$SHUI_COLOR_ACCENT"  ;;
+              accent|primary) label_color="$SHUI_COLOR_ACCENT" ;;  # primary: deprecated alias
               muted)   label_color="$SHUI_COLOR_MUTED"   ;;
             esac
             shift ;;
@@ -68,8 +68,10 @@ _shui_layout() {
         esac
       done
 
+      [[ -n "$label" && -n $warn ]] && label="$(_shui_warn_text "$label")"
+
       if [[ -n "$label" ]]; then
-        local prefix_len=$(( ${#label} + 4 ))
+        local prefix_len=$(( $(_shui_visible_len "$label") + 4 ))
         local trail_len=$(( _SHUI_TERMINAL_WIDTH - prefix_len ))
         [[ $trail_len -lt 2 ]] && trail_len=2
         printf '%s%s %s%s%s%s %s%s%s\n' \

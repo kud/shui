@@ -15,3 +15,16 @@ jobs:
       - uses: jdx/mise-action@v5
       - run: mise run lint
       - run: mise run test
+      - name: Test without a UTF-8 locale
+        run: LANG= LC_ALL=C mise run test
+
+  colour-tokens:
+    # src/tokens/glyphs-colors.zsh is generated: re-run the sync at the pinned
+    # @kud/glyphs version and fail if the committed file has drifted from it.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install zsh
+        run: sudo apt-get update && sudo apt-get install -y zsh
+      - run: zsh scripts/sync-colors.zsh
+      - run: git diff --exit-code -- src/tokens/glyphs-colors.zsh

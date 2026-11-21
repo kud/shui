@@ -13,7 +13,8 @@ shui.zsh                  # main entrypoint — loads tokens, icons, theme, comp
 src/
   tokens/
     colors.zsh            # _shui_color(), _shui_bg_color(), _shui_repeat(), _shui_visible_len()
-    contract.zsh          # _SHUI_REQUIRED_TOKENS list + _shui_validate_theme()
+    glyphs-colors.zsh     # GENERATED semantic colour tokens (SHUI_COLOR_*_ANSI16/ANSI256/HEX, SHUI_STATE_*)
+    contract.zsh          # _SHUI_REQUIRED_TOKENS + _shui_resolve_tokens() + _shui_validate_theme()
   icons/
     unicode.zsh           # base layer — standard Unicode symbols, always sourced first
     nerd.zsh              # Nerd Font PUA glyphs (default, SHUI_ICONS=nerd)
@@ -45,6 +46,7 @@ completions/
 scripts/
   demo.zsh                # visual showcase of all components (--interactive for form fields)
   sync-icons.zsh          # regenerate src/icons/*.zsh from @kud/glyphs
+  sync-colors.zsh         # regenerate src/tokens/glyphs-colors.zsh from @kud/glyphs (CI checks drift)
 ```
 
 ---
@@ -52,14 +54,16 @@ scripts/
 ## Loading order (shui.zsh)
 
 1. `src/tokens/colors.zsh` — utilities available to themes
-2. `src/tokens/contract.zsh` — token list + validation function
-3. `src/icons/unicode.zsh` — base Unicode symbols, loaded regardless of icon set **when the locale is UTF-8**.
+2. `src/tokens/glyphs-colors.zsh` — generated colour tokens the themes derive from
+3. `src/tokens/contract.zsh` — token list + validation function
+4. `src/icons/unicode.zsh` — base Unicode symbols, loaded regardless of icon set **when the locale is UTF-8**.
    Otherwise every `$'\U…'` escape is a fatal "character not in range", so shui skips it and switches any
    set but `none` to `ascii` (escape-free). The check probes the escape itself (one `eval`, no fork).
-4. `src/icons/<SHUI_ICONS>.zsh` — overrides `SHUI_ICON_*` tokens for the selected set
-5. `src/themes/<SHUI_THEME>.zsh` — sets colour/style tokens (may override icon tokens)
-6. `_shui_validate_theme` — aborts if any required token is missing
-7. All `src/components/*.zsh`
+5. `src/icons/<SHUI_ICONS>.zsh` — overrides `SHUI_ICON_*` tokens for the selected set
+6. `src/themes/<SHUI_THEME>.zsh` — sets colour/style tokens (may override icon tokens)
+7. `_shui_resolve_tokens` — PRIMARY → ACCENT alias, legacy-theme fallbacks
+8. `_shui_validate_theme` — aborts if any required token is missing
+9. All `src/components/*.zsh`
 
 Themes only define **colours**. Icons are owned by icon sets. The `plain` theme is an exception — it overrides icon tokens with ASCII fallbacks intentionally.
 
@@ -115,6 +119,29 @@ Invariants (produced upstream by @kud/glyphs, still enforced by `tests/test-icon
 - Never write a literal `SHUI_ICON_<UPPERCASE>` token in a comment inside an icon file — the grep-based parity check counts it as a phantom definition.
 
 Run `mise test` to verify (`tests/test-icons.zsh` checks non-empty values, escape syntax, and parity). To inspect codepoints, see @kud/glyphs' `glyphs.json` — the authoritative `name → { nerd, unicode?, emoji? }` map.
+
+## Colour tokens (`src/tokens/glyphs-colors.zsh`)
+
+**Generated from @kud/glyphs' `zsh/colors.zsh`** by `scripts/sync-colors.zsh`, pinned by its
+`GLYPHS_VERSION`. Do not hand-edit; change the token upstream, bump the pin, re-run the sync. The
+CI job `colour-tokens` re-runs it and fails on `git diff --exit-code`. The prefix is added, not
+swapped (`COLOR_ACCENT_ANSI256` → `SHUI_COLOR_ACCENT_ANSI256`, `STATE_RUNNING_COLOR` →
+`SHUI_STATE_RUNNING_COLOR`), so a state's colour value names `SHUI_COLOR_<value>` directly.
+
+Themes derive the rendered `SHUI_COLOR_*` / `SHUI_BG_*` escapes from those numbers with
+`_shui_token_color` (ANSI256 on a 256-colour terminal, ANSI16 otherwise) or `_shui_token_color16`
+(the ANSI16 floor only — `minimal`). The ANSI16 index is the contract; HEX is not rendered yet.
+`SHUI_COLOR_MUTED` deliberately stays SGR 2 (dimColor) in `default`.
+
+Colour roles: headers (`section`, `subtitle`, `subsection`) are bold in the default foreground;
+the accent marks names and the current item only. **Warning always carries its glyph** — 214 sits a
+hair from the accent's 208 — so any warning-coloured output goes through `_shui_warn_text` or shows
+`SHUI_ICON_WARNING`, which `_shui_resolve_tokens` guarantees non-empty (`!` for the `none` set).
+`tests/test-warning.zsh` renders every warning call site and guards the sources. Badge text on
+each fill follows ink-ui's INK table (black on 79/214/117/208, white on 203).
+
+`SHUI_COLOR_PRIMARY` / `SHUI_BG_PRIMARY` are **deprecated aliases** of `ACCENT`, set by
+`_shui_resolve_tokens`; components use `ACCENT`. Do not reintroduce them in themes.
 
 ## Versioning
 

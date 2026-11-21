@@ -51,8 +51,8 @@ A custom theme sources `default.zsh` first — only override the tokens you want
 # src/themes/mytheme.zsh
 source "${SHUI_DIR}/src/themes/default.zsh"
 
-SHUI_COLOR_PRIMARY=$(_shui_color "38;5;135" "0;35")  # purple
-SHUI_COLOR_ACCENT=$(_shui_color  "38;5;135" "0;35")
+SHUI_COLOR_ACCENT=$(_shui_color "38;5;135" "35")  # purple
+SHUI_BG_ACCENT=$(_shui_bg_color "48;5;135" "45")
 ```
 
 ```zsh
@@ -66,8 +66,20 @@ shui theme validate   # check all required tokens are defined
 | ------------------------------------------------------------ | ------------------------ |
 | `SHUI_RESET`                                                 | Reset all styles         |
 | `SHUI_BOLD` `SHUI_DIM` `SHUI_ITALIC` `SHUI_UNDERLINE`        | Text styles              |
-| `SHUI_COLOR_PRIMARY`                                         | Primary accent colour    |
+| `SHUI_COLOR_ACCENT`                                          | Accent colour            |
 | `SHUI_COLOR_SUCCESS` `SHUI_COLOR_WARNING` `SHUI_COLOR_ERROR` | Status colours           |
-| `SHUI_COLOR_INFO` `SHUI_COLOR_MUTED` `SHUI_COLOR_ACCENT`     | Info / muted / accent    |
-| `SHUI_BG_SUCCESS` … `SHUI_BG_MUTED`                          | Badge background colours |
+| `SHUI_COLOR_INFO` `SHUI_COLOR_MUTED` `SHUI_COLOR_GROUP`      | Info / muted / group     |
+| `SHUI_COLOR_LINK` `SHUI_COLOR_ADDED` `SHUI_COLOR_REMOVED`    | Links and diffs          |
+| `SHUI_COLOR_DIM` `SHUI_COLOR_TRACK` `SHUI_COLOR_SECONDARY`   | Quiet text and tracks    |
+| `SHUI_BG_SUCCESS` … `SHUI_BG_ACCENT` `SHUI_BG_MUTED`         | Badge background colours |
 | `SHUI_ICON_SUCCESS` `SHUI_ICON_ERROR` …                      | Status & UI icons        |
+
+The built-in themes derive the semantic colours from [@kud/glyphs](https://github.com/kud/glyphs)'
+tokens (`src/tokens/glyphs-colors.zsh`): each token's ANSI16 palette index is the floor every
+terminal gets, and its ANSI256 cell the rendering on a 256-colour terminal. A theme can do the
+same with `_shui_token_color <TOKEN>` (or `_shui_token_color16 <TOKEN>` to stay on the floor).
+
+**Deprecated:** `SHUI_COLOR_PRIMARY` and `SHUI_BG_PRIMARY` are aliases of the `ACCENT` tokens,
+set after the theme loads, and `primary` is accepted wherever `accent` is. The earlier, separate
+blue `SHUI_COLOR_ACCENT` is gone; a theme that still sets `SHUI_COLOR_PRIMARY` has that value
+taken as its accent.

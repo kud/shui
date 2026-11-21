@@ -21,7 +21,7 @@ _shui_prompt() {
   esac
 
   if [[ -n "$icon" ]]; then
-    printf '%s%s%s %s ' "$SHUI_COLOR_PRIMARY" "$icon" "$SHUI_RESET" "$message"
+    printf '%s%s%s %s ' "$SHUI_COLOR_ACCENT" "$icon" "$SHUI_RESET" "$message"
   else
     printf '%s ' "$message"
   fi

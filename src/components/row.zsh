@@ -35,7 +35,7 @@ _shui_row() {
   case "$variant" in
     success) color="$SHUI_COLOR_SUCCESS" ;;
     error)   color="$SHUI_COLOR_ERROR"   ;;
-    warning) color="$SHUI_COLOR_WARNING" ;;
+    warning) color="$SHUI_COLOR_WARNING"; tag="$(_shui_warn_text "$tag")" ;;
     info)    color="$SHUI_COLOR_INFO"    ;;
     muted)   color="$SHUI_COLOR_MUTED"   ;;
     *) echo "shui: unknown row variant '${variant}'" >&2; return 1 ;;

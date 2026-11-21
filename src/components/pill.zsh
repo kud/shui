@@ -3,6 +3,7 @@
 _shui_pill() {
   local type="$1" text="$2"
 
+  [[ $type == warning ]] && text="$(_shui_warn_text "$text")"
   { [[ -n "${NO_COLOR:-}" ]] || (( _SHUI_COLOR_DEPTH == 0 )) } && { printf '[%s]' "$text"; return; }
   [[ -z "${SHUI_ICON_PL_CAP_LEFT:-}" ]]  && { printf '[%s]' "$text"; return; }
 
@@ -11,7 +12,7 @@ _shui_pill() {
   case "$type" in
     success)           color_code=46;  text_color=0  ;;
     error|danger|critical) color_code=196; text_color=15 ;;
-    warning)           color_code=208; text_color=0  ;;
+    warning)           color_code=214; text_color=0  ;;  # amber, as ink-ui; 208 is the accent
     info)              color_code=39;  text_color=15 ;;
     primary|major)     color_code=226; text_color=0  ;;
     accent|minor)      color_code=33;  text_color=15 ;;

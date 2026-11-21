@@ -18,6 +18,7 @@ typeset -g _SHUI_LOADED=1
 zmodload zsh/datetime
 
 source "${SHUI_DIR}/src/tokens/colors.zsh"
+source "${SHUI_DIR}/src/tokens/glyphs-colors.zsh"
 source "${SHUI_DIR}/src/tokens/contract.zsh"
 
 _SHUI_ICONS="${SHUI_ICONS:-nerd}"
@@ -49,6 +50,8 @@ fi
 
 _SHUI_THEME="${SHUI_THEME:-default}"
 
+unset SHUI_COLOR_PRIMARY SHUI_BG_PRIMARY   # see _shui_resolve_tokens
+
 if [[ -f "${SHUI_DIR}/src/themes/${_SHUI_THEME}.zsh" ]]; then
   source "${SHUI_DIR}/src/themes/${_SHUI_THEME}.zsh"
 else
@@ -56,6 +59,7 @@ else
   source "${SHUI_DIR}/src/themes/default.zsh"
 fi
 
+_shui_resolve_tokens
 _shui_validate_theme || return 1
 
 for _shui_f in "${SHUI_DIR}"/src/components/*.zsh; do
@@ -106,7 +110,7 @@ _shui_theme_cmd() {
 
 _shui_help() {
   echo
-  echo -e "${SHUI_BOLD}${SHUI_COLOR_PRIMARY}shui · 水  —  Shell UI for Zsh${SHUI_RESET}"
+  echo -e "${SHUI_BOLD}${SHUI_COLOR_ACCENT}shui · 水  —  Shell UI for Zsh${SHUI_RESET}"
   echo
   cat <<'HELP'
 USAGE
@@ -268,7 +272,7 @@ _shui_help_cmd() {
     badge)
       echo "Usage: shui badge <type> <text>"
       echo "Inline solid-background label. Use inside \$(...)."
-      echo "Types: success error warning info primary muted" ;;
+      echo "Types: success error warning info accent primary muted" ;;
     pill)
       echo "Usage: shui pill <type> <text>"
       echo "       shui pill <0-255> <text>"
