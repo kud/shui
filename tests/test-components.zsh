@@ -115,6 +115,16 @@ _out=$(strip_ansi "$(_shui_box "line1\nline2")")
 assert_contains "multi-line: first line present" "line1" "$_out"
 assert_contains "multi-line: second line present" "line2" "$_out"
 
+# Every line — rules, titled rule, content rows — spans the terminal exactly;
+# the rules used to stop 2 columns short (4 with a title) of the content rows.
+for _title in "" "Hi" "Odd" "🚀 Deploy"; do
+  _out=$(strip_ansi "$(_shui_box ${_title:+--title="$_title"} "short" "a longer content line")")
+  _widths=()
+  for _line in "${(@f)_out}"; do _widths+=("$(_shui_visible_len "$_line")"); done
+  assert_eq "box '${_title:-untitled}': all lines are ${_SHUI_TERMINAL_WIDTH} wide" \
+    "${_SHUI_TERMINAL_WIDTH}" "${(j: :)${(@u)_widths}}"
+done
+
 # ---------------------------------------------------------------------------
 # 8. _shui_table
 # ---------------------------------------------------------------------------
