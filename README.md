@@ -78,6 +78,10 @@ $ shui confirm "Deploy to production?"
 ? Deploy to production? [y/N]
 ```
 
+`multiselect` with `--columns`, `--details` and `--footer`: aligned columns, a pane that follows the cursor, and a total that follows the ticks.
+
+![multiselect with columns, a detail pane and a footer](assets/multiselect-columns.png)
+
 Switch icon sets with `SHUI_ICONS`:
 
 ```zsh
