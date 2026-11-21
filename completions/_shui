@@ -123,6 +123,14 @@ _shui() {
             '--default=[default value]:value:' \
             '--validate=[validation rule]:rule:(email url number)' \
             '*:prompt:' ;;
+        multiselect)
+          _arguments \
+            '--columns=[column spec, align:width:drop per cell]:spec:' \
+            '--header=[header row, tab-separated cells]:row:' \
+            '--keys=[key hint text]:text:' \
+            '--details=[array of detail panes, one per row]:array:_parameters -g "*array*"' \
+            '--footer=[function printing the footer line]:function:_functions' \
+            '*:prompt and options:' ;;
         confirm)
           _arguments \
             '--default=[default answer]:default:(y n)' \

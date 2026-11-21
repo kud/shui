@@ -39,6 +39,7 @@ src/
     screen.zsh            # section header + command runner with elapsed time; also timer-start/timer-end for per-step timing
     tabs.zsh              # live horizontal tab bar — ←/→/1-9 move, enter confirms
     interactive.zsh       # confirm, select, radio, multiselect, input (--validate=email|url|number|<regex>), password (masked)
+    columns.zsh           # multiselect --columns: cell markup, column fitting, detail pane and footer renderer
 assets/                   # SVG screenshots embedded in README
 completions/
   _shui                   # zsh completion — kept in parity with the dispatcher by tests/test-completion.zsh

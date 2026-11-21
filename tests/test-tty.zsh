@@ -222,6 +222,118 @@ _out=${${_PTY#*$_HIDE}%%<<rc=*}
 assert_not_contains "but none reaches the screen" $'\e[31m' "$_out"
 
 # ---------------------------------------------------------------------------
+# 5b. multiselect --columns, --header, --keys, --details, --footer
+# ---------------------------------------------------------------------------
+_t_section "multiselect: bad flags exit 1 before the terminal is touched"
+
+_mc='out=$(shui multiselect "${flags[@]}" Pick "${items[@]}"); print -r -- "<<rc=$?>><<out=${(j:,:)${(f)out}}>>"'
+items=($'a\talpha' $'b\tbeta')
+notarray="text"
+short=(one)
+for _case in \
+  "--columns=l:*:0,r:*:0|only one column may be *" \
+  "--header=x|need --columns" \
+  "--columns=l:*:0 --details=1bad|is not a variable name" \
+  "--columns=l:*:0 --details=notarray|is not an array" \
+  "--columns=l:*:0 --details=short|has 1 elements for 2 rows" \
+  "--columns=l:*:0 --footer=no_such_fn|no function named"; do
+  flags=("${(@s: :)${_case%%|*}}")
+  _pty 10 60 "$_mc" "<<end"
+  assert_contains "${_case%%|*}: exits 1" "<<rc=1>>" "$_PTY"
+  assert_contains "${_case%%|*}: says why" "${_case#*|}" "$_PTY"
+  assert_not_contains "${_case%%|*}: draws nothing" "$_HIDE" "$_PTY"
+done
+
+_t_section "multiselect: a prompt that starts with -- is still a prompt"
+
+flags=()
+_pty 10 60 'out=$(shui multiselect --not-a-flag a b); print -r -- "<<rc=$?>>"' "$_HIDE" q
+assert_contains "drawn as the prompt" "--not-a-flag" "$_PTY"
+assert_contains "and cancelled as usual" "<<rc=130>>" "$_PTY"
+
+_t_section "multiselect --columns: rows, header, keys"
+
+items=(
+  $'pkg-a\t{success:*}\talpha\t1.2.0 -> 1.2.{success:1}\tpatch'
+  $'pkg-b\t\tbeta\t2.0.0 -> {error:3.0.0}\t{error:MAJOR}'
+  $'pkg-c\t{success:*}\tgamma-with-a-rather-long-name\t0.9 -> 0.{warning:10}\t{warning:minor}'
+)
+flags=('--columns=l:1:1,l:*:0,r:16:2,l:7:0' '--header=!	name	from -> to	level' '--keys=space tick · enter build · q later')
+_pty 12 80 "$_mc" "$_HIDE" ' ' j j ' ' $'\n'
+_out=${${_PTY#*$_HIDE}%%<<rc=*}
+assert_contains "the ids come back, not the cells" "<<rc=0>><<out=pkg-a,pkg-c>>" "$_PTY"
+assert_contains "the key line is the caller's"      "space tick · enter build · q later" "$_PTY"
+assert_contains "the header sits over the columns"  "!  name" "$_out"
+assert_contains "cells are laid out in columns"     "  > # *  gamma-with-a-rather-long-name" "$_out"
+assert_contains "a right-aligned column"            "   2.0.0 -> 3.0.0  MAJOR" "$_out"
+assert_not_contains "no markup reaches the screen"  "{success:" "$_out"
+assert_not_contains "ids are never drawn"           "pkg-" "$_out"
+assert_eq "no line wider than the terminal" "1" "$(( $(_widest "$_out") <= 79 ))"
+
+_pty 12 40 "$_mc" "$_HIDE" j $'\n'
+_out=${${_PTY#*$_HIDE}%%<<rc=*}
+assert_eq "40 columns: no line wider than 39" "1" "$(( $(_widest "$_out") <= 39 ))"
+assert_not_contains "40 columns: the drop-2 column has gone" "1.2.0 ->" "$_out"
+assert_contains "40 columns: the never-drop column stays" "patch" "$_out"
+
+_t_section "multiselect --details: a fixed-height pane that follows the cursor"
+
+det=(
+  $'alpha · the first\nVersion  1.2.0\nNote     short'
+  $'beta · the second\nVersion  {error:3.0.0}\nOne\nTwo\nLast line of five'
+  $'gamma\nVersion  0.10\nNote     x'
+)
+flags=('--columns=l:1:1,l:*:0,r:16:2,l:7:0' --details=det)
+_pty 24 80 "$_mc" "$_HIDE" j j k $'\n'
+_out=${${_PTY#*$_HIDE}%%<<rc=*}
+assert_eq "every redraw climbs the same rows, whatever the element's length" \
+  "9" "$(_climbs "$_out" | tr " " "\n" | sort -u)"
+assert_contains "the rule carries the element's first line" "-- beta · the second --" "$_out"
+assert_contains "the pane follows the cursor"               "Last line of five" "$_out"
+assert_contains "markup in the pane is drawn"              "Version  3.0.0" "$_out"
+
+_pty 8 80 "$_mc" "$_HIDE" j $'\n'
+_out=${${_PTY#*$_HIDE}%%<<rc=*}
+assert_not_contains "a short terminal gives up the pane first" "-- " "$_out"
+assert_contains "and keeps the list" "gamma" "$_out"
+
+# A caller array that shares a name with one of shui's own locals.
+for _name in labels selected cmd; do
+  typeset -ga $_name
+  set -A $_name $'mine · '$_name $'second\nx' $'third\ny'
+  flags=('--columns=l:1:1,l:*:0,r:16:2,l:7:0' --details=$_name)
+  _pty 24 80 "$_mc" "$_HIDE" $'\n'
+  assert_contains "a details array called ${_name} reads the caller's" "-- mine · ${_name} --" "$_PTY"
+done
+unset labels selected cmd
+
+_t_section "multiselect --footer: run in a subshell, on ticks only"
+
+_calls=$(mktemp)
+_foot() {
+  n=99 cursor=99
+  print -u2 "noise on stderr"
+  print -r -- x >> "$_calls"
+  print -r -- "{bold:$# ticked} · $*"
+  print -r -- "a second line nobody sees"
+}
+flags=('--columns=l:1:1,l:*:0,r:16:2,l:7:0' --details=det --footer=_foot)
+_pty 24 80 "$_mc" "$_HIDE" ' ' j j ' ' k $'\n'
+_out=${${_PTY#*$_HIDE}%%<<rc=*}
+assert_eq "called at start and on each space, never on a move" "3" "$(wc -l < "$_calls" | tr -d ' ')"
+assert_contains "the footer shows its first line" "2 ticked · pkg-a pkg-c" "$_out"
+assert_not_contains "only its first line" "a second line nobody sees" "$_out"
+assert_not_contains "its stderr never reaches the screen" "noise on stderr" "$_out"
+assert_contains "it cannot touch the picker's state" "<<rc=0>><<out=pkg-a,pkg-c>>" "$_PTY"
+assert_eq "the climb stays put" "11" "$(_climbs "$_out" | tr " " "\n" | sort -u)"
+rm -f "$_calls"
+
+_failing() { return 1 }
+flags=('--columns=l:1:1,l:*:0,r:16:2,l:7:0' --footer=_failing)
+_pty 24 80 "$_mc" "$_HIDE" ' ' $'\n'
+assert_contains "a failing footer is an empty one, never an abort" "<<rc=0>><<out=pkg-a>>" "$_PTY"
+
+# ---------------------------------------------------------------------------
 # 6. radio
 # ---------------------------------------------------------------------------
 _t_section "radio"

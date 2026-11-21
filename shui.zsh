@@ -305,9 +305,26 @@ _shui_help_cmd() {
       echo "Arrow-key list: ↑↓/jk move · g/G first/last · PgUp/PgDn · enter select · q cancel."
       echo "Options may be label⇥hint. A list taller than the terminal scrolls. Prints the chosen label." ;;
     multiselect)
-      echo "Usage: shui multiselect <prompt> <opt1> [opt2…]"
+      echo "Usage: shui multiselect [--columns=<spec>] [--header=<row>] [--keys=<text>]"
+      echo "                        [--details=<array>] [--footer=<function>] <prompt> <opt1> [opt2…]"
       echo "Checkboxes: ↑↓/jk move · space toggle · a all · enter confirm · q cancel."
-      echo "Options may be label⇥hint. A list taller than the terminal scrolls. Prints the selected labels, one per line." ;;
+      echo "Options may be label⇥hint. A list taller than the terminal scrolls. Prints the selected labels, one per line."
+      echo ""
+      echo "  --columns=<spec>     rows become id⇥cell⇥cell…; the id is printed, never drawn."
+      echo "                       spec: align:width:drop per cell, comma-separated, e.g."
+      echo "                       l:*:0,r:16:2,l:7:0 (l|r; a width or * for the one flexible"
+      echo "                       column, *N for a minimum of N; columns with the highest"
+      echo "                       drop number go first when the row does not fit, 0 never)"
+      echo "  --header=<row>       cells drawn muted above the list (needs --columns)"
+      echo "  --keys=<text>        replaces the key hint; the keys themselves do not change"
+      echo "  --details=<array>    one element per row, lines joined by newlines, drawn under"
+      echo "                       the list for the cursor row; the first line is the rule"
+      echo "  --footer=<function>  called in a subshell with the ticked ids whenever they"
+      echo "                       change; its first line of output is drawn last. Keep it"
+      echo "                       fast: a hung footer cannot be interrupted"
+      echo "Cells, the header, details and the footer take {success|warning|error|info|muted|bold:text}"
+      echo "spans; escape foreign text with \${s//\\{/{{}. --details and --footer name things in"
+      echo "the calling shell, so they work only with a sourced shui. A bad flag exits 1." ;;
     tabs)
       echo "Usage: shui tabs <prompt> <label[⇥desc]>…"
       echo "Live horizontal tab bar. Each arg is a tab label, optionally label⇥desc."
@@ -335,23 +352,23 @@ shui() {
   [[ $# -eq 0 ]] && { _shui_help; return 0; }
   [[ -n "${SHUI_QUIET:-}" ]] && return 0
 
-  local cmd="$1"; shift
+  local _shui_cmd="$1"; shift
 
   # Per-command --help
   if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
-    _shui_help_cmd "$cmd"
+    _shui_help_cmd "$_shui_cmd"
     return 0
   fi
 
-  case "$cmd" in
-    bold|dim|italic|underline|text)                            _shui_text    "$cmd" "$@" ;;
-    success|error|warning|info)                                _shui_message "$cmd" "$@" ;;
+  case "$_shui_cmd" in
+    bold|dim|italic|underline|text)                            _shui_text    "$_shui_cmd" "$@" ;;
+    success|error|warning|info)                                _shui_message "$_shui_cmd" "$@" ;;
     message)                                                   _shui_message_dispatch "$@" ;;
     success-simple|error-simple|warning-simple|info-simple)
-      echo -e "\e[33m⚠ shui: '${cmd}' is deprecated — use 'shui message ${cmd%-simple}' instead\e[0m" >&2
-      _shui_message_simple "${cmd%-simple}" "$@" ;;
+      echo -e "\e[33m⚠ shui: '${_shui_cmd}' is deprecated — use 'shui message ${_shui_cmd%-simple}' instead\e[0m" >&2
+      _shui_message_simple "${_shui_cmd%-simple}" "$@" ;;
     muted)                                                     _shui_message_simple "muted" "$@" ;;
-    section|subtitle|subsection|divider|hr|spacer|center-text|fence) _shui_layout  "$cmd" "$@" ;;
+    section|subtitle|subsection|divider|hr|spacer|center-text|fence) _shui_layout  "$_shui_cmd" "$@" ;;
     screen)       _shui_screen      "$@" ;;
     timer-start)  _shui_timer_start      ;;
     timer-end)    _shui_timer_end   "$@" ;;
@@ -365,12 +382,12 @@ shui() {
     spinner)      _shui_spinner     "$@" ;;
     spinner-tick) _shui_spinner_tick "$@" ;;
     spinner-clear) _shui_spinner_clear ;;
-    task-start|task-done|final-success|final-fail) _shui_task "$cmd" "$@" ;;
-    title|title-action|title-install|title-update) _shui_title "$cmd" "$@" ;;
-    set-total-steps|next-step)                     _shui_step  "$cmd" "$@" ;;
+    task-start|task-done|final-success|final-fail) _shui_task "$_shui_cmd" "$@" ;;
+    title|title-action|title-install|title-update) _shui_title "$_shui_cmd" "$@" ;;
+    set-total-steps|next-step)                     _shui_step  "$_shui_cmd" "$@" ;;
     loader)                                          _shui_loader    "$@" ;;
-    typewriter|fade-in)                              _shui_animation "$cmd" "$@" ;;
-    hide-cursor|show-cursor|save-cursor|restore-cursor|move-cursor|clear-line|cleanup) _shui_cursor "$cmd" "$@" ;;
+    typewriter|fade-in)                              _shui_animation "$_shui_cmd" "$@" ;;
+    hide-cursor|show-cursor|save-cursor|restore-cursor|move-cursor|clear-line|cleanup) _shui_cursor "$_shui_cmd" "$@" ;;
     hyperlink)   _shui_hyperlink  "$@" ;;
     print-link)  _shui_print_link "$@" ;;
     terminal-size) _shui_util "terminal-size" ;;
@@ -389,7 +406,7 @@ shui() {
     version|--version|-v) echo "shui $SHUI_VERSION" ;;
     help|--help|-h) _shui_help ;;
     *)
-      echo "shui: unknown command '${cmd}'" >&2
+      echo "shui: unknown command '${_shui_cmd}'" >&2
       echo "Run 'shui help' for usage." >&2
       return 1
       ;;

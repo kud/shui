@@ -42,12 +42,12 @@ assert_exit_ok "zsh -n completions/_shui" $?
 local -a _completion_cmds
 _completion_cmds=("${(@f)$(grep -oE "^    '[a-z][a-z-]*:" "$_COMPFILE" | sed "s/^    '//; s/:$//")}")
 
-# Dispatcher commands: case labels inside shui()'s `case "$cmd" in`, split on |.
+# Dispatcher commands: case labels inside shui()'s `case "$_shui_cmd" in`, split on |.
 local -a _dispatch_cmds
 _dispatch_cmds=("${(@f)$(
   awk '
     /^shui\(\) \{/{f=1}
-    f && /case "\$cmd" in/{c=1; next}
+    f && /case "\$_shui_cmd" in/{c=1; next}
     c && /^  esac/{c=0}
     c && /\)/{
       sub(/\).*/, "");        # drop everything from the first )

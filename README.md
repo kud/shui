@@ -17,7 +17,7 @@
 - **Unified message API** — `shui message <type> <text>` covers success, error, warning, info, and muted in one consistent command
 - **Token-based theme engine** — swap colours, icons, and styles via environment variables without touching component code; ships with `default`, `minimal`, and `plain` themes
 - **Inline components** — `badge` and `pill` write to stdout without a newline, composing naturally inside `$(...)` expressions
-- **Interactive prompts** — `confirm`, `select`, `radio`, `multiselect`, and `input` with keyboard navigation and sensible defaults
+- **Interactive prompts** — `confirm`, `select`, `radio`, `multiselect`, and `input` with keyboard navigation and sensible defaults; `multiselect` can also draw aligned columns, a detail pane that follows the cursor and a live footer
 - **Progress & spinners** — `progress`, `spinner`, and `loader` with optional native iTerm2 dock-badge integration
 - **Zero dependencies** — a single `source shui.zsh` is all you need; no npm, no brew, no external tools
 - **NO_COLOR aware** — respects the [NO_COLOR](https://no-color.org/) convention and degrades gracefully to plain ASCII

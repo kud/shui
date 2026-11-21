@@ -286,13 +286,18 @@ _shui_list_render() {
 # The shared loop behind radio and multiselect: draws, reads keys, redraws, and
 # hands back the tty as it found it. Sets the caller's cursor and selected.
 # Returns 0 on enter, 130 on q, esc or ctrl-c, 2 if the terminal goes away.
+#
+# $2 names another renderer (the column one), whose caller has already drawn
+# the lines above the list; without it, the label⇥hint list is set up here.
+# A caller's on_tick, when set, names a function to run whenever the ticked set
+# changes, before the redraw.
 _shui_list_run() {
-  local hint="$1"
+  local hint="$1" render="${2:-_shui_list_render}"
   local -a labels descs label_w drawn
   local -i max_len=0 top=1 page=1 header_w i
   local opt REPLY
 
-  for opt in "${options[@]}"; do
+  [[ "$render" == _shui_list_render ]] && for opt in "${options[@]}"; do
     _shui_plain "${opt%%$'\t'*}"
     labels+=("$REPLY")
     label_w+=(${(m)#REPLY})
@@ -305,12 +310,14 @@ _shui_list_run() {
     fi
   done
 
-  _shui_plain "$prompt"
-  header_w=$(( ${(m)#REPLY} + 1 + ${(m)#hint} ))
-  printf '%s%s%s %s%s%s\n' \
-    "$SHUI_BOLD" "$prompt" "$SHUI_RESET" \
-    "$SHUI_COLOR_MUTED" "$hint" "$SHUI_RESET" >&2
-  _shui_list_render >&2
+  if [[ "$render" == _shui_list_render ]]; then
+    _shui_plain "$prompt"
+    header_w=$(( ${(m)#REPLY} + 1 + ${(m)#hint} ))
+    printf '%s%s%s %s%s%s\n' \
+      "$SHUI_BOLD" "$prompt" "$SHUI_RESET" \
+      "$SHUI_COLOR_MUTED" "$hint" "$SHUI_RESET" >&2
+  fi
+  $render >&2
 
   # stdin on the tty, stdout on /dev/null, here and at every other stty call in
   # this file. macOS stty writes "stdout appears redirected, but stdin is the
@@ -328,37 +335,45 @@ _shui_list_run() {
   [[ -n "$old_stty" ]] && stty -echo -icanon -isig min 1 time 0 </dev/tty >/dev/null
   _shui_cursor hide-cursor >&2
 
-  while true; do
-    if ! _shui_read_key; then
-      exit_code=2
-      break
-    fi
-    case "$REPLY" in
-      up|k)   (( cursor > 1 )) && (( cursor-- )) ;;
-      down|j) (( cursor < n )) && (( cursor++ )) ;;
-      home|g) cursor=1 ;;
-      end|G)  cursor=$n ;;
-      pgup)   cursor=$(( cursor - page > 1 ? cursor - page : 1 )) ;;
-      pgdn)   cursor=$(( cursor + page < n ? cursor + page : n )) ;;
-      ' ')
-        [[ "$mode" == multi ]] && (( n )) && selected[$cursor]=$(( ! selected[$cursor] ))
-        ;;
-      a|A)
-        if [[ "$mode" == multi ]]; then
-          local -i all=1
-          for (( i = 1; i <= n; i++ )); do (( selected[$i] )) || { all=0; break; }; done
-          for (( i = 1; i <= n; i++ )); do selected[$i]=$(( all ? 0 : 1 )); done
-        fi
-        ;;
-      enter) break ;;
-      esc|q|Q|$'\003') exit_code=130; break ;;
-    esac
-    _shui_list_render >&2
-  done
-
-  [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty >/dev/null
-  _shui_cursor show-cursor >&2
-  printf '\n' >&2
+  # The terminal goes back in `always`, so an error inside the loop (a bad
+  # redraw, a caller's function gone wrong) still hands back echo and cursor.
+  {
+    while true; do
+      if ! _shui_read_key; then
+        exit_code=2
+        break
+      fi
+      case "$REPLY" in
+        up|k)   (( cursor > 1 )) && (( cursor-- )) ;;
+        down|j) (( cursor < n )) && (( cursor++ )) ;;
+        home|g) cursor=1 ;;
+        end|G)  cursor=$n ;;
+        pgup)   cursor=$(( cursor - page > 1 ? cursor - page : 1 )) ;;
+        pgdn)   cursor=$(( cursor + page < n ? cursor + page : n )) ;;
+        ' ')
+          if [[ "$mode" == multi ]] && (( n )); then
+            selected[$cursor]=$(( ! selected[$cursor] ))
+            [[ -n "${on_tick:-}" ]] && $on_tick
+          fi
+          ;;
+        a|A)
+          if [[ "$mode" == multi ]]; then
+            local -i all=1
+            for (( i = 1; i <= n; i++ )); do (( selected[$i] )) || { all=0; break; }; done
+            for (( i = 1; i <= n; i++ )); do selected[$i]=$(( all ? 0 : 1 )); done
+            [[ -n "${on_tick:-}" ]] && $on_tick
+          fi
+          ;;
+        enter) break ;;
+        esc|q|Q|$'\003') exit_code=130; break ;;
+      esac
+      $render >&2
+    done
+  } always {
+    [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty >/dev/null
+    _shui_cursor show-cursor >&2
+    printf '\n' >&2
+  }
   return $exit_code
 }
 
@@ -381,8 +396,65 @@ _shui_radio() {
   return $exit_code
 }
 
+# shui multiselect [--columns=<spec>] [--header=<row>] [--keys=<text>]
+#                  [--details=<array>] [--footer=<function>] <prompt> <row>…
+#
+# Flags are read only before the prompt, only in these five exact forms, and
+# stop at "--" or the first other argument, so a prompt that merely starts with
+# "--" is still a prompt. A bad flag is the caller's mistake, reported on stderr
+# with exit 1, before the terminal is touched; 2 stays "no terminal".
+#
+# Every local here is _shui_-prefixed until the --details array has been copied:
+# ${(P)name} resolves through dynamic scope, so a caller array called "labels"
+# or "selected" would otherwise read shui's own local of that name.
 _shui_multiselect() {
   emulate -L zsh
+  local _shui_columns="" _shui_header="" _shui_keys="" _shui_details_name="" _shui_footer=""
+  local -i _shui_has_columns=0 _shui_has_details=0
+  local -a _shui_details _shui_spec
+
+  while (( $# )); do
+    case "$1" in
+      --columns=*) _shui_columns="${1#--columns=}"; _shui_has_columns=1 ;;
+      --header=*)  _shui_header="${1#--header=}" ;;
+      --keys=*)    _shui_keys="${1#--keys=}" ;;
+      --details=*) _shui_details_name="${1#--details=}"; _shui_has_details=1 ;;
+      --footer=*)  _shui_footer="${1#--footer=}" ;;
+      --)          shift; break ;;
+      *)           break ;;
+    esac
+    shift
+  done
+
+  if (( _shui_has_columns )) && ! _shui_columns_parse "$_shui_columns"; then
+    printf 'shui: multiselect: %s\n' "$REPLY" >&2
+    return 1
+  fi
+  if (( ! _shui_has_columns )) && [[ -n "$_shui_header$_shui_details_name$_shui_footer" ]]; then
+    printf 'shui: multiselect: --header, --details and --footer need --columns\n' >&2
+    return 1
+  fi
+  if (( _shui_has_details )); then
+    if [[ ! "$_shui_details_name" =~ '^[A-Za-z_][A-Za-z0-9_]*$' ]]; then
+      printf 'shui: multiselect: --details: %s is not a variable name\n' "${(q+)_shui_details_name}" >&2
+      return 1
+    fi
+    if [[ "${(Pt)_shui_details_name}" != array* ]]; then
+      printf 'shui: multiselect: --details: %s is not an array\n' "$_shui_details_name" >&2
+      return 1
+    fi
+    _shui_details=("${(@P)_shui_details_name}")
+    if (( ${#_shui_details} != $# - 1 )); then
+      printf 'shui: multiselect: --details: %s has %d elements for %d rows\n' \
+        "$_shui_details_name" ${#_shui_details} $(( $# > 0 ? $# - 1 : 0 )) >&2
+      return 1
+    fi
+  fi
+  if [[ -n "$_shui_footer" ]] && (( ! $+functions[$_shui_footer] )); then
+    printf 'shui: multiselect: --footer: no function named %s\n' "${(q+)_shui_footer}" >&2
+    return 1
+  fi
+
   _shui_require_tty || return 2
   local prompt="$1"; shift
   local -a options=("$@")
@@ -391,10 +463,17 @@ _shui_multiselect() {
   local -a selected
   for (( i = 1; i <= n; i++ )); do selected[$i]=0; done
 
-  # "label<TAB>hint", as in radio: the hint is drawn as an aligned grey column and
-  # never returned, so a caller gets back only the labels it can act on.
-  _shui_list_run "↑↓/jk move · space toggle · a all · enter confirm · q cancel"
-  exit_code=$?
+  local keys="${_shui_keys:-↑↓/jk move · space toggle · a all · enter confirm · q cancel}"
+
+  if (( ! _shui_has_columns )); then
+    # "label<TAB>hint", as in radio: the hint is drawn as an aligned grey column and
+    # never returned, so a caller gets back only the labels it can act on.
+    _shui_list_run "$keys"
+    exit_code=$?
+  else
+    _shui_multiselect_columns
+    exit_code=$?
+  fi
 
   if (( exit_code == 0 )); then
     for (( i = 1; i <= n; i++ )); do
@@ -402,6 +481,63 @@ _shui_multiselect() {
     done
   fi
   return $exit_code
+}
+
+# The column path of multiselect: rows are "id⇥cell⇥cell…", the id is never
+# drawn. Reads _shui_multiselect's locals; draws the prompt and key lines once,
+# then hands the loop the column renderer.
+_shui_multiselect_columns() {
+  local col_spec_text="$_shui_columns" col_header="$_shui_header" col_footer=""
+  local -a col_rows col_details
+  local -i col_pane_h=0 col_head_rows=3 col_has_footer=0 k
+  local opt on_tick="" REPLY
+  local -a reply
+
+  for opt in "${options[@]}"; do
+    if [[ "$opt" == *$'\t'* ]]; then
+      col_rows+=("${opt#*$'\t'}")
+    else
+      col_rows+=("")
+    fi
+  done
+
+  if (( _shui_has_details )); then
+    col_details=("${_shui_details[@]}")
+    for opt in "${col_details[@]}"; do
+      k=${#${(@f)opt}}
+      (( k > col_pane_h )) && col_pane_h=$k
+    done
+    (( col_pane_h > _SHUI_PANE_MAX )) && col_pane_h=$_SHUI_PANE_MAX
+  fi
+
+  if [[ -n "$_shui_footer" ]]; then
+    col_has_footer=1
+    on_tick=_shui_multiselect_footer
+    _shui_multiselect_footer
+  fi
+
+  _shui_tty_size
+  local -i limit=$(( reply[2] - 1 ))
+  _shui_plain "$prompt"
+  _shui_fit "$REPLY" $limit
+  printf '%s%s%s\n' "$SHUI_BOLD" "$REPLY" "$SHUI_RESET" >&2
+  _shui_fit "$keys" $limit
+  printf '%s%s%s\n\n' "$SHUI_COLOR_MUTED" "$REPLY" "$SHUI_RESET" >&2
+
+  _shui_list_run "$keys" _shui_list_render_columns
+}
+
+# Runs the caller's --footer function on the ticked ids, in a subshell: it can
+# neither change the picker's state nor print into the ids a caller captures.
+# Its first line of output is the footer; a failure or no output is no footer.
+_shui_multiselect_footer() {
+  local -a ids
+  local -i k
+  for (( k = 1; k <= n; k++ )); do
+    (( selected[$k] )) && ids+=("${options[$k]%%$'\t'*}")
+  done
+  col_footer=$("$_shui_footer" "${ids[@]}" </dev/null 2>/dev/null) || col_footer=""
+  col_footer="${col_footer%%$'\n'*}"
 }
 
 
