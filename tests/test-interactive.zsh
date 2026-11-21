@@ -78,7 +78,19 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# 5. Dispatcher routing — unknown commands are now known
+# 5. State glyphs survive the `none` icon set
+# ---------------------------------------------------------------------------
+_t_section "_shui_list_glyphs under SHUI_ICONS=none"
+
+_glyphs() { local -a reply; _shui_list_glyphs; print -r -- "${(j:|:)reply}"; }
+assert_eq "pointer, ticked and unticked fall back to ASCII" ">|[x]|[ ]" "$(_glyphs)"
+assert_eq "a set's own glyphs are kept" "❯|■|□" \
+  "$(SHUI_ICON_POINTER=❯ SHUI_ICON_SQUARE=■ SHUI_ICON_SQUARE_EMPTY=□ _glyphs)"
+assert_eq "one blank box is padded to the other's width" ">|[x]|.  " \
+  "$(SHUI_ICON_SQUARE_EMPTY=. _glyphs)"
+
+# ---------------------------------------------------------------------------
+# 6. Dispatcher routing — unknown commands are now known
 # ---------------------------------------------------------------------------
 _t_section "shui() routes new subcommands"
 

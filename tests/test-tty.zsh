@@ -165,6 +165,18 @@ assert_contains "no pointer on another row"   "    . alpha" "$_frame"
 _lines=("${(@f)_frame}")
 assert_eq "exactly one pointer in the frame" "1" "${#${(@M)_lines:#*\> *}}"
 
+_t_section "multiselect: ticks and cursor survive SHUI_ICONS=none"
+
+# `none` blanks the box and pointer tokens; a list drawn from them showed no
+# state at all. zpty runs a copy of this shell, so blanking them here is `none`.
+_none='SHUI_ICON_SQUARE= SHUI_ICON_SQUARE_EMPTY= SHUI_ICON_POINTER=; '
+_pty 10 40 "$_none$_ms" "$_HIDE" ' ' j $'\n'
+_frame=${${_PTY#*$_HIDE}%%<<rc=*}
+_frame=${_frame##*$'\e[3A'}
+assert_contains "a ticked row shows [x]"         "    [x] alpha" "$_frame"
+assert_contains "the cursor row shows > and [ ]" "  > [ ] beta"  "$_frame"
+assert_contains "an unticked row shows [ ]"      "    [ ] gamma" "$_frame"
+
 # ---------------------------------------------------------------------------
 # 4. A list taller than the terminal scrolls
 # ---------------------------------------------------------------------------

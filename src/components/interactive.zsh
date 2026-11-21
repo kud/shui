@@ -148,6 +148,25 @@ _shui_list_window() {
   reply=($top $height $marker)
 }
 
+# The state glyphs a list draws: pointer, ticked box, unticked box. A checkbox
+# and a cursor are state, not decoration, so an icon set that blanks them
+# (`none`) must not blank the state: each empty token falls back to ASCII, and
+# the two boxes are padded to one width so a tick never shifts its row.
+# Sets reply=(pointer ticked unticked).
+_shui_list_glyphs() {
+  emulate -L zsh
+  local pointer="${SHUI_ICON_POINTER:->}"
+  local on="${SHUI_ICON_SQUARE:-[x]}" off="${SHUI_ICON_SQUARE_EMPTY:-[ ]}"
+  local -i gap=$(( ${(m)#on} - ${(m)#off} ))
+  local _sp=""
+  if (( gap > 0 )); then
+    off+="${(l:gap:)_sp}"
+  elif (( gap < 0 )); then
+    on+="${(l:-gap:)_sp}"
+  fi
+  reply=("$pointer" "$on" "$off")
+}
+
 # One frame of a radio or multiselect list, drawn over the previous one. Reads
 # the caller's locals: mode (radio|multi), labels and descs (display text),
 # label_w, max_len, n, cursor, selected, header_w; updates top, page and drawn
@@ -179,14 +198,16 @@ _shui_list_render() {
   fi
   drawn=()
 
-  local pointer="$SHUI_ICON_POINTER" _blank_src=""
+  local pointer on off _blank_src=""
+  _shui_list_glyphs
+  pointer=$reply[1] on=$reply[2] off=$reply[3]
   local blank="${(l:${(m)#pointer}:)_blank_src}" check
   local -i glyph_w=${(m)#pointer}
   # Multi mode marks the cursor with the same pointer column as radio: colour
   # alone disappears under `plain` and fails anyone who cannot tell the hues
   # apart. So a multi row is "  ❯ ■ label", the pointer blank off the cursor.
   if [[ "$mode" == multi ]]; then
-    glyph_w=$(( ${(m)#pointer} + 1 + (${(m)#SHUI_ICON_SQUARE} > ${(m)#SHUI_ICON_SQUARE_EMPTY} ? ${(m)#SHUI_ICON_SQUARE} : ${(m)#SHUI_ICON_SQUARE_EMPTY}) ))
+    glyph_w=$(( ${(m)#pointer} + 1 + ${(m)#on} ))
   fi
   local -i room=$(( limit - 3 - glyph_w ))
   local -i col=$(( max_len < room ? max_len : room ))
@@ -225,9 +246,9 @@ _shui_list_render() {
       fi
     else
       if (( selected[$i] )); then
-        check="${SHUI_COLOR_SUCCESS}${SHUI_ICON_SQUARE}${SHUI_RESET}"
+        check="${SHUI_COLOR_SUCCESS}${on}${SHUI_RESET}"
       else
-        check="${SHUI_COLOR_MUTED}${SHUI_ICON_SQUARE_EMPTY}${SHUI_RESET}"
+        check="${SHUI_COLOR_MUTED}${off}${SHUI_RESET}"
       fi
       # Bold, not PRIMARY, for the label: the default theme's PRIMARY is a
       # 256-colour code, and the pointer already says which row this is.
