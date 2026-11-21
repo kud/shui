@@ -16,12 +16,15 @@ _shui_box() {
     esac
   done
 
+  # A content row is │ + 2 spaces + inner + 2 spaces + │, i.e. the full terminal
+  # width; the horizontal rules between the corners must span inner + 4 to meet it.
   local inner=$(( _SHUI_TERMINAL_WIDTH - 6 ))
+  local rule=$(( inner + 4 ))
 
   if [[ -n "$title" ]]; then
-    local title_len=${#title}
-    local left=$(( (inner - title_len - 2) / 2 ))
-    local right=$(( inner - title_len - 2 - left ))
+    local title_len=$(_shui_visible_len "$title")
+    local left=$(( (rule - title_len - 2) / 2 ))
+    local right=$(( rule - title_len - 2 - left ))
     printf '%s' "${SHUI_COLOR_MUTED}┌"
     _shui_repeat "─" "$left"
     printf ' %s%s%s%s ' "${SHUI_COLOR_PRIMARY}${SHUI_BOLD}" "$title" "${SHUI_RESET}${SHUI_COLOR_MUTED}"
@@ -29,7 +32,7 @@ _shui_box() {
     printf '┐%s\n' "${SHUI_RESET}"
   else
     printf '%s' "${SHUI_COLOR_MUTED}┌"
-    _shui_repeat "─" $(( inner + 2 ))
+    _shui_repeat "─" "$rule"
     printf '┐%s\n' "${SHUI_RESET}"
   fi
 
@@ -44,6 +47,6 @@ _shui_box() {
   done
 
   printf '%s' "${SHUI_COLOR_MUTED}└"
-  _shui_repeat "─" $(( inner + 2 ))
+  _shui_repeat "─" "$rule"
   printf '┘%s\n' "${SHUI_RESET}"
 }

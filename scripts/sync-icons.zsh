@@ -11,7 +11,7 @@
 
 set -euo pipefail
 
-GLYPHS_VERSION=v0.3.0
+GLYPHS_VERSION=v0.4.0
 GLYPHS_RAW="https://raw.githubusercontent.com/kud/glyphs/${GLYPHS_VERSION}/zsh"
 ICONS="${0:A:h}/../src/icons"
 
@@ -36,9 +36,34 @@ fetch() { curl -fsSL "${GLYPHS_RAW}/$1.zsh" | grep -E '^ICON_' | sed 's/^ICON_/S
 { header "emoji icon set — Unicode emoji, no special font required"
   fetch emoji } >| "${ICONS}/emoji.zsh"
 
+# State vocabulary for the unicode base layer. @kud/glyphs v0.4.0 carries no
+# `unicode` value for these names, so its unicode.zsh is geometrics only and a
+# set that inherits the base (or the base alone) has no success/error/... glyph.
+# Appended only for names upstream does not already emit: once glyphs.json gains
+# a `unicode` field for one, upstream wins and its line here becomes inert.
+UNICODE_STATES=(
+  SUCCESS 2713   # ✓
+  ERROR   2717   # ✗
+  WARNING 26A0   # ⚠
+  INFO    2139   # ℹ
+  ARROW   2192   # →
+  CHECK   2713   # ✓
+  CROSS   2717   # ✗
+)
+
+unicode_base() {
+  local upstream name cp
+  upstream=$(fetch unicode)
+  print -r -- "$upstream"
+  for name cp in "${UNICODE_STATES[@]}"; do
+    [[ $upstream == *"SHUI_ICON_${name}="* ]] && continue
+    print -r -- "SHUI_ICON_${name}=\$'\\U0000${cp}'"
+  done
+}
+
 { header "unicode icon set — standard Unicode symbols, no special font required" \
-    "Thin base layer, sourced first; nerd/emoji/none override per set."
-  fetch unicode } >| "${ICONS}/unicode.zsh"
+    "Thin base layer, sourced first; nerd/emoji/none override per set. State glyphs are shui's own until @kud/glyphs carries them."
+  unicode_base } >| "${ICONS}/unicode.zsh"
 
 # none — every name from the nerd set, emptied (text-only fallback, keeps parity).
 { header "none icon set — no icons (text-only fallback)"

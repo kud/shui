@@ -93,6 +93,20 @@ _t_section "none — all variables defined"
 ) || exit 1
 
 # ---------------------------------------------------------------------------
+# 4b. unicode base layer — carries the state vocabulary on its own
+# ---------------------------------------------------------------------------
+_t_section "unicode — base layer defines the state glyphs"
+
+(
+  source "${SHUI_DIR}/src/icons/unicode.zsh"
+  for _var in SHUI_ICON_SUCCESS SHUI_ICON_ERROR SHUI_ICON_WARNING SHUI_ICON_INFO \
+              SHUI_ICON_ARROW SHUI_ICON_CHECK SHUI_ICON_CROSS SHUI_ICON_BULLET; do
+    assert_not_empty "$_var is non-empty" "${(P)_var}"
+  done
+  _t_results
+) || exit 1
+
+# ---------------------------------------------------------------------------
 # 5. Parity — all three sets expose the same variable names
 # ---------------------------------------------------------------------------
 _t_section "parity — all sets define the same variables"

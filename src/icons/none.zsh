@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 #
 # none icon set — no icons (text-only fallback)
-# GENERATED from @kud/glyphs v0.3.0 by scripts/sync-icons.zsh — do not edit.
+# GENERATED from @kud/glyphs v0.4.0 by scripts/sync-icons.zsh — do not edit.
 # Change the glyph upstream in @kud/glyphs, bump GLYPHS_VERSION, and re-run the sync.
 #
 
@@ -56,6 +56,19 @@ SHUI_ICON_INSTALL=''
 SHUI_ICON_JAVA=''
 SHUI_ICON_JULIA=''
 SHUI_ICON_KEY=''
+SHUI_ICON_KEY_BACKSPACE=''
+SHUI_ICON_KEY_COMMAND=''
+SHUI_ICON_KEY_CONTROL=''
+SHUI_ICON_KEY_DOWN=''
+SHUI_ICON_KEY_ENTER=''
+SHUI_ICON_KEY_ESCAPE=''
+SHUI_ICON_KEY_LEFT=''
+SHUI_ICON_KEY_OPTION=''
+SHUI_ICON_KEY_RIGHT=''
+SHUI_ICON_KEY_SHIFT=''
+SHUI_ICON_KEY_SPACE=''
+SHUI_ICON_KEY_TAB=''
+SHUI_ICON_KEY_UP=''
 SHUI_ICON_KOTLIN=''
 SHUI_ICON_LINK=''
 SHUI_ICON_LOADING=''
@@ -68,7 +81,9 @@ SHUI_ICON_PHP=''
 SHUI_ICON_PL_ARROW_LEFT=''
 SHUI_ICON_PL_ARROW_RIGHT=''
 SHUI_ICON_PL_CAP_LEFT=''
+SHUI_ICON_PL_CAP_LEFT_THIN=''
 SHUI_ICON_PL_CAP_RIGHT=''
+SHUI_ICON_PL_CAP_RIGHT_THIN=''
 SHUI_ICON_PLUG=''
 SHUI_ICON_POINTER=''
 SHUI_ICON_PROMPT=''

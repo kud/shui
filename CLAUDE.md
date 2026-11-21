@@ -19,6 +19,7 @@ src/
     nerd.zsh              # Nerd Font PUA glyphs (default, SHUI_ICONS=nerd)
     emoji.zsh             # Unicode emoji  (SHUI_ICONS=emoji)
     none.zsh              # no icons       (SHUI_ICONS=none)
+    ascii.zsh             # 7-bit ASCII    (SHUI_ICONS=ascii) — hand-written, layered on none.zsh; the non-UTF-8 fallback
   themes/
     default.zsh           # 256-colour with 16-colour fallback (colours only, no icons)
     minimal.zsh           # 16-colour ANSI (inherits default, overrides colours)
@@ -52,7 +53,9 @@ scripts/
 
 1. `src/tokens/colors.zsh` — utilities available to themes
 2. `src/tokens/contract.zsh` — token list + validation function
-3. `src/icons/unicode.zsh` — base Unicode symbols, always loaded regardless of icon set
+3. `src/icons/unicode.zsh` — base Unicode symbols, loaded regardless of icon set **when the locale is UTF-8**.
+   Otherwise every `$'\U…'` escape is a fatal "character not in range", so shui skips it and switches any
+   set but `none` to `ascii` (escape-free). The check probes the escape itself (one `eval`, no fork).
 4. `src/icons/<SHUI_ICONS>.zsh` — overrides `SHUI_ICON_*` tokens for the selected set
 5. `src/themes/<SHUI_THEME>.zsh` — sets colour/style tokens (may override icon tokens)
 6. `_shui_validate_theme` — aborts if any required token is missing
@@ -90,13 +93,20 @@ After regenerating SVGs, commit `assets/` alongside any code changes.
 
 ## Icon files (`src/icons/`)
 
-**The four `src/icons/*.zsh` files are GENERATED from [@kud/glyphs](https://github.com/kud/glyphs)** — the shared source of truth for terminal glyphs. Do not hand-edit them. To change or add an icon:
+**The four `src/icons/{unicode,nerd,emoji,none}.zsh` files are GENERATED from [@kud/glyphs](https://github.com/kud/glyphs)** — the shared source of truth for terminal glyphs. Do not hand-edit them. To change or add an icon:
 
 1. Edit `glyphs.json` in @kud/glyphs and release a new version.
 2. Bump `GLYPHS_VERSION` in `scripts/sync-icons.zsh`.
 3. Run `zsh scripts/sync-icons.zsh` and commit the regenerated files.
 
 The sync fetches @kud/glyphs' escape-safe `ICON_*` zsh files and text-substitutes the prefix into shui's namespace (`sed 's/^ICON_/SHUI_ICON_/'`). **No node, no runtime dependency** — the generated files are plain literal assignments shui sources directly at load time.
+
+`unicode.zsh` gets the state glyphs (success, error, warning, info, arrow, check, cross) from
+`UNICODE_STATES` in `scripts/sync-icons.zsh`, because @kud/glyphs has no `unicode` value for them yet;
+each is emitted only when upstream does not already provide that name.
+
+`ascii.zsh` is the one hand-written icon file: plain quoted 7-bit literals over `none.zsh`, never an escape
+(`tests/test-locale.zsh` enforces both).
 
 Invariants (produced upstream by @kud/glyphs, still enforced by `tests/test-icons.zsh`):
 
