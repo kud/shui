@@ -73,14 +73,21 @@ done
 
 _t_section "headers carry no hue"
 
-_hdr() { env FORCE_COLOR=1 SHUI_ICONS=none TERM=xterm-256color zsh -fc \
-  "source '${SHUI_DIR}/shui.zsh'; $1" 2>&1; }
-for _call in 'shui section Hosts' 'shui subtitle Hosts' 'shui subsection Hosts'; do
-  _out=$(_hdr "$_call")
-  assert_contains     "${_call#shui } is bold" $'\033[1m' "$_out"
-  assert_not_contains "${_call#shui } carries no hue" $'\033[38;' "$_out"
-  assert_not_contains "${_call#shui } carries no 16-colour hue" $'\033[3' "${_out//$'\033[3m'/}"
+_hdr() { env FORCE_COLOR=1 SHUI_ICONS=none SHUI_THEME=${_HDR_THEME:-default} TERM=${_HDR_TERM:-xterm-256color} \
+  zsh -fc "source '${SHUI_DIR}/shui.zsh'; $1" 2>&1; }
+for _HDR_THEME in default minimal; do
+  for _HDR_TERM in xterm-256color xterm; do
+    for _call in 'shui section Hosts' 'shui subtitle Hosts' 'shui subsection Hosts'; do
+      _out=$(_hdr "$_call")
+      _tag="$_HDR_THEME/$_HDR_TERM: ${_call#shui }"
+      assert_contains     "$_tag is bold" $'\033[1m' "$_out"
+      assert_not_contains "$_tag carries no 256-colour hue" $'\033[38;' "$_out"
+      assert_not_contains "$_tag carries no 16-colour hue" $'\033[3' "${_out//$'\033[3m'/}"
+      assert_not_contains "$_tag carries no bright hue" $'\033[9' "$_out"
+    done
+  done
 done
+unset _HDR_THEME _HDR_TERM
 
 _t_section "badge text follows ink-ui's INK table"
 
