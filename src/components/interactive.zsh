@@ -1,5 +1,18 @@
 #!/usr/bin/env zsh
 
+# Every prompt below reads its answer from /dev/tty, never stdin, so piped input
+# cannot answer on the user's behalf. With no controlling terminal (cron, CI, a
+# detached `setsid`, an agent's subprocess) that open fails: the read errors out,
+# `confirm` falls back to its default and a `--default=y` reads as consent nobody
+# gave, while `--default=n` exits 1 and the caller cannot tell "declined" from
+# "never asked". Refuse instead: one stderr line and exit 2, before any prompt is
+# drawn. The probe is a builtin redirect, so it costs no fork.
+_shui_require_tty() {
+  { true </dev/tty } 2>/dev/null && return 0
+  printf 'shui: no terminal to ask; pass --yes\n' >&2
+  return 2
+}
+
 _shui_confirm() {
   local default="n"
   local prompt="Are you sure?"
@@ -10,6 +23,8 @@ _shui_confirm() {
       *)           prompt="$1";              shift ;;
     esac
   done
+
+  _shui_require_tty || return 2
 
   local hint
   if [[ "$default" == "y" ]]; then
@@ -30,6 +45,7 @@ _shui_confirm() {
 }
 
 _shui_select() {
+  _shui_require_tty || return 2
   local prompt="$1"; shift
   local -a options=("$@")
 
@@ -57,6 +73,7 @@ _shui_select() {
 }
 
 _shui_radio() {
+  _shui_require_tty || return 2
   local prompt="$1"; shift
   local -a options=("$@")
   local n=${#options[@]}
@@ -143,6 +160,7 @@ _shui_radio() {
 }
 
 _shui_multiselect() {
+  _shui_require_tty || return 2
   local prompt="$1"; shift
   local -a options=("$@")
   local n=${#options[@]}
@@ -259,6 +277,8 @@ _shui_input() {
     esac
   done
 
+  _shui_require_tty || return 2
+
   local hint=""
   [[ -n "$default" ]] && hint=" ${SHUI_COLOR_MUTED}(${default})${SHUI_RESET}"
 
@@ -293,6 +313,8 @@ _shui_password() {
       *) prompt="$1"; shift ;;
     esac
   done
+
+  _shui_require_tty || return 2
 
   printf '%s%s%s ' "$SHUI_BOLD" "$prompt" "$SHUI_RESET" >&2
 

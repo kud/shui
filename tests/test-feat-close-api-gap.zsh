@@ -98,7 +98,7 @@ done
 _t_section "_shui_message_simple"
 
 for _type in success error warning info muted; do
-  _out=$(strip_ansi "$(_shui_message_simple "$_type" "hello")")
+  _out=$(strip_ansi "$(_shui_message_simple "$_type" "hello" 2>&1)")
   assert_contains "_shui_message_simple ${_type} contains message text" "hello" "$_out"
 done
 

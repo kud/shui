@@ -69,7 +69,7 @@ unset NO_COLOR
 _t_section "_shui_message"
 
 for _type in success error warning info; do
-  _out=$(strip_ansi "$(_shui_message "$_type" "the message text")")
+  _out=$(strip_ansi "$(_shui_message "$_type" "the message text" 2>&1)")
   assert_contains "${_type} renders message text" "the message text" "$_out"
 done
 

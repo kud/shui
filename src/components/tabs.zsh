@@ -21,6 +21,8 @@ _shui_tabs() {
   local -a raw=("$@")
   local n=${#raw[@]}
   (( n == 0 )) && return 1
+  # Same refusal as every prompt in interactive.zsh: no terminal, no answer.
+  _shui_require_tty || return 2
 
   # Split each arg into a label and an optional (tab-separated) description.
   local -a labels descs
