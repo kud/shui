@@ -26,7 +26,7 @@ _shui_animation() {
           *) text="$1"; shift ;;
         esac
       done
-      local ch
+      local ch i
       printf '%s' "$color"
       for ((i=1; i<=${#text}; i++)); do
         ch="${text[$i]}"
@@ -45,6 +45,16 @@ _shui_animation() {
         esac
       done
       local s
+      # The fade redraws with \r, which only reaches the start of the current row:
+      # text wider than the terminal wraps, and each step would land a row lower.
+      # Such text skips the fade and is printed once.
+      if [[ -t 1 ]]; then
+        local REPLY
+        local -a reply
+        _shui_tty_size
+        _shui_plain "$text"
+        (( ${(m)#REPLY} >= reply[2] )) && steps=0
+      fi
       for ((s=0; s<steps; s++)); do
         printf '\r%s%s%s' "$SHUI_DIM" "$text" "$SHUI_RESET"
         sleep 0.1

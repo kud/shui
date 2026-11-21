@@ -302,10 +302,12 @@ _shui_help_cmd() {
       echo "Prints the chosen option to stdout." ;;
     radio)
       echo "Usage: shui radio <prompt> <opt1> [opt2…]"
-      echo "Like select but with ○ radio button indicators. Prints the chosen option to stdout." ;;
+      echo "Arrow-key list: ↑↓/jk move · g/G first/last · PgUp/PgDn · enter select · q cancel."
+      echo "Options may be label⇥hint. A list taller than the terminal scrolls. Prints the chosen label." ;;
     multiselect)
       echo "Usage: shui multiselect <prompt> <opt1> [opt2…]"
-      echo "Checkbox selection. Enter comma-separated numbers or \"all\". Prints selected options newline-separated." ;;
+      echo "Checkboxes: ↑↓/jk move · space toggle · a all · enter confirm · q cancel."
+      echo "Options may be label⇥hint. A list taller than the terminal scrolls. Prints the selected labels, one per line." ;;
     tabs)
       echo "Usage: shui tabs <prompt> <label[⇥desc]>…"
       echo "Live horizontal tab bar. Each arg is a tab label, optionally label⇥desc."

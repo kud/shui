@@ -91,6 +91,12 @@ choices=$(shui multiselect "Which packages?" brew npm cargo)
 name=$(shui input --default="world" "Your name:")
 ```
 
+`radio` and `multiselect` take options as `label⇥hint` and print only the labels.
+A list taller than the terminal scrolls with the cursor, under a position line
+such as `12–30 of 76`, and a line wider than the terminal is cut with an
+ellipsis on screen, never in what is printed. `q`, Esc and Ctrl-C cancel with
+exit 130.
+
 Every prompt reads its answer from the terminal, not from stdin. When there is no
 terminal to ask (cron, CI, a detached process), it draws nothing, prints
 `shui: no terminal to ask; pass --yes` to stderr and exits **2** — a default is

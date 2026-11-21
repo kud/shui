@@ -15,8 +15,8 @@
 #
 # Prompt + rendering go to stderr so the printed result stays capturable,
 # matching shui radio/select.
-
 _shui_tabs() {
+  emulate -L zsh
   local prompt="$1"; shift
   local -a raw=("$@")
   local n=${#raw[@]}
@@ -25,31 +25,97 @@ _shui_tabs() {
   _shui_require_tty || return 2
 
   # Split each arg into a label and an optional (tab-separated) description.
-  local -a labels descs
-  local opt
+  # labels are what the caller gets back; shown and descs are what is drawn,
+  # escape and control characters already made harmless (see _shui_plain).
+  local -a labels shown descs drawn
+  local opt REPLY
   for opt in "${raw[@]}"; do
     labels+=("${opt%%$'\t'*}")
-    [[ "$opt" == *$'\t'* ]] && descs+=("${opt#*$'\t'}") || descs+=("")
+    _shui_plain "${opt%%$'\t'*}"
+    shown+=("$REPLY")
+    if [[ "$opt" == *$'\t'* ]]; then
+      _shui_plain "${opt#*$'\t'}"
+      descs+=("$REPLY")
+    else
+      descs+=("")
+    fi
   done
 
   local active=1
 
   # Two lines, always: the tab bar and a desc line (blank when the active tab
-  # has none). A constant height keeps the cursor-up redraw a fixed \033[2A.
+  # has none). Each is cut to the terminal's width, so a constant height keeps
+  # the cursor-up redraw a fixed \033[2A until a narrower window reflows them.
+  # A bar too wide for the terminal shows the tabs around the active one, with
+  # "…" standing for the rest.
   _shui_tabs_render() {
-    local bar="" i
-    for (( i = 1; i <= n; i++ )); do
-      (( i > 1 )) && bar+="${SHUI_COLOR_MUTED}  ·  ${SHUI_RESET}"
-      if (( i == active )); then
-        bar+="${SHUI_COLOR_PRIMARY}${SHUI_BOLD}«${labels[i]}»${SHUI_RESET}"
-      else
-        bar+="${SHUI_COLOR_MUTED}${labels[i]}${SHUI_RESET}"
+    local -a reply
+    local REPLY bar="" label sep="  ·  "
+    local -i cols limit used lo hi i grew reserve label_room
+    _shui_tty_size
+    cols=${reply[2]}
+    limit=$(( cols - 1 ))
+
+    if (( ${#drawn} )); then
+      _shui_rows_drawn $cols "${drawn[@]}"
+      printf '\033[%dA' "$REPLY"
+    fi
+
+    lo=$active hi=$active
+    used=$(( 2 + ${(m)#shown[active]} + 2 ))
+    grew=1
+    local -i whole=$(( 2 + 2 + 5 * (n - 1) ))
+    for (( i = 1; i <= n; i++ )); do (( whole += ${(m)#shown[i]} )); done
+    (( whole <= limit )) && { lo=1 hi=$n used=$whole grew=0; }
+    while (( grew )); do
+      grew=0
+      if (( hi < n )); then
+        reserve=$(( (lo > 1 ? 6 : 0) + (hi + 1 < n ? 6 : 0) ))
+        if (( used + 5 + ${(m)#shown[hi+1]} + reserve <= limit )); then
+          (( used += 5 + ${(m)#shown[hi+1]} ))
+          (( hi++ ))
+          grew=1
+        fi
+      fi
+      if (( lo > 1 )); then
+        reserve=$(( (lo - 1 > 1 ? 6 : 0) + (hi < n ? 6 : 0) ))
+        if (( used + 5 + ${(m)#shown[lo-1]} + reserve <= limit )); then
+          (( used += 5 + ${(m)#shown[lo-1]} ))
+          (( lo-- ))
+          grew=1
+        fi
       fi
     done
+    reserve=$(( (lo > 1 ? 6 : 0) + (hi < n ? 6 : 0) ))
+    (( used += reserve ))
+
+    label="${shown[active]}"
+    if (( used > limit )); then
+      label_room=$(( ${(m)#label} - (used - limit) ))
+      _shui_fit "$label" $(( label_room > 1 ? label_room : 1 ))
+      label="$REPLY"
+      used=$(( 2 + 2 + ${(m)#label} + reserve ))
+    fi
+
+    (( lo > 1 )) && bar+="${SHUI_COLOR_MUTED}…${sep}${SHUI_RESET}"
+    for (( i = lo; i <= hi; i++ )); do
+      (( i > lo )) && bar+="${SHUI_COLOR_MUTED}${sep}${SHUI_RESET}"
+      if (( i == active )); then
+        bar+="${SHUI_COLOR_PRIMARY}${SHUI_BOLD}«${label}»${SHUI_RESET}"
+      else
+        bar+="${SHUI_COLOR_MUTED}${shown[i]}${SHUI_RESET}"
+      fi
+    done
+    (( hi < n )) && bar+="${SHUI_COLOR_MUTED}${sep}…${SHUI_RESET}"
+
     printf '\033[2K\r  %s\n' "$bar"
+    drawn=($used 0)
     printf '\033[2K\r'
-    [[ -n "${descs[active]}" ]] && \
-      printf '  %s%s%s' "$SHUI_COLOR_SECONDARY" "${descs[active]}" "$SHUI_RESET"
+    if [[ -n "${descs[active]}" ]]; then
+      _shui_fit "${descs[active]}" $(( limit - 2 ))
+      printf '  %s%s%s' "$SHUI_COLOR_SECONDARY" "$REPLY" "$SHUI_RESET"
+      drawn[2]=$(( 2 + ${(m)#REPLY} ))
+    fi
     printf '\n'
   }
 
@@ -58,33 +124,25 @@ _shui_tabs() {
   _shui_tabs_render >&2
 
   # stdout on /dev/null, never /dev/tty: see the note in interactive.zsh. The
-  # stty warning it avoids shifts every redraw down a row.
-  local old_stty exit_code=0 char seq
+  # stty warning it avoids shifts every redraw down a row. -isig makes ctrl-c a
+  # keypress, for the same reason as there.
+  local old_stty exit_code=0
   old_stty=$(stty -g </dev/tty 2>/dev/null) || old_stty=""
-  [[ -n "$old_stty" ]] && stty -echo -icanon min 1 time 0 </dev/tty >/dev/null
+  [[ -n "$old_stty" ]] && stty -echo -icanon -isig min 1 time 0 </dev/tty >/dev/null
   _shui_cursor hide-cursor >&2
 
   while true; do
-    IFS= read -rk1 char </dev/tty
-    case "$char" in
-      $'\033')
-        if IFS= read -rk2 -t 0.4 seq </dev/tty; then
-          case "$seq" in
-            '[C') active=$(( active % n + 1 )) ;;              # right — wraps
-            '[D') active=$(( (active - 2 + n) % n + 1 )) ;;    # left  — wraps
-            '[Z') active=$(( (active - 2 + n) % n + 1 )) ;;    # shift-tab
-          esac
-        else
-          exit_code=130; break                                # bare esc — cancel
-        fi
-        ;;
-      $'\t'|l) active=$(( active % n + 1 )) ;;
-      h)        active=$(( (active - 2 + n) % n + 1 )) ;;
-      [1-9])    (( char <= n )) && active=$char ;;
-      $'\r'|$'\n') break ;;
-      q|Q|$'\003') exit_code=130; break ;;
+    if ! _shui_read_key; then
+      exit_code=2
+      break
+    fi
+    case "$REPLY" in
+      right|$'\t'|l)    active=$(( active % n + 1 )) ;;              # wraps
+      left|backtab|h)   active=$(( (active - 2 + n) % n + 1 )) ;;    # wraps
+      [1-9])            (( REPLY <= n )) && active=$REPLY ;;
+      enter)            break ;;
+      esc|q|Q|$'\003')  exit_code=130; break ;;
     esac
-    printf '\033[2A' >&2
     _shui_tabs_render >&2
   done
 
