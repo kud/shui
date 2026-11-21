@@ -98,4 +98,12 @@ assert_contains "info: black on 117"    $'\033[48;5;117m\033[38;5;0m'  "$(_badge
 assert_contains "error: white on 203"   $'\033[48;5;203m\033[38;5;15m' "$(_badge error)"
 assert_contains "accent: black on 208"  $'\033[48;5;208m\033[38;5;0m'  "$(_badge accent)"
 
+_t_section "warning pill is amber, never the accent cell"
+
+# A pill shows a word, so the fill is what separates warning from accent.
+_pill() { env FORCE_COLOR=1 SHUI_ICONS=nerd TERM=xterm-256color zsh -fc \
+  "source '${SHUI_DIR}/shui.zsh'; shui pill $1 x" 2>&1; }
+assert_contains     "warning pill: black on 214 amber" $'\033[48;5;214m\033[38;5;0m' "$(_pill warning)"
+assert_not_contains "warning pill is not on 208"       $'\033[48;5;208m'              "$(_pill warning)"
+
 _t_results

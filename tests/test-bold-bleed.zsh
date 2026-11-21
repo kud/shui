@@ -78,6 +78,29 @@ assert_not_empty "bold carried into the next colour" \
 assert_not_empty "bold left on at end of line" \
   "$(_bleed_check $'\e[1mA\n')"
 
+_t_section "bold+colour span, then a plain coloured span"
+
+# fence --color=accent prints a bold accent label, then the muted rule: the
+# rule must carry no bold. Proven against a broken variant too — the same tree
+# with the reset after the label removed — so this cannot pass vacuously.
+_fence='shui fence label --color=accent'
+for _theme in default minimal; do
+  _out=$(env FORCE_COLOR=1 SHUI_ICONS=none SHUI_THEME=$_theme TERM=xterm zsh -fc \
+    "source '${SHUI_DIR}/shui.zsh'; $_fence" 2>&1)
+  assert_contains "$_theme: label is bold"           $'\033[1m' "$_out"
+  assert_eq       "$_theme: the rule after it is not" "" "$(_bleed_check "$_out")"
+done
+
+_broken=$(mktemp -d)
+cp -R "${SHUI_DIR}/shui.zsh" "${SHUI_DIR}/src" "$_broken/"
+sed -i.orig 's/"\$label" "\$SHUI_RESET"/"$label" ""/' "$_broken/src/components/layout.zsh"
+assert_not_empty "the broken variant really drops the reset" \
+  "$(diff "$_broken/src/components/layout.zsh.orig" "$_broken/src/components/layout.zsh")"
+_out=$(env FORCE_COLOR=1 SHUI_ICONS=none SHUI_THEME=minimal TERM=xterm zsh -fc \
+  "source '$_broken/shui.zsh'; $_fence" 2>&1)
+assert_not_empty "broken variant: the leak is caught" "$(_bleed_check "$_out")"
+[[ -n $_broken && -d $_broken/src ]] && rm -rf -- "$_broken"
+
 _t_section "no component leaks bold"
 
 _CALLS=(
