@@ -182,8 +182,11 @@ _shui_list_render() {
   local pointer="$SHUI_ICON_POINTER" _blank_src=""
   local blank="${(l:${(m)#pointer}:)_blank_src}" check
   local -i glyph_w=${(m)#pointer}
+  # Multi mode marks the cursor with the same pointer column as radio: colour
+  # alone disappears under `plain` and fails anyone who cannot tell the hues
+  # apart. So a multi row is "  ❯ ■ label", the pointer blank off the cursor.
   if [[ "$mode" == multi ]]; then
-    glyph_w=$(( ${(m)#SHUI_ICON_SQUARE} > ${(m)#SHUI_ICON_SQUARE_EMPTY} ? ${(m)#SHUI_ICON_SQUARE} : ${(m)#SHUI_ICON_SQUARE_EMPTY} ))
+    glyph_w=$(( ${(m)#pointer} + 1 + (${(m)#SHUI_ICON_SQUARE} > ${(m)#SHUI_ICON_SQUARE_EMPTY} ? ${(m)#SHUI_ICON_SQUARE} : ${(m)#SHUI_ICON_SQUARE_EMPTY}) ))
   fi
   local -i room=$(( limit - 3 - glyph_w ))
   local -i col=$(( max_len < room ? max_len : room ))
@@ -226,10 +229,14 @@ _shui_list_render() {
       else
         check="${SHUI_COLOR_MUTED}${SHUI_ICON_SQUARE_EMPTY}${SHUI_RESET}"
       fi
+      # Bold, not PRIMARY, for the label: the default theme's PRIMARY is a
+      # 256-colour code, and the pointer already says which row this is.
       if (( i == cursor )); then
-        printf '  %s %s%s%s%*s' "$check" "$SHUI_COLOR_PRIMARY" "$label" "$SHUI_RESET" "$pad" ""
+        printf '  %s%s%s %s %s%s%s%*s' \
+          "$SHUI_COLOR_PRIMARY" "$pointer" "$SHUI_RESET" \
+          "$check" "$SHUI_BOLD" "$label" "$SHUI_RESET" "$pad" ""
       else
-        printf '  %s %s%*s' "$check" "$label" "$pad" ""
+        printf '  %s %s %s%*s' "$blank" "$check" "$label" "$pad" ""
       fi
     fi
     [[ -n "$desc" ]] && printf '%s%s%s' "$SHUI_COLOR_SECONDARY" "$desc" "$SHUI_RESET"

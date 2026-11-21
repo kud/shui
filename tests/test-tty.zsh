@@ -134,19 +134,36 @@ _rd='out=$(shui radio Pick "${items[@]}"); print -r -- "<<rc=$?>><<out=$out>>"'
 # ---------------------------------------------------------------------------
 # 3. A short list draws exactly as before
 # ---------------------------------------------------------------------------
-_t_section "multiselect: short list unchanged"
+_t_section "multiselect: a short list, byte for byte"
 
 items=(a b$'\t'hint c)
 _pty 10 60 "$_ms" "$_HIDE" j ' ' $'\e[B' ' ' $'\n'
 _want="Pick ↑↓/jk move · space toggle · a all · enter confirm · q cancel"$'\n'
-for _f in ". . ." ". . ." ". # ." ". # ." ". # #"; do
+# Each frame: the cursor row, then the three boxes. The pointer marks the
+# cursor row; every other row carries a blank of the same width.
+for _f in "1 . . ." "2 . . ." "2 . # ." "3 . # ." "3 . # #"; do
   [[ "$_want" == *$_HIDE* ]] && _want+=$'\e[3A'
   _f=(${=_f})
-  _want+=$'\e[2K  '"$_f[1]"$' a  \n\e[2K  '"$_f[2]"$' b  hint\n\e[2K  '"$_f[3]"$' c  \n'
+  _ptr=(" " " " " ")
+  _ptr[$_f[1]]=">"
+  _want+=$'\e[2K  '"$_ptr[1] $_f[2]"$' a  \n\e[2K  '"$_ptr[2] $_f[3]"$' b  hint\n\e[2K  '"$_ptr[3] $_f[4]"$' c  \n'
   [[ "$_want" == *$_HIDE* ]] || _want+="$_HIDE"
 done
 _want+="$_SHOW"$'\n'"<<rc=0>><<out=b,c>>"$'\n'
-assert_eq "every byte as drawn by 1.5.0" "$_want" "${_PTY%<<end 0>>$'\n'}"
+assert_eq "every byte as expected, the pointer on the cursor row" "$_want" "${_PTY%<<end 0>>$'\n'}"
+
+_t_section "multiselect: the cursor shows without colour"
+
+# Under `plain` every colour token is empty, so a cursor drawn in colour alone
+# vanished. The pointer must be on the cursor row and on no other.
+items=(alpha beta gamma)
+_pty 10 40 "$_ms" "$_HIDE" j $'\n'
+_frame=${${_PTY#*$_HIDE}%%<<rc=*}
+_frame=${_frame##*$'\e[3A'}
+assert_contains "pointer on the cursor row"   "  > . beta"  "$_frame"
+assert_contains "no pointer on another row"   "    . alpha" "$_frame"
+_lines=("${(@f)_frame}")
+assert_eq "exactly one pointer in the frame" "1" "${#${(@M)_lines:#*\> *}}"
 
 # ---------------------------------------------------------------------------
 # 4. A list taller than the terminal scrolls
@@ -159,7 +176,7 @@ assert_eq "every redraw climbs the same 7 rows" "7" "$(_climbs "$_PTY" | tr " " 
 assert_contains "position line at the top"    "1–6 of 30"                 "$_PTY"
 assert_contains "PgDn moves a page"           "5–10 of 30 · 1 selected"   "$_PTY"
 assert_contains "G reaches the end"           "25–30 of 30 · 3 selected"  "$_PTY"
-assert_not_contains "never more rows than fit" "item-01  "$'\n'$'\e[2K'"  . item-08" "$_PTY"
+assert_not_contains "never more rows than fit" "item-01  "$'\n'$'\e[2K'"    . item-08" "$_PTY"
 assert_contains "returns the ticked labels"   "<<rc=0>><<out=item-04,item-10,item-30>>" "$_PTY"
 _out=${${_PTY#*$_HIDE}%%<<rc=*}
 assert_eq "no line wider than the terminal" "1" "$(( $(_widest "$_out") <= 39 ))"
