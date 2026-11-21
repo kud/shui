@@ -69,6 +69,7 @@ if (( _can_detach )); then
     'multiselect'          'shui multiselect "Pick" one two'
     'input --default'      'shui input --default=fallback "Name?"'
     'password'             'shui password "Secret?"'
+    'tabs'                 'shui tabs "Pick" one two'
   )
   for _name in ${(ko)_calls}; do
     _detached "source '${SHUI_DIR}/shui.zsh'; ${_calls[$_name]}"
