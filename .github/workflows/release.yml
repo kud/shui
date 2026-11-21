@@ -1,0 +1,37 @@
+name: Release
+
+# Tags the version in VERSION and publishes a GitHub release.
+# Run it by hand on main once VERSION, SHUI_VERSION and CHANGELOG.md carry the
+# new version (bin/release.sh --sync, or a release PR). Consumers pin the tag
+# (ambre: antidote.yml and plugins.txt), so the tag is the release.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Tag and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF" == "refs/heads/main" ]] || { echo "::error::Run the release from main."; exit 1; }
+          version=$(tr -d '[:space:]' < VERSION)
+          tag="v$version"
+          grep -q "^SHUI_VERSION=\"$version\"" shui.zsh || { echo "::error::shui.zsh SHUI_VERSION is not $version."; exit 1; }
+          grep -q "^## \[$version\]" CHANGELOG.md || { echo "::error::CHANGELOG.md has no [$version] section."; exit 1; }
+          if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+            echo "::error::$tag already exists. Bump VERSION first."
+            exit 1
+          fi
+          awk -v v="$version" '$0 ~ "^## \\[" v "\\]" {on=1; next} on && /^## \[/ {exit} on' CHANGELOG.md | sed '/^---$/d' > notes.md
+          git tag "$tag" "$GITHUB_SHA"
+          git push origin "refs/tags/$tag"
+          gh release create "$tag" --title "$tag" --notes-file notes.md --verify-tag
