@@ -3,7 +3,7 @@
 # unicode icon set — standard Unicode symbols, no special font required
 # GENERATED from @kud/glyphs v0.4.0 by scripts/sync-icons.zsh — do not edit.
 # Change the glyph upstream in @kud/glyphs, bump GLYPHS_VERSION, and re-run the sync.
-# Thin base layer, sourced first; nerd/emoji/none override per set.
+# Thin base layer, sourced first; nerd/emoji/none override per set. State glyphs are shui's own until @kud/glyphs carries them.
 #
 
 SHUI_ICON_BULLET=$'\U0000203A'
@@ -27,3 +27,10 @@ SHUI_ICON_POINTER=$'\U0000276F'
 SHUI_ICON_SQUARE=$'\U000025A0'
 SHUI_ICON_SQUARE_EMPTY=$'\U000025A1'
 SHUI_ICON_TRIANGLE=$'\U000025B2'
+SHUI_ICON_SUCCESS=$'\U00002713'
+SHUI_ICON_ERROR=$'\U00002717'
+SHUI_ICON_WARNING=$'\U000026A0'
+SHUI_ICON_INFO=$'\U00002139'
+SHUI_ICON_ARROW=$'\U00002192'
+SHUI_ICON_CHECK=$'\U00002713'
+SHUI_ICON_CROSS=$'\U00002717'
