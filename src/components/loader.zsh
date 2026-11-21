@@ -13,6 +13,18 @@ _shui_loader() {
     esac
   done
 
+  # Frames return to column 0 with \r, which only reaches the start of the
+  # current row: a message wider than the terminal wraps, and each frame then
+  # lands a row lower. Cut it to fit, leaving room for the dots or the glyph.
+  if [[ -t 1 ]]; then
+    local REPLY
+    local -a reply
+    _shui_tty_size
+    _shui_plain "$msg"
+    _shui_fit "$REPLY" $(( reply[2] - 4 ))
+    msg="$REPLY"
+  fi
+
   case "$style" in
     dots)
       local end=$(( EPOCHSECONDS + duration ))

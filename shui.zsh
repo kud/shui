@@ -4,7 +4,7 @@
 # https://github.com/kud/shui
 #
 
-SHUI_VERSION="1.4.0"
+SHUI_VERSION="1.5.1"
 SHUI_DIR="${0:A:h}"
 
 [[ -n "${_SHUI_LOADED:-}" ]] && return 0
@@ -36,7 +36,12 @@ elif [[ $_SHUI_ICONS != (none|ascii) ]]; then
   _SHUI_ICONS=ascii
 fi
 
-if [[ $_SHUI_ICONS != unicode && -f "${SHUI_DIR}/src/icons/${_SHUI_ICONS}.zsh" ]]; then
+# unicode is the base layer, already sourced above (and only under UTF-8; the
+# non-UTF-8 branch has rewritten it to ascii). Asking for it explicitly means
+# "the base layer alone": nothing more to source, nothing to warn about.
+if [[ $_SHUI_ICONS == unicode ]]; then
+  :
+elif [[ -f "${SHUI_DIR}/src/icons/${_SHUI_ICONS}.zsh" ]]; then
   source "${SHUI_DIR}/src/icons/${_SHUI_ICONS}.zsh"
 else
   echo "shui: icon set '${_SHUI_ICONS}' not found, falling back to nerd" >&2
@@ -295,16 +300,18 @@ _shui_help_cmd() {
       echo "Runs <command> with a spinner. Exits with the command's exit code." ;;
     confirm)
       echo "Usage: shui confirm [--default=y|n] <prompt>"
-      echo "Exits 0 for yes, 1 for no. Default is n." ;;
+      echo "Exits 0 for yes, 1 for no, 2 when there is no terminal to ask. Default is n." ;;
     select)
       echo "Usage: shui select <prompt> <opt1> [opt2…]"
       echo "Prints the chosen option to stdout." ;;
     radio)
       echo "Usage: shui radio <prompt> <opt1> [opt2…]"
-      echo "Like select but with ○ radio button indicators. Prints the chosen option to stdout." ;;
+      echo "Arrow-key list: ↑↓/jk move · g/G first/last · PgUp/PgDn · enter select · q cancel."
+      echo "Options may be label⇥hint. A list taller than the terminal scrolls. Prints the chosen label." ;;
     multiselect)
       echo "Usage: shui multiselect <prompt> <opt1> [opt2…]"
-      echo "Checkbox selection. Enter comma-separated numbers or \"all\". Prints selected options newline-separated." ;;
+      echo "Checkboxes: ↑↓/jk move · space toggle · a all · enter confirm · q cancel."
+      echo "Options may be label⇥hint. A list taller than the terminal scrolls. Prints the selected labels, one per line." ;;
     tabs)
       echo "Usage: shui tabs <prompt> <label[⇥desc]>…"
       echo "Live horizontal tab bar. Each arg is a tab label, optionally label⇥desc."

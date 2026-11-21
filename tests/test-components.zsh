@@ -69,7 +69,7 @@ unset NO_COLOR
 _t_section "_shui_message"
 
 for _type in success error warning info; do
-  _out=$(strip_ansi "$(_shui_message "$_type" "the message text")")
+  _out=$(strip_ansi "$(_shui_message "$_type" "the message text" 2>&1)")
   assert_contains "${_type} renders message text" "the message text" "$_out"
 done
 
@@ -171,6 +171,15 @@ _out=$(_shui_progress 5 10 --width=10 --iterm=clear)
 assert_contains "--iterm=clear emits state 0" $'\033]9;4;0' "$_out"
 
 unset ITERM_SESSION_ID
+
+_t_section "_shui_progress out of range"
+
+_out=$(strip_ansi "$(_shui_progress 0 0 --width=10 2>&1)")
+assert_not_contains "total 0: no division error" "division" "$_out"
+assert_contains "total 0: nothing left to do, 100%" "100%" "$_out"
+_out=$(strip_ansi "$(_shui_progress 15 10 --width=10)")
+assert_contains "past the total: capped at 100%" "100%" "$_out"
+assert_eq "past the total: bar stays --width wide" "10" "${#${_out//[^█░]/}}"
 
 # ---------------------------------------------------------------------------
 # 10. _shui_animation

@@ -1,5 +1,18 @@
 #!/usr/bin/env zsh
 
+# Every prompt below reads its answer from /dev/tty, never stdin, so piped input
+# cannot answer on the user's behalf. With no controlling terminal (cron, CI, a
+# detached `setsid`, an agent's subprocess) that open fails: the read errors out,
+# `confirm` falls back to its default and a `--default=y` reads as consent nobody
+# gave, while `--default=n` exits 1 and the caller cannot tell "declined" from
+# "never asked". Refuse instead: one stderr line and exit 2, before any prompt is
+# drawn. The probe is a builtin redirect, so it costs no fork.
+_shui_require_tty() {
+  { true </dev/tty } 2>/dev/null && return 0
+  printf 'shui: no terminal to ask; pass --yes\n' >&2
+  return 2
+}
+
 _shui_confirm() {
   local default="n"
   local prompt="Are you sure?"
@@ -10,6 +23,12 @@ _shui_confirm() {
       *)           prompt="$1";              shift ;;
     esac
   done
+
+  # Only a bare lowercase "y" counted as a yes default: "--default=Y" drew the
+  # hint as y/N while enter answered yes, and "--default=yes" answered no.
+  [[ "${(L)default}" == y* ]] && default=y || default=n
+
+  _shui_require_tty || return 2
 
   local hint
   if [[ "$default" == "y" ]]; then
@@ -30,8 +49,10 @@ _shui_confirm() {
 }
 
 _shui_select() {
+  _shui_require_tty || return 2
   local prompt="$1"; shift
   local -a options=("$@")
+  local opt
 
   printf '%s%s%s\n' \
     "$SHUI_BOLD" "$prompt" "$SHUI_RESET" >&2
@@ -56,116 +77,150 @@ _shui_select() {
   fi
 }
 
-_shui_radio() {
-  local prompt="$1"; shift
-  local -a options=("$@")
-  local n=${#options[@]}
-  local cursor=1
 
-  _shui_radio_render() {
-    local i label desc max_len=0 pad
-    local pointer="$SHUI_ICON_POINTER" _blank_src=""
-    local blank="${(l:${#pointer}:)_blank_src}"
-    for (( i = 1; i <= n; i++ )); do
-      label="${options[$i]%%$'\t'*}"
-      (( ${#label} > max_len )) && max_len=${#label}
-    done
+# Reads one keypress from the terminal and names it: up, down, left, right,
+# home, end, pgup, pgdn, backtab, esc, enter, or the character itself; "" for a
+# sequence nothing here uses. An escape sequence is read to its final byte, so a
+# four-byte key such as PgDn (\e[6~) never leaves a stray "~" behind to be taken
+# for the next keypress. Fails only when the terminal is gone. Sets REPLY.
+_shui_read_key() {
+  emulate -L zsh
+  local c seq
+  IFS= read -rk1 c </dev/tty || return 1
+  case "$c" in
+    $'\r'|$'\n') REPLY=enter; return 0 ;;
+    $'\033')     ;;
+    *)           REPLY="$c"; return 0 ;;
+  esac
 
-    for (( i = 1; i <= n; i++ )); do
-      label="${options[$i]%%$'\t'*}"
-      desc="${options[$i]#*$'\t'}"
-      [[ "$desc" == "$label" ]] && desc=""
-      pad=$(( max_len - ${#label} + 2 ))
-      printf '\033[2K\r'
+  # A bare escape sends nothing after it; a slow link gets 0.4s to prove otherwise.
+  if ! IFS= read -rk1 -t 0.4 c </dev/tty; then
+    REPLY=esc
+    return 0
+  fi
+  REPLY=""
+  [[ "$c" == '[' || "$c" == 'O' ]] || return 0
+  seq="$c"
+  while (( ${#seq} < 8 )) && IFS= read -rk1 -t 0.4 c </dev/tty; do
+    seq+="$c"
+    [[ "$seq" != '[[' && "$c" == [@-~] ]] && break
+  done
+  case "$seq" in
+    '[A'|'OA')             REPLY=up ;;
+    '[B'|'OB')             REPLY=down ;;
+    '[C'|'OC')             REPLY=right ;;
+    '[D'|'OD')             REPLY=left ;;
+    '[H'|'OH'|'[1~'|'[7~') REPLY=home ;;
+    '[F'|'OF'|'[4~'|'[8~') REPLY=end ;;
+    '[5~')                 REPLY=pgup ;;
+    '[6~')                 REPLY=pgdn ;;
+    '[Z')                  REPLY=backtab ;;
+  esac
+  return 0
+}
+
+# Which slice of a list to draw. A list taller than the terminal cannot be
+# redrawn by moving the cursor up its full height: the cursor stops at the top
+# row, and every redraw lands below the last one. So a long list shows a window,
+# scrolled just far enough to keep the cursor in it, and a position line under it.
+#
+#   $1 options  $2 cursor  $3 current top  $4 rows free for the list
+#
+# Sets reply=(top height marker), marker 1 when the list is clipped and the
+# position line fits. Pure, so the arithmetic is testable without a terminal.
+_shui_list_window() {
+  emulate -L zsh
+  local -i n=$1 cursor=$2 top=$3 avail=$4 height marker=1
+  if (( n <= avail )); then
+    reply=(1 $n 0)
+    return
+  fi
+  height=$(( avail - 1 ))
+  if (( height < 1 )); then
+    height=$(( avail > 1 ? avail : 1 ))
+    marker=0
+  fi
+  (( cursor < 1 )) && cursor=1
+  (( top > cursor )) && top=$cursor
+  (( cursor > top + height - 1 )) && top=$(( cursor - height + 1 ))
+  (( top > n - height + 1 )) && top=$(( n - height + 1 ))
+  (( top < 1 )) && top=1
+  reply=($top $height $marker)
+}
+
+# One frame of a radio or multiselect list, drawn over the previous one. Reads
+# the caller's locals: mode (radio|multi), labels and descs (display text),
+# label_w, max_len, n, cursor, selected, header_w; updates top, page and drawn
+# (the visible width of each line written, which the next frame climbs back over).
+#
+# Every line is cut to the terminal's width, hint first and then label, so no
+# line wraps and the climb is exact. Only the display is cut: callers still get
+# the full label back.
+_shui_list_render() {
+  local -a reply
+  local REPLY
+  _shui_tty_size
+  local -i rows=${reply[1]} cols=${reply[2]}
+  local -i limit=$(( cols - 1 ))
+  local -i header_rows=$(( header_w > 0 ? (header_w + cols - 1) / cols : 1 ))
+  local -i avail=$(( rows - 1 - header_rows ))
+  (( avail < 2 )) && avail=$(( rows - 1 ))
+
+  _shui_list_window $n $cursor $top $avail
+  top=${reply[1]}
+  local -i height=${reply[2]} marker=${reply[3]}
+  page=$height
+
+  local -i climbed=0
+  if (( ${#drawn} )); then
+    _shui_rows_drawn $cols "${drawn[@]}"
+    climbed=$REPLY
+    printf '\033[%dA' "$climbed"
+  fi
+  drawn=()
+
+  local pointer="$SHUI_ICON_POINTER" _blank_src=""
+  local blank="${(l:${(m)#pointer}:)_blank_src}" check
+  local -i glyph_w=${(m)#pointer}
+  if [[ "$mode" == multi ]]; then
+    glyph_w=$(( ${(m)#SHUI_ICON_SQUARE} > ${(m)#SHUI_ICON_SQUARE_EMPTY} ? ${(m)#SHUI_ICON_SQUARE} : ${(m)#SHUI_ICON_SQUARE_EMPTY} ))
+  fi
+  local -i room=$(( limit - 3 - glyph_w ))
+  local -i col=$(( max_len < room ? max_len : room ))
+  (( col < 0 )) && col=0
+  local -i i pad width hint_room
+  local label desc
+
+  for (( i = top; i < top + height; i++ )); do
+    label="${labels[$i]}"
+    desc="${descs[$i]}"
+    (( label_w[$i] > col )) && { _shui_fit "$label" $col; label="$REPLY"; }
+    hint_room=$(( room - col - 2 ))
+    if [[ -n "$desc" ]]; then
+      if (( hint_room >= 2 )); then
+        _shui_fit "$desc" $hint_room
+        desc="$REPLY"
+      else
+        desc=""
+      fi
+    fi
+    pad=$(( col - ${(m)#label} + 2 ))
+    width=$(( 3 + glyph_w + ${(m)#label} + pad + ${(m)#desc} ))
+    (( width > limit )) && { (( pad -= width - limit )); width=$limit; }
+    (( pad < 0 )) && pad=0
+
+    printf '\033[2K\r'
+    if [[ "$mode" == radio ]]; then
       if (( i == cursor )); then
         printf '  %s%s%s %s%s%s%*s' \
           "$SHUI_COLOR_ACCENT" "$pointer" "$SHUI_RESET" \
           "$SHUI_COLOR_ACCENT" "$label" "$SHUI_RESET" \
           "$pad" ""
-        [[ -n "$desc" ]] && printf '%s%s%s' "$SHUI_COLOR_SECONDARY" "$desc" "$SHUI_RESET"
-        printf '\n'
       else
         printf '  %s %s%*s' \
           "$blank" "$label" "$pad" ""
-        [[ -n "$desc" ]] && printf '%s%s%s' "$SHUI_COLOR_SECONDARY" "$desc" "$SHUI_RESET"
-        printf '\n'
       fi
-    done
-  }
-
-  printf '%s%s%s %s↑↓/jk move · g/G first/last · enter select · q cancel%s\n' \
-    "$SHUI_BOLD" "$prompt" "$SHUI_RESET" \
-    "$SHUI_COLOR_MUTED" "$SHUI_RESET" >&2
-  _shui_radio_render >&2
-
-  # stdin on the tty, stdout on /dev/null, here and at every other stty call in
-  # this file. macOS stty writes "stdout appears redirected, but stdin is the
-  # control descriptor" to stderr when stdout is /dev/tty, and it writes the same
-  # line when stdout is a caller's pipe ("ambre install | tee log"). That line
-  # lands between the first draw and the first redraw, so every redraw starts one
-  # row low and the top option shows up twice. /dev/null is the only target that
-  # avoids the warning in both cases.
-  local old_stty exit_code=0 char seq
-  old_stty=$(stty -g </dev/tty 2>/dev/null) || old_stty=""
-  [[ -n "$old_stty" ]] && stty -echo -icanon min 1 time 0 </dev/tty >/dev/null
-  _shui_cursor hide-cursor >&2
-
-  while true; do
-    IFS= read -rk1 char </dev/tty
-    case "$char" in
-      $'\033')
-        if IFS= read -rk2 -t 0.4 seq </dev/tty; then
-          case "$seq" in
-            '[A') (( cursor > 1 )) && (( cursor-- )) ;;
-            '[B') (( cursor < n )) && (( cursor++ )) ;;
-          esac
-        else
-          exit_code=130; break
-        fi
-        ;;
-      k) (( cursor > 1 )) && (( cursor-- )) ;;
-      j) (( cursor < n )) && (( cursor++ )) ;;
-      g) cursor=1 ;;
-      G) cursor=$n ;;
-      $'\r'|$'\n') break ;;
-      q|Q|$'\003') exit_code=130; break ;;
-    esac
-    printf '\033[%dA' "$n" >&2
-    _shui_radio_render >&2
-  done
-
-  [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty >/dev/null
-  _shui_cursor show-cursor >&2
-  printf '\n' >&2
-
-  (( exit_code == 0 )) && printf '%s\n' "${options[$cursor]%%$'\t'*}"
-  return $exit_code
-}
-
-_shui_multiselect() {
-  local prompt="$1"; shift
-  local -a options=("$@")
-  local n=${#options[@]}
-  local cursor=1
-  local -a selected
-  local i
-  for (( i = 1; i <= n; i++ )); do selected[$i]=0; done
-
-  # "label<TAB>hint", as in radio: the hint is drawn as an aligned grey column and
-  # never returned, so a caller gets back only the labels it can act on.
-  _shui_multiselect_render() {
-    local i check label desc max_len=0 pad
-    for (( i = 1; i <= n; i++ )); do
-      label="${options[$i]%%$'\t'*}"
-      (( ${#label} > max_len )) && max_len=${#label}
-    done
-
-    for (( i = 1; i <= n; i++ )); do
-      label="${options[$i]%%$'\t'*}"
-      desc="${options[$i]#*$'\t'}"
-      [[ "$desc" == "$label" ]] && desc=""
-      pad=$(( max_len - ${#label} + 2 ))
-      printf '\033[2K\r'
+    else
       if (( selected[$i] )); then
         check="${SHUI_COLOR_SUCCESS}${SHUI_ICON_SQUARE}${SHUI_RESET}"
       else
@@ -176,54 +231,142 @@ _shui_multiselect() {
       else
         printf '  %s %s%*s' "$check" "$label" "$pad" ""
       fi
-      [[ -n "$desc" ]] && printf '%s%s%s' "$SHUI_COLOR_SECONDARY" "$desc" "$SHUI_RESET"
-      printf '\n'
-    done
-  }
+    fi
+    [[ -n "$desc" ]] && printf '%s%s%s' "$SHUI_COLOR_SECONDARY" "$desc" "$SHUI_RESET"
+    printf '\n'
+    drawn+=($width)
+  done
 
-  printf '%s%s%s %s↑↓/jk move · space toggle · a all · enter confirm · q cancel%s\n' \
+  if (( marker )); then
+    local position="$top–$(( top + height - 1 )) of $n"
+    if [[ "$mode" == multi ]]; then
+      local -i ticked=0
+      for (( i = 1; i <= n; i++ )); do (( selected[$i] )) && (( ticked++ )); done
+      (( ticked )) && position+=" · $ticked selected"
+    fi
+    _shui_fit "$position" $(( limit - 2 ))
+    printf '\033[2K\r  %s%s%s\n' "$SHUI_COLOR_MUTED" "$REPLY" "$SHUI_RESET"
+    drawn+=($(( 2 + ${(m)#REPLY} )))
+  fi
+
+  # A frame shorter than the last one (the window shrank, the list stopped being
+  # clipped) leaves the old frame's tail below it.
+  (( ${#drawn} < climbed )) && printf '\033[J'
+  return 0
+}
+
+# The shared loop behind radio and multiselect: draws, reads keys, redraws, and
+# hands back the tty as it found it. Sets the caller's cursor and selected.
+# Returns 0 on enter, 130 on q, esc or ctrl-c, 2 if the terminal goes away.
+_shui_list_run() {
+  local hint="$1"
+  local -a labels descs label_w drawn
+  local -i max_len=0 top=1 page=1 header_w i
+  local opt REPLY
+
+  for opt in "${options[@]}"; do
+    _shui_plain "${opt%%$'\t'*}"
+    labels+=("$REPLY")
+    label_w+=(${(m)#REPLY})
+    (( ${(m)#REPLY} > max_len )) && max_len=${(m)#REPLY}
+    if [[ "$opt" == *$'\t'* ]]; then
+      _shui_plain "${opt#*$'\t'}"
+      descs+=("$REPLY")
+    else
+      descs+=("")
+    fi
+  done
+
+  _shui_plain "$prompt"
+  header_w=$(( ${(m)#REPLY} + 1 + ${(m)#hint} ))
+  printf '%s%s%s %s%s%s\n' \
     "$SHUI_BOLD" "$prompt" "$SHUI_RESET" \
-    "$SHUI_COLOR_MUTED" "$SHUI_RESET" >&2
-  _shui_multiselect_render >&2
+    "$SHUI_COLOR_MUTED" "$hint" "$SHUI_RESET" >&2
+  _shui_list_render >&2
 
-  local old_stty exit_code=0 char seq
+  # stdin on the tty, stdout on /dev/null, here and at every other stty call in
+  # this file. macOS stty writes "stdout appears redirected, but stdin is the
+  # control descriptor" to stderr when stdout is /dev/tty, and it writes the same
+  # line when stdout is a caller's pipe ("ambre install | tee log"). That line
+  # lands between the first draw and the first redraw, so every redraw starts one
+  # row low and the top option shows up twice. /dev/null is the only target that
+  # avoids the warning in both cases.
+  #
+  # -isig makes ctrl-c a keypress like q. As a signal it killed the caller's
+  # script mid-prompt, past the restore below: echo off, cursor hidden.
+  local old_stty
+  local -i exit_code=0
   old_stty=$(stty -g </dev/tty 2>/dev/null) || old_stty=""
-  [[ -n "$old_stty" ]] && stty -echo -icanon min 1 time 0 </dev/tty >/dev/null
+  [[ -n "$old_stty" ]] && stty -echo -icanon -isig min 1 time 0 </dev/tty >/dev/null
   _shui_cursor hide-cursor >&2
 
   while true; do
-    IFS= read -rk1 char </dev/tty
-    case "$char" in
-      $'\033')
-        if IFS= read -rk2 -t 0.4 seq </dev/tty; then
-          case "$seq" in
-            '[A') (( cursor > 1 )) && (( cursor-- )) ;;
-            '[B') (( cursor < n )) && (( cursor++ )) ;;
-          esac
-        else
-          exit_code=130; break
+    if ! _shui_read_key; then
+      exit_code=2
+      break
+    fi
+    case "$REPLY" in
+      up|k)   (( cursor > 1 )) && (( cursor-- )) ;;
+      down|j) (( cursor < n )) && (( cursor++ )) ;;
+      home|g) cursor=1 ;;
+      end|G)  cursor=$n ;;
+      pgup)   cursor=$(( cursor - page > 1 ? cursor - page : 1 )) ;;
+      pgdn)   cursor=$(( cursor + page < n ? cursor + page : n )) ;;
+      ' ')
+        [[ "$mode" == multi ]] && (( n )) && selected[$cursor]=$(( ! selected[$cursor] ))
+        ;;
+      a|A)
+        if [[ "$mode" == multi ]]; then
+          local -i all=1
+          for (( i = 1; i <= n; i++ )); do (( selected[$i] )) || { all=0; break; }; done
+          for (( i = 1; i <= n; i++ )); do selected[$i]=$(( all ? 0 : 1 )); done
         fi
         ;;
-      ' ') selected[$cursor]=$(( ! selected[$cursor] )) ;;
-      k) (( cursor > 1 )) && (( cursor-- )) ;;
-      j) (( cursor < n )) && (( cursor++ )) ;;
-      g) cursor=1 ;;
-      G) cursor=$n ;;
-      a|A)
-        local all=1 idx
-        for (( idx = 1; idx <= n; idx++ )); do (( selected[$idx] )) || { all=0; break; }; done
-        for (( idx = 1; idx <= n; idx++ )); do selected[$idx]=$(( all ? 0 : 1 )); done
-        ;;
-      $'\r'|$'\n') break ;;
-      q|Q|$'\003') exit_code=130; break ;;
+      enter) break ;;
+      esc|q|Q|$'\003') exit_code=130; break ;;
     esac
-    printf '\033[%dA' "$n" >&2
-    _shui_multiselect_render >&2
+    _shui_list_render >&2
   done
 
   [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty >/dev/null
   _shui_cursor show-cursor >&2
   printf '\n' >&2
+  return $exit_code
+}
+
+_shui_radio() {
+  emulate -L zsh
+  local prompt="$1"; shift
+  local -a options=("$@")
+  local -i n=${#options[@]} cursor=1 exit_code
+  # Nothing to choose from is not a choice: exiting 0 would hand back an empty
+  # "selection" as though someone had made it. Same answer as tabs.
+  (( n == 0 )) && return 1
+  _shui_require_tty || return 2
+  local mode=radio
+  local -a selected
+
+  _shui_list_run "↑↓/jk move · g/G first/last · enter select · q cancel"
+  exit_code=$?
+
+  (( exit_code == 0 )) && printf '%s\n' "${options[$cursor]%%$'\t'*}"
+  return $exit_code
+}
+
+_shui_multiselect() {
+  emulate -L zsh
+  _shui_require_tty || return 2
+  local prompt="$1"; shift
+  local -a options=("$@")
+  local -i n=${#options[@]} cursor=1 exit_code i
+  local mode=multi
+  local -a selected
+  for (( i = 1; i <= n; i++ )); do selected[$i]=0; done
+
+  # "label<TAB>hint", as in radio: the hint is drawn as an aligned grey column and
+  # never returned, so a caller gets back only the labels it can act on.
+  _shui_list_run "↑↓/jk move · space toggle · a all · enter confirm · q cancel"
+  exit_code=$?
 
   if (( exit_code == 0 )); then
     for (( i = 1; i <= n; i++ )); do
@@ -232,6 +375,7 @@ _shui_multiselect() {
   fi
   return $exit_code
 }
+
 
 # Pure validator — no TTY, no side effects. Returns 0 if $2 satisfies rule $1.
 # Named rules (email/url/number) plus an arbitrary-regex fallback, so it stays
@@ -258,6 +402,8 @@ _shui_input() {
       *)            prompt="$1";                  shift ;;
     esac
   done
+
+  _shui_require_tty || return 2
 
   local hint=""
   [[ -n "$default" ]] && hint=" ${SHUI_COLOR_MUTED}(${default})${SHUI_RESET}"
@@ -294,35 +440,42 @@ _shui_password() {
     esac
   done
 
+  _shui_require_tty || return 2
+
   printf '%s%s%s ' "$SHUI_BOLD" "$prompt" "$SHUI_RESET" >&2
 
-  local old_stty value="" char seq
+  # -isig makes ctrl-c a keypress: as a signal it killed the caller with echo
+  # still off, and the cancel branch below never ran.
+  local old_stty value=""
+  local -i exit_code=0
   old_stty=$(stty -g </dev/tty 2>/dev/null) || old_stty=""
-  [[ -n "$old_stty" ]] && stty -echo -icanon min 1 time 0 </dev/tty >/dev/null
+  [[ -n "$old_stty" ]] && stty -echo -icanon -isig min 1 time 0 </dev/tty >/dev/null
 
-  while IFS= read -rk1 char </dev/tty; do
-    case "$char" in
-      $'\r'|$'\n') break ;;
-      $'\003')                                    # ctrl-c — cancel
-        [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty >/dev/null
-        printf '\n' >&2
-        return 130
-        ;;
+  # Keys arrive whole (_shui_read_key): arrows, Home, Delete and the like used to
+  # be swallowed two bytes at a time, so the "~" ending Delete or PgUp went into
+  # the password unseen.
+  while true; do
+    if ! _shui_read_key; then
+      exit_code=2
+      break
+    fi
+    case "$REPLY" in
+      enter)   break ;;
+      $'\003') exit_code=130; break ;;            # ctrl-c — cancel
       $'\177'|$'\010')                            # backspace / delete
         if (( ${#value} > 0 )); then
           value="${value[1,-2]}"
           printf '\b \b' >&2
         fi
         ;;
-      $'\033')                                    # swallow escape sequences (arrows…)
-        IFS= read -rk2 -t 0.01 seq </dev/tty 2>/dev/null
-        ;;
       [[:cntrl:]]) ;;                             # ignore other control chars
-      *) value+="$char"; printf '*' >&2 ;;
+      ?) value+="$REPLY"; printf '*' >&2 ;;
+      *) ;;                                       # a named key: arrows, home…
     esac
   done
 
   [[ -n "$old_stty" ]] && stty "$old_stty" </dev/tty >/dev/null
   printf '\n' >&2
-  printf '%s\n' "$value"
+  (( exit_code == 0 )) && printf '%s\n' "$value"
+  return $exit_code
 }

@@ -32,6 +32,24 @@ _shui_progress() {
     esac
   done
 
+  # A total of 0 divided by zero and aborted the call; a count past the total
+  # drew a bar longer than --width and a percentage over 100.
+  (( current < 0 )) && current=0
+  if (( total <= 0 )); then
+    current=1 total=1
+  elif (( current > total )); then
+    current=$total
+  fi
+
+  # --inline redraws with \r, which only reaches the start of the current row:
+  # a bar wider than the terminal wraps, and each update lands a row lower.
+  if $inline && [[ -t 1 ]]; then
+    local -a reply
+    _shui_tty_size
+    local room=$(( reply[2] - 1 - ${(m)#label} - 5 ))
+    (( width > room )) && width=$(( room > 1 ? room : 1 ))
+  fi
+
   local percentage=$(( current * 100 / total ))
   local filled=$(( current * width / total ))
   local empty=$(( width - filled ))

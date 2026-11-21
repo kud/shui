@@ -4,6 +4,44 @@ All notable changes to this project are documented here.
 
 ---
 
+## [Unreleased]
+
+---
+
+## [1.5.1] — 2026-11-21
+
+### 🐛 Bug Fixes
+
+- `radio` and `multiselect` work with lists taller than the terminal. Each redraw moved the cursor up one row per option, and once the list outgrew the screen the cursor stopped at the top row, so every keypress stacked a fresh copy of the list below the last one and the picker became unusable. A long list now shows a window that scrolls with the cursor, under a quiet position line (`12–30 of 76`, plus `· 3 selected` in `multiselect`). PgUp/PgDn move a page and Home/End jump to either end. A short list draws exactly as before.
+- A label or hint wider than the terminal no longer wraps onto a second row and throws the redraw out. The hint is cut first, then the label, each ending in `…`; what is printed on stdout is still the full label. Tabs, newlines and escape sequences inside an option are drawn as plain text, and the option still comes back as given. A terminal resized between keypresses is measured again on the next redraw.
+- Ctrl-C in `radio`, `multiselect`, `tabs` and `password` cancels like `q` (exit 130) and hands the terminal back. It used to arrive as a signal that killed the calling script mid-prompt, leaving echo off and the cursor hidden.
+- Keys arrive whole: Delete, PgUp and other multi-byte keys no longer leave a stray `~` behind, which `password` added to the value unseen. Arrow keys in application mode (`\eOA`) work too.
+- A prompt whose terminal disappears mid-answer exits 2 instead of returning what had been typed so far (`password`) or spinning on a dead tty.
+- `radio` with no options exits 1 instead of printing an empty "choice", as `tabs` already did; `multiselect` with no options no longer moves the cursor up a row on every keypress.
+- `confirm --default=Y` (or `yes`) now means yes in the hint as well as the answer; the hint used to show `y/N` while Enter answered yes.
+- `tabs` fits a narrow terminal: tabs that do not fit around the active one collapse into `…`, and the description line is cut to the width.
+- `spinner`, `loader`, `progress --inline` and `animation fade-in` cut what they redraw to the terminal's width, so a long message no longer walks down the screen one row per frame.
+- `spinner` no longer prints job-control notices (`[1] 12345`, `[1] + done`) when called from an interactive shell.
+- `progress` with a total of 0 shows 100% instead of failing with a division by zero, and a count past the total is capped rather than drawing a bar longer than `--width`.
+
+---
+
+## [1.5.0] — 2026-11-21
+
+### ✨ Features
+
+- Icons follow @kud/glyphs 0.4: thin powerline caps (`SHUI_ICON_PL_CAP_*_THIN`) and keyboard-key glyphs (`SHUI_ICON_KEY_*`) in every icon set, and the unicode set gains the state glyphs ✓ ✗ ⚠ ℹ →.
+
+### 🐛 Bug Fixes
+
+- shui loads under a non-UTF-8 locale (a bare `C` or `POSIX`) instead of failing with "character not in range" and a broken theme.
+- Prompts no longer answer for a user who is not there. `confirm`, `select`, `radio`, `multiselect`, `input`, `password` and `tabs` read from `/dev/tty`, and with no controlling terminal (cron, CI, a detached `setsid`, an agent's subprocess) that open failed: `shui confirm --default=y` then returned yes, consent nobody gave, after leaking "no such device or address: /dev/tty"; `--default=n` returned 1, which a caller could not tell from a real "no"; `input` returned its default; and `radio`, `multiselect` and `tabs` spun forever, redrawing on every failed read. Each prompt now checks for a terminal before drawing anything, and without one prints `shui: no terminal to ask; pass --yes` to stderr and exits 2.
+- `shui error` and `shui warning` print to stderr, so `x=$(cmd)` or `cmd | jq` no longer captures a diagnostic as data. `success`, `info` and `muted` stay on stdout, and callers that already add `>&2` are unaffected.
+- `shui print-link` and `shui hyperlink` follow the colour gate: on a pipe or under `NO_COLOR` they print plain text — `text (url)`, or the URL alone when it is the text — instead of raw OSC 8 escapes. `FORCE_COLOR` brings the escapes back.
+- `SHUI_ICONS=unicode` keeps the unicode icons. Since the 0.4 glyph sync the explicit setting fell through to "icon set 'unicode' not found, falling back to nerd" and loaded Nerd Font glyphs over the unicode layer; it is now honoured silently.
+
+---
+
 ## [1.4.0] — 2026-09-30
 
 ### ✨ Features
