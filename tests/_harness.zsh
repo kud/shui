@@ -4,6 +4,17 @@
 # Provides: assert_*, strip_ansi, _t_section, _t_title, _t_results
 #
 
+# The suites assert UTF-8 behaviour (glyph widths, the nerd/emoji escapes), so
+# pin a UTF-8 locale when the inherited one is not — a bare Linux shell or CI
+# runner has none. test-locale.zsh covers the C locale in its own `env -i`.
+if ! eval ": \$'\\U2713'" 2>/dev/null; then
+  for _t_loc in C.UTF-8 en_US.UTF-8; do
+    export LC_ALL=$_t_loc
+    eval ": \$'\\U2713'" 2>/dev/null && break
+  done
+  unset _t_loc
+fi
+
 # Tests run piped, which the colour gate reads as "no colour"; FORCE_COLOR keeps
 # every colour path under test. Cases for the gate itself unset it explicitly.
 export FORCE_COLOR=1

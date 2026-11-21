@@ -20,9 +20,20 @@ zmodload zsh/datetime
 source "${SHUI_DIR}/src/tokens/colors.zsh"
 source "${SHUI_DIR}/src/tokens/contract.zsh"
 
-source "${SHUI_DIR}/src/icons/unicode.zsh"
-
 _SHUI_ICONS="${SHUI_ICONS:-nerd}"
+
+# Under a non-UTF-8 locale (LANG/LC_ALL unset is the common case on Linux) every
+# $'\U…' escape in the icon files is a fatal "character not in range": the file
+# aborts mid-way, the theme contract fails, and shui is never defined. Probe the
+# escape itself rather than pattern-matching $LANG, which also catches a UTF-8
+# name whose locale is not installed. One eval, no fork, no module.
+if eval ": \$'\\U2713'" 2>/dev/null; then
+  source "${SHUI_DIR}/src/icons/unicode.zsh"
+elif [[ $_SHUI_ICONS != (none|ascii) ]]; then
+  [[ -n ${SHUI_ICONS:-} ]] &&
+    echo "shui: locale is not UTF-8, using ascii icons instead of '${SHUI_ICONS}'" >&2
+  _SHUI_ICONS=ascii
+fi
 
 if [[ $_SHUI_ICONS != unicode && -f "${SHUI_DIR}/src/icons/${_SHUI_ICONS}.zsh" ]]; then
   source "${SHUI_DIR}/src/icons/${_SHUI_ICONS}.zsh"
