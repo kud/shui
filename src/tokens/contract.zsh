@@ -44,17 +44,20 @@ _SHUI_REQUIRED_TOKENS=(
   SHUI_ICON_CROSS
 )
 
-# Run between the theme and the contract check. Two jobs:
+# Run between the theme and the contract check. Three jobs:
 #
 #   · A theme written before glyphs 0.5 sets PRIMARY (the orange) and ACCENT (a
 #     blue that no longer exists). PRIMARY was always the accent, so it wins, and
 #     tokens that theme predates are taken from @kud/glyphs rather than failing it.
 #   · SHUI_COLOR_PRIMARY / SHUI_BG_PRIMARY become aliases of ACCENT. DEPRECATED:
 #     kept so existing callers do not break; use SHUI_COLOR_ACCENT / SHUI_BG_ACCENT.
+#   · Warning always carries a glyph. Its colour (256-colour 214) sits a hair from
+#     the accent (208), so the glyph, not the hue, is what says "warning". An icon
+#     set with no glyph for it (none) falls back to `!`, as plain and ascii use.
 #
 # shui.zsh unsets both PRIMARY names before sourcing the theme, so their presence
 # here means the theme itself set them.
-_shui_resolve_theme_aliases() {
+_shui_resolve_tokens() {
   (( ${+SHUI_COLOR_PRIMARY} )) && SHUI_COLOR_ACCENT=$SHUI_COLOR_PRIMARY
   (( ${+SHUI_BG_PRIMARY} ))    && SHUI_BG_ACCENT=$SHUI_BG_PRIMARY
 
@@ -63,6 +66,8 @@ _shui_resolve_theme_aliases() {
     name=SHUI_COLOR_$token
     (( ${(P)+name} )) || typeset -g "$name=$(_shui_token_color $token)"
   done
+
+  [[ -n ${SHUI_ICON_WARNING:-} ]] || typeset -g SHUI_ICON_WARNING='!'
 
   typeset -g SHUI_COLOR_PRIMARY=$SHUI_COLOR_ACCENT   # deprecated alias
   typeset -g SHUI_BG_PRIMARY=$SHUI_BG_ACCENT         # deprecated alias

@@ -14,7 +14,7 @@ src/
   tokens/
     colors.zsh            # _shui_color(), _shui_bg_color(), _shui_repeat(), _shui_visible_len()
     glyphs-colors.zsh     # GENERATED semantic colour tokens (SHUI_COLOR_*_ANSI16/ANSI256/HEX, SHUI_STATE_*)
-    contract.zsh          # _SHUI_REQUIRED_TOKENS + _shui_resolve_theme_aliases() + _shui_validate_theme()
+    contract.zsh          # _SHUI_REQUIRED_TOKENS + _shui_resolve_tokens() + _shui_validate_theme()
   icons/
     unicode.zsh           # base layer — standard Unicode symbols, always sourced first
     nerd.zsh              # Nerd Font PUA glyphs (default, SHUI_ICONS=nerd)
@@ -61,7 +61,7 @@ scripts/
    set but `none` to `ascii` (escape-free). The check probes the escape itself (one `eval`, no fork).
 5. `src/icons/<SHUI_ICONS>.zsh` — overrides `SHUI_ICON_*` tokens for the selected set
 6. `src/themes/<SHUI_THEME>.zsh` — sets colour/style tokens (may override icon tokens)
-7. `_shui_resolve_theme_aliases` — PRIMARY → ACCENT alias, legacy-theme fallbacks
+7. `_shui_resolve_tokens` — PRIMARY → ACCENT alias, legacy-theme fallbacks
 8. `_shui_validate_theme` — aborts if any required token is missing
 9. All `src/components/*.zsh`
 
@@ -133,8 +133,15 @@ Themes derive the rendered `SHUI_COLOR_*` / `SHUI_BG_*` escapes from those numbe
 (the ANSI16 floor only — `minimal`). The ANSI16 index is the contract; HEX is not rendered yet.
 `SHUI_COLOR_MUTED` deliberately stays SGR 2 (dimColor) in `default`.
 
+Colour roles: headers (`section`, `subtitle`, `subsection`) are bold in the default foreground;
+the accent marks names and the current item only. **Warning always carries its glyph** — 214 sits a
+hair from the accent's 208 — so any warning-coloured output goes through `_shui_warn_text` or shows
+`SHUI_ICON_WARNING`, which `_shui_resolve_tokens` guarantees non-empty (`!` for the `none` set).
+`tests/test-warning.zsh` renders every warning call site and guards the sources. Badge text on
+each fill follows ink-ui's INK table (black on 79/214/117/208, white on 203).
+
 `SHUI_COLOR_PRIMARY` / `SHUI_BG_PRIMARY` are **deprecated aliases** of `ACCENT`, set by
-`_shui_resolve_theme_aliases`; components use `ACCENT`. Do not reintroduce them in themes.
+`_shui_resolve_tokens`; components use `ACCENT`. Do not reintroduce them in themes.
 
 ## Versioning
 

@@ -55,6 +55,13 @@ _shui_token_color16() {  # _shui_token_color16 <TOKEN> [bg]
   _shui_sgr "$(_shui_ansi16_sgr "${(P)n16}" "${2:-}")"
 }
 
+# Prefix the warning glyph to text that is about to be painted in the warning
+# colour. Warning is never told apart from the accent by hue alone — see
+# _shui_resolve_tokens — so every warning-coloured run of text goes through here.
+_shui_warn_text() {  # _shui_warn_text <text>
+  print -rn -- "${SHUI_ICON_WARNING} $1"
+}
+
 _shui_repeat() {
   local char="$1" count="$2" result=""
   local i

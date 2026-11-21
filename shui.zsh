@@ -45,7 +45,7 @@ fi
 
 _SHUI_THEME="${SHUI_THEME:-default}"
 
-unset SHUI_COLOR_PRIMARY SHUI_BG_PRIMARY   # see _shui_resolve_theme_aliases
+unset SHUI_COLOR_PRIMARY SHUI_BG_PRIMARY   # see _shui_resolve_tokens
 
 if [[ -f "${SHUI_DIR}/src/themes/${_SHUI_THEME}.zsh" ]]; then
   source "${SHUI_DIR}/src/themes/${_SHUI_THEME}.zsh"
@@ -54,7 +54,7 @@ else
   source "${SHUI_DIR}/src/themes/default.zsh"
 fi
 
-_shui_resolve_theme_aliases
+_shui_resolve_tokens
 _shui_validate_theme || return 1
 
 for _shui_f in "${SHUI_DIR}"/src/components/*.zsh; do

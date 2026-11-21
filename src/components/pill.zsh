@@ -3,6 +3,7 @@
 _shui_pill() {
   local type="$1" text="$2"
 
+  [[ $type == warning ]] && text="$(_shui_warn_text "$text")"
   { [[ -n "${NO_COLOR:-}" ]] || (( _SHUI_COLOR_DEPTH == 0 )) } && { printf '[%s]' "$text"; return; }
   [[ -z "${SHUI_ICON_PL_CAP_LEFT:-}" ]]  && { printf '[%s]' "$text"; return; }
 
