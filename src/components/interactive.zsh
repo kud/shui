@@ -13,9 +13,9 @@ _shui_confirm() {
 
   local hint
   if [[ "$default" == "y" ]]; then
-    hint="${SHUI_COLOR_PRIMARY}Y${SHUI_RESET}/${SHUI_COLOR_MUTED}n${SHUI_RESET}"
+    hint="${SHUI_COLOR_ACCENT}Y${SHUI_RESET}/${SHUI_COLOR_MUTED}n${SHUI_RESET}"
   else
-    hint="${SHUI_COLOR_MUTED}y${SHUI_RESET}/${SHUI_COLOR_PRIMARY}N${SHUI_RESET}"
+    hint="${SHUI_COLOR_MUTED}y${SHUI_RESET}/${SHUI_COLOR_ACCENT}N${SHUI_RESET}"
   fi
 
   printf '%s%s%s %s [%s] ' \
@@ -79,8 +79,8 @@ _shui_radio() {
       printf '\033[2K\r'
       if (( i == cursor )); then
         printf '  %s%s%s %s%s%s%*s' \
-          "$SHUI_COLOR_PRIMARY" "$pointer" "$SHUI_RESET" \
-          "$SHUI_COLOR_PRIMARY" "$label" "$SHUI_RESET" \
+          "$SHUI_COLOR_ACCENT" "$pointer" "$SHUI_RESET" \
+          "$SHUI_COLOR_ACCENT" "$label" "$SHUI_RESET" \
           "$pad" ""
         [[ -n "$desc" ]] && printf '%s%s%s' "$SHUI_COLOR_SECONDARY" "$desc" "$SHUI_RESET"
         printf '\n'
@@ -172,7 +172,7 @@ _shui_multiselect() {
         check="${SHUI_COLOR_MUTED}${SHUI_ICON_SQUARE_EMPTY}${SHUI_RESET}"
       fi
       if (( i == cursor )); then
-        printf '  %s %s%s%s%*s' "$check" "$SHUI_COLOR_PRIMARY" "$label" "$SHUI_RESET" "$pad" ""
+        printf '  %s %s%s%s%*s' "$check" "$SHUI_COLOR_ACCENT" "$label" "$SHUI_RESET" "$pad" ""
       else
         printf '  %s %s%*s' "$check" "$label" "$pad" ""
       fi

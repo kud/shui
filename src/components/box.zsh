@@ -27,7 +27,7 @@ _shui_box() {
     local right=$(( rule - title_len - 2 - left ))
     printf '%s' "${SHUI_COLOR_MUTED}┌"
     _shui_repeat "─" "$left"
-    printf ' %s%s%s%s ' "${SHUI_COLOR_PRIMARY}${SHUI_BOLD}" "$title" "${SHUI_RESET}${SHUI_COLOR_MUTED}"
+    printf ' %s%s%s%s ' "${SHUI_COLOR_ACCENT}${SHUI_BOLD}" "$title" "${SHUI_RESET}${SHUI_COLOR_MUTED}"
     _shui_repeat "─" "$right"
     printf '┐%s\n' "${SHUI_RESET}"
   else

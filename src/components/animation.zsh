@@ -6,7 +6,7 @@ _shui_animation() {
   case "$type" in
     typewriter)
       local delay=0.03
-      local color="$SHUI_COLOR_PRIMARY"
+      local color="$SHUI_COLOR_ACCENT"
       local text=""
       while [[ $# -gt 0 ]]; do
         case "$1" in
@@ -19,8 +19,7 @@ _shui_animation() {
               warning) color="$SHUI_COLOR_WARNING" ;;
               info)    color="$SHUI_COLOR_INFO"    ;;
               muted)   color="$SHUI_COLOR_MUTED"   ;;
-              accent)  color="$SHUI_COLOR_ACCENT"  ;;
-              primary) color="$SHUI_COLOR_PRIMARY" ;;
+              accent|primary) color="$SHUI_COLOR_ACCENT" ;;  # primary: deprecated alias
             esac
             shift ;;
           *) text="$1"; shift ;;

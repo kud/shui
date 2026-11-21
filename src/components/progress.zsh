@@ -42,7 +42,7 @@ _shui_progress() {
 
   printf '\r%s%s%s%s%s%s%s %s%d%%%s' \
     "$label" \
-    "$SHUI_COLOR_PRIMARY" "$bar_filled" \
+    "$SHUI_COLOR_ACCENT" "$bar_filled" \
     "$SHUI_COLOR_MUTED"   "$bar_empty" \
     "$SHUI_RESET" \
     "$SHUI_COLOR_MUTED" "$SHUI_RESET" \

@@ -21,7 +21,7 @@ _shui_spinner() {
   local i=1
 
   while kill -0 "$pid" 2>/dev/null; do
-    printf '\r%s%s%s %s' "$SHUI_COLOR_PRIMARY" "${frames[$i]}" "$SHUI_RESET" "$message"
+    printf '\r%s%s%s %s' "$SHUI_COLOR_ACCENT" "${frames[$i]}" "$SHUI_RESET" "$message"
     i=$(( (i % ${#frames[@]}) + 1 ))
     sleep 0.08
   done
@@ -47,7 +47,7 @@ _shui_spinner_tick() {
   local frame_idx="$1" msg="$2"
   local -a frames=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
   local idx=$(( (frame_idx % ${#frames[@]}) + 1 ))
-  printf '\r%s%s%s %s' "$SHUI_COLOR_PRIMARY" "${frames[$idx]}" "$SHUI_RESET" "$msg"
+  printf '\r%s%s%s %s' "$SHUI_COLOR_ACCENT" "${frames[$idx]}" "$SHUI_RESET" "$msg"
 }
 
 _shui_spinner_clear() {

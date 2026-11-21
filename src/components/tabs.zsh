@@ -39,7 +39,7 @@ _shui_tabs() {
     for (( i = 1; i <= n; i++ )); do
       (( i > 1 )) && bar+="${SHUI_COLOR_MUTED}  ·  ${SHUI_RESET}"
       if (( i == active )); then
-        bar+="${SHUI_COLOR_PRIMARY}${SHUI_BOLD}«${labels[i]}»${SHUI_RESET}"
+        bar+="${SHUI_COLOR_ACCENT}${SHUI_BOLD}«${labels[i]}»${SHUI_RESET}"
       else
         bar+="${SHUI_COLOR_MUTED}${labels[i]}${SHUI_RESET}"
       fi

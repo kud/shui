@@ -9,7 +9,7 @@ _shui_text() {
     italic)    echo -e "${SHUI_ITALIC}${*}${SHUI_RESET}" ;;
     underline) echo -e "${SHUI_UNDERLINE}${*}${SHUI_RESET}" ;;
     text)
-      local color="$SHUI_COLOR_PRIMARY"
+      local color="$SHUI_COLOR_ACCENT"
       local -a words=()
 
       while [[ $# -gt 0 ]]; do
@@ -23,8 +23,7 @@ _shui_text() {
               warning) color="$SHUI_COLOR_WARNING" ;;
               info)    color="$SHUI_COLOR_INFO"    ;;
               muted)   color="$SHUI_COLOR_MUTED"   ;;
-              accent)  color="$SHUI_COLOR_ACCENT"  ;;
-              primary) color="$SHUI_COLOR_PRIMARY" ;;
+              accent|primary) color="$SHUI_COLOR_ACCENT" ;;  # primary: deprecated alias
             esac
             shift ;;
           *) words+=("$1"); shift ;;

@@ -31,6 +31,30 @@ _shui_bg_color() {
   [[ $_SHUI_COLOR_DEPTH -ge 256 ]] && printf '\033[%sm' "$c256" || printf '\033[%sm' "$c16"
 }
 
+# SGR parameter for a 16-colour palette index: 0-7 are the normal colours
+# (30-37 fg, 40-47 bg), 8-15 the bright ones (90-97 fg, 100-107 bg).
+_shui_ansi16_sgr() {  # _shui_ansi16_sgr <index 0-15> [bg]
+  local -i i=$1 base=30
+  [[ ${2:-} == bg ]] && base=40
+  (( i >= 8 )) && (( base += 60, i -= 8 ))
+  print -rn -- $(( base + i ))
+}
+
+# Render a semantic token from @kud/glyphs (src/tokens/glyphs-colors.zsh) at the
+# terminal's depth: its ANSI256 cell on a 256-colour terminal, its ANSI16 index
+# (the contract floor) on anything less. The HEX layer is not rendered yet.
+_shui_token_color() {  # _shui_token_color <TOKEN> [bg]
+  local n256="SHUI_COLOR_${1}_ANSI256" n16="SHUI_COLOR_${1}_ANSI16"
+  local layer=38; [[ ${2:-} == bg ]] && layer=48
+  _shui_color "${layer};5;${(P)n256}" "$(_shui_ansi16_sgr "${(P)n16}" "${2:-}")"
+}
+
+# The ANSI16 floor alone, whatever the terminal's depth — the 16-colour themes.
+_shui_token_color16() {  # _shui_token_color16 <TOKEN> [bg]
+  local n16="SHUI_COLOR_${1}_ANSI16"
+  _shui_sgr "$(_shui_ansi16_sgr "${(P)n16}" "${2:-}")"
+}
+
 _shui_repeat() {
   local char="$1" count="$2" result=""
   local i

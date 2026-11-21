@@ -25,8 +25,7 @@ _shui_layout() {
               error)   color="$SHUI_COLOR_ERROR"   ;;
               warning) color="$SHUI_COLOR_WARNING" ;;
               info)    color="$SHUI_COLOR_INFO"    ;;
-              primary) color="$SHUI_COLOR_PRIMARY" ;;
-              accent)  color="$SHUI_COLOR_ACCENT"  ;;
+              accent|primary) color="$SHUI_COLOR_ACCENT" ;;  # primary: deprecated alias
               muted)   color="$SHUI_COLOR_MUTED"   ;;
             esac
             shift ;;
@@ -38,7 +37,7 @@ _shui_layout() {
       printf '%s\n' "${SHUI_RESET}"
       ;;
     hr)
-      printf '%s' "${SHUI_COLOR_PRIMARY}"
+      printf '%s' "${SHUI_COLOR_ACCENT}"
       _shui_repeat "─" 40
       printf '%s\n' "${SHUI_RESET}"
       ;;
@@ -59,8 +58,7 @@ _shui_layout() {
               error)   label_color="$SHUI_COLOR_ERROR"   ;;
               warning) label_color="$SHUI_COLOR_WARNING" ;;
               info)    label_color="$SHUI_COLOR_INFO"    ;;
-              primary) label_color="$SHUI_COLOR_PRIMARY" ;;
-              accent)  label_color="$SHUI_COLOR_ACCENT"  ;;
+              accent|primary) label_color="$SHUI_COLOR_ACCENT" ;;  # primary: deprecated alias
               muted)   label_color="$SHUI_COLOR_MUTED"   ;;
             esac
             shift ;;
