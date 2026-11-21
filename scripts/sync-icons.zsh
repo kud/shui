@@ -11,7 +11,7 @@
 
 set -euo pipefail
 
-GLYPHS_VERSION=v0.3.0
+GLYPHS_VERSION=v0.4.0
 GLYPHS_RAW="https://raw.githubusercontent.com/kud/glyphs/${GLYPHS_VERSION}/zsh"
 ICONS="${0:A:h}/../src/icons"
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 #
 # unicode icon set — standard Unicode symbols, no special font required
-# GENERATED from @kud/glyphs v0.3.0 by scripts/sync-icons.zsh — do not edit.
+# GENERATED from @kud/glyphs v0.4.0 by scripts/sync-icons.zsh — do not edit.
 # Change the glyph upstream in @kud/glyphs, bump GLYPHS_VERSION, and re-run the sync.
 # Thin base layer, sourced first; nerd/emoji/none override per set.
 #
@@ -10,6 +10,19 @@ SHUI_ICON_BULLET=$'\U0000203A'
 SHUI_ICON_CIRCLE=$'\U000025CF'
 SHUI_ICON_CIRCLE_EMPTY=$'\U000025CB'
 SHUI_ICON_DIAMOND=$'\U000025C6'
+SHUI_ICON_KEY_BACKSPACE=$'\U0000232B'
+SHUI_ICON_KEY_COMMAND=$'\U00002318'
+SHUI_ICON_KEY_CONTROL=$'\U00002303'
+SHUI_ICON_KEY_DOWN=$'\U00002193'
+SHUI_ICON_KEY_ENTER=$'\U000021B5'
+SHUI_ICON_KEY_ESCAPE=$'\U0000238B'
+SHUI_ICON_KEY_LEFT=$'\U00002190'
+SHUI_ICON_KEY_OPTION=$'\U00002325'
+SHUI_ICON_KEY_RIGHT=$'\U00002192'
+SHUI_ICON_KEY_SHIFT=$'\U000021E7'
+SHUI_ICON_KEY_SPACE=$'\U00002423'
+SHUI_ICON_KEY_TAB=$'\U000021E5'
+SHUI_ICON_KEY_UP=$'\U00002191'
 SHUI_ICON_POINTER=$'\U0000276F'
 SHUI_ICON_SQUARE=$'\U000025A0'
 SHUI_ICON_SQUARE_EMPTY=$'\U000025A1'
