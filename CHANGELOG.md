@@ -8,6 +8,26 @@ All notable changes to this project are documented here.
 
 ---
 
+## [1.6.0] — 2026-11-21
+
+### ✨ Features
+
+- `multiselect` can lay its options out as a table. `--columns=<spec>` turns each row into `id<TAB>cell<TAB>cell…` and fits the columns to the terminal. Each column in the spec is `align:width:drop`. One flexible `*` column stops growing at its widest cell, `*N` sets a minimum for it, and the columns with the highest drop numbers disappear first when the terminal is narrow.
+- Four opt-in companions to `--columns`: `--header` draws a heading row, `--keys` replaces the key hint, `--details=<array>` shows a fixed-height pane under the list that follows the cursor, and `--footer=<function>` runs in a subshell with the ticked ids whenever the ticks change, so a total can follow the selection.
+- Cells accept `{success|warning|error|info|muted|bold:text}` markup, drawn with the theme's tokens, with `{{` and `}}` to write a literal brace. A malformed flag exits 1 before anything is drawn. See `docs/async.mdx` and the new README screenshot.
+
+### 🔄 Changed
+
+- `multiselect` now marks the cursor row with the pointer (`❯`) and a blank of the same width on the other rows, so every row is indented two columns more than before.
+- The cursor row's label is drawn bold instead of in the primary colour. Colour alone vanished under the `plain` theme and failed colour-blind users.
+
+### 🐛 Bug Fixes
+
+- Under `SHUI_ICONS=none`, `radio` and `multiselect` show `>` for the pointer and `[x]` / `[ ]` for the boxes instead of nothing, so the cursor and the ticks stay visible.
+- `radio` and `multiselect` restore echo and the cursor even when something fails mid-prompt, rather than leaving the terminal half-configured.
+
+---
+
 ## [1.5.1] — 2026-11-21
 
 ### 🐛 Bug Fixes
