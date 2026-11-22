@@ -40,7 +40,9 @@ src/
     tabs.zsh              # live horizontal tab bar — ←/→/1-9 move, enter confirms
     interactive.zsh       # confirm, select, radio, multiselect, input (--validate=email|url|number|<regex>), password (masked)
     columns.zsh           # multiselect --columns: cell markup, column fitting, detail pane and footer renderer
+    help.zsh              # shui help — the shared CLI help layout (also draws shui's own help)
 assets/                   # SVG screenshots embedded in README
+tests/golden/help/        # @kud/ink-ui's help byte contract (copied verbatim) + deploy.zsh fixture; tests/test-help.zsh must match it
 completions/
   _shui                   # zsh completion — kept in parity with the dispatcher by tests/test-completion.zsh
 scripts/

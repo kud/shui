@@ -82,6 +82,34 @@ $ shui confirm "Deploy to production?"
 
 ![multiselect with columns, a detail pane and a footer](assets/multiselect-columns.png)
 
+`shui help` draws a help page for your own tool in one shared layout: header,
+then USAGE, COMMANDS, ARGUMENTS, OPTIONS, EXAMPLES, ENVIRONMENT and SEE ALSO,
+each left out when empty. Rows are `name|description`, options add `|default`,
+examples are `comment|command`; every list flag repeats.
+
+```zsh
+shui help --name=acme-cli --version=1.4.0 --desc='Ship static folders to Acme hosting' \
+  --usage='acme-cli <command> [options]' \
+  --command='deploy <dir>|Upload a folder and publish it' \
+  --command='login|Store an API token for later commands' \
+  --option='-p, --project <id>|Project to act on|from acme.json' \
+  --option='-f, --force|Skip the confirmation prompt' \
+  --option='--dry-run|Show what would be uploaded without sending anything' \
+  --example='Publish the build folder|acme-cli deploy dist' \
+  --env='ACME_TOKEN|API token, used when no login is stored' \
+  --see='https://acme.dev/docs/cli'
+```
+
+![shui help rendering a help page for acme-cli](assets/help.png)
+
+Descriptions start at column 26 in every section; headings carry the only
+structural colour. Colours come from @kud/glyphs, not the theme, so the page
+reads the same in every tool, and the output is byte for byte what
+@kud/ink-ui's `renderHelp` prints for the same input. Under `NO_COLOR` the page
+keeps bold and underline and drops colour; piped or written to a file it
+carries no escape at all. `--about` adds a short paragraph under USAGE, and
+`shui help --help` lists every flag.
+
 Switch icon sets with `SHUI_ICONS`:
 
 ```zsh
