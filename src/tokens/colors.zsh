@@ -9,7 +9,7 @@
 _SHUI_COLOR_DEPTH=$(tput colors 2>/dev/null || echo 8)
 if [[ -n "${FORCE_COLOR:-}" && "${FORCE_COLOR}" != 0 ]]; then
   :
-elif [[ -n "${NO_COLOR:-}" || ! -t 1 ]]; then
+elif [[ -n "${NO_COLOR:-}" ]] || { [[ ! -t 1 ]] && [[ -z "${SHUI_FORCE_TTY:-}" || "${SHUI_FORCE_TTY}" == 0 ]]; }; then
   _SHUI_COLOR_DEPTH=0
 fi
 _SHUI_TERMINAL_WIDTH=$(tput cols 2>/dev/null || echo 80)

@@ -104,135 +104,108 @@ _shui_theme_cmd() {
   esac
 }
 
+# shui's own help, drawn by the help component it ships (src/components/help.zsh)
+# so the listing follows the same layout every tool built on shui gets. Full
+# signatures live in `shui <command> --help`.
 _shui_help() {
-  echo
-  echo -e "${SHUI_BOLD}${SHUI_COLOR_PRIMARY}shui · 水  —  Shell UI for Zsh${SHUI_RESET}"
-  echo
-  cat <<'HELP'
-USAGE
-  shui <command> [options] [args…]
-  shui <command> --help          per-command help
+  _shui_help_render \
+    --name=shui --version="$SHUI_VERSION" \
+    --desc='Fluid terminal UI for Zsh: a design system for the shell' \
+    --usage='shui <command> [options] [args…]' \
+    --usage='shui <command> --help' \
+    --usage='shui help <command>' \
+    --about='Colour types, wherever a command takes one: success error warning info primary muted accent secondary group danger' \
+    --command='bold <text>|Bold text' \
+    --command='dim <text>|Dimmed text' \
+    --command='italic <text>|Italic text' \
+    --command='underline <text>|Underlined text' \
+    --command='text [<type>] <text>|Text in a colour type' \
+    --command='success <message>|Success message with its icon' \
+    --command='error <message>|Error message with its icon, on stderr' \
+    --command='warning <message>|Warning message with its icon, on stderr' \
+    --command='info <message>|Information message with its icon' \
+    --command='message <type> <text>|Any message type in one call, muted included' \
+    --command='muted <message>|Muted line' \
+    --command='section <title>|Section heading' \
+    --command='subtitle <title>|Subtitle heading' \
+    --command='subsection <title>|Subsection heading' \
+    --command='divider|Full-width rule' \
+    --command='fence [label]|Rule with a label' \
+    --command='hr|Horizontal rule' \
+    --command='center-text <text>|Centred text' \
+    --command='spacer [n]|Blank lines' \
+    --command='screen <title> -- <command>|Heading, then a command and its elapsed time' \
+    --command='timer-start|Start a step timer' \
+    --command='timer-end [label]|Print the time since timer-start' \
+    --command='badge <type> <text>|Inline solid label, for use inside $(…)' \
+    --command='pill <type> <text>|Inline rounded tag, for use inside $(…)' \
+    --command='box <text>|Bordered block (--title)' \
+    --command='banner <type> <title>|Coloured banner block, with optional content' \
+    --command='table <header> <row…>|Pipe-separated table (--sep)' \
+    --command='row <variant> <tag> <name>|Streaming status row' \
+    --command='progress <cur> <total>|Progress bar' \
+    --command='spinner <message> -- <command>|Run a command behind a spinner; exits with its code' \
+    --command='spinner-tick <frame> <msg>|Draw one spinner frame' \
+    --command='spinner-clear|Clear the spinner line' \
+    --command='task-start <msg>|Task line, in progress' \
+    --command='task-done <msg>|Task line, done' \
+    --command='final-success <msg>|Closing success line' \
+    --command='final-fail <msg>|Closing failure line' \
+    --command='title <text>|Title line' \
+    --command='title-action <action> <target>|Title naming an action and its target' \
+    --command='title-install <target>|Install title' \
+    --command='title-update <target>|Update title' \
+    --command='set-total-steps <n>|Set the step count' \
+    --command='next-step <msg>|Next numbered step' \
+    --command='loader <msg>|Looping indicator (--style, --duration)' \
+    --command='typewriter <text>|Text typed out' \
+    --command='fade-in <text>|Text faded in' \
+    --command='hide-cursor|Hide the cursor' \
+    --command='show-cursor|Show the cursor' \
+    --command='save-cursor|Save the cursor position' \
+    --command='restore-cursor|Restore the cursor position' \
+    --command='move-cursor <row> <col>|Move the cursor' \
+    --command='clear-line|Clear the current line' \
+    --command='cleanup|Restore the cursor and the line' \
+    --command='hyperlink <text> <url>|Inline terminal hyperlink' \
+    --command='print-link <text> <url>|Hyperlink on its own line' \
+    --command='terminal-size|Print the terminal size as WxH' \
+    --command='debug <msg>|Debug line, when SHUI_DEBUG is true' \
+    --command='debug-vars <var…>|Print variables, when SHUI_DEBUG is true' \
+    --command='debug-timing <start> <name>|Print elapsed time, when SHUI_DEBUG is true' \
+    --command='debug-command <cmd…>|Run and trace a command, when SHUI_DEBUG is true' \
+    --command='confirm <prompt>|Yes or no; exit 0, 1, or 2 without a terminal' \
+    --command='select <prompt> <opt…>|Numbered menu' \
+    --command='radio <prompt> <opt…>|Arrow-key single choice' \
+    --command='multiselect <prompt> <opt…>|Checkbox list, with optional columns' \
+    --command='tabs <prompt> <label…>|Horizontal tab bar' \
+    --command='input <prompt>|Text entry (--default, --validate)' \
+    --command='password [<prompt>]|Masked text entry' \
+    --command='help [<command>]|This help, a command'"'"'s help, or a help page for your own tool' \
+    --command='theme <subcommand>|List, create or validate themes' \
+    --command='version|Print the shui version' \
+    --example='A success message|shui success "Deployed"' \
+    --example='A help page for your own tool|shui help --name=acme --desc="Ship folders" --command="deploy <dir>|Upload a folder"' \
+    --env='SHUI_ICONS|Icon set: nerd, emoji, unicode, ascii or none|nerd' \
+    --env='SHUI_THEME|Theme: default, minimal or plain|default' \
+    --env='SHUI_QUIET|Set to 1 to silence every command' \
+    --env='SHUI_DEBUG|Set to true to enable the debug commands' \
+    --env='NO_COLOR|No colour; also the default when stdout is not a terminal' \
+    --env='FORCE_COLOR|Colour even when piped; outranks NO_COLOR' \
+    --env='SHUI_FORCE_TTY|Treat stdout as a terminal, for tests' \
+    --see='https://kud.io/projects/shui/docs'
+}
 
-TEXT
-  shui bold <text>
-  shui dim <text>
-  shui italic <text>
-  shui underline <text>
-  shui text [<type>] <text>
-
-MESSAGES
-  shui success <message>
-  shui error <message>
-  shui warning <message>
-  shui info <message>
-  shui success-simple <message> [lines_before]
-  shui error-simple <message>
-  shui warning-simple <message>
-  shui info-simple <message>
-  shui muted <message>
-
-LAYOUT
-  shui section <title>
-  shui subtitle <title>
-  shui subsection <title>
-  shui divider [--char=C] [--width=N] [--color=<type>]
-  shui fence [label] [--char=C] [--color=<type>]
-  shui hr
-  shui center-text <text> [--width=N]
-  shui spacer [n]
-  shui screen <title> -- <command> [args…]
-
-INLINE  (use inside $(...))
-  shui badge <type> <text>
-  shui pill <type> <text>
-
-BLOCKS
-  shui box [--title=<title>] <content>
-  shui banner <type> <title> [content]
-  shui table [--sep=<char>] <header> [<row>…]
-  shui row [--tag-width=N] [--name-width=N] <variant> <tag> <name> [<detail>]
-
-PROGRESS
-  shui progress <current> <total> [--width=N] [--label=<text>] [--filled-char=X] [--empty-char=Y] [--inline] [--iterm=normal|success|error|warning|indeterminate|clear]
-  shui spinner [--success=<msg>] [--fail=<msg>] <message> -- <command>
-  shui spinner-tick <frame_idx> <msg>
-  shui spinner-clear
-
-TASK
-  shui task-start <msg>
-  shui task-done <msg>
-  shui final-success <msg>
-  shui final-fail <msg>
-
-TITLE
-  shui title <text>
-  shui title-action <action> <target>
-  shui title-install <target>
-  shui title-update <target>
-
-STEP
-  shui set-total-steps <n>
-  shui next-step <msg>
-
-LOADER
-  shui loader [--style=dots|pulse|spinner] [--duration=N] <msg>
-
-ANIMATION
-  shui typewriter [--delay=N] [--color=<type>] <text>
-  shui fade-in [--steps=N] <text>
-
-CURSOR
-  shui hide-cursor
-  shui show-cursor
-  shui save-cursor
-  shui restore-cursor
-  shui move-cursor <row> <col>
-  shui clear-line
-  shui cleanup
-
-LINK
-  shui hyperlink <text> <url>
-  shui print-link <text> <url>
-
-UTIL
-  shui terminal-size
-
-DEBUG  (requires SHUI_DEBUG=true)
-  shui debug <msg>
-  shui debug-vars <var1> [var2…]
-  shui debug-timing <start_epoch> <operation_name>
-  shui debug-command <cmd…>
-
-INTERACTIVE
-  shui confirm [--default=y|n] <prompt>
-  shui select <prompt> <opt1> [opt2…]
-  shui radio <prompt> <opt1> [opt2…]
-  shui multiselect <prompt> <opt1> [opt2…]
-  shui tabs <prompt> <label[⇥desc]>…
-  shui input [--default=<value>] [--validate=email|url|number|<regex>] <prompt>
-  shui password [<prompt>]
-
-THEME
-  shui theme list
-  shui theme create <name>
-  shui theme validate
-
-ICONS
-  SHUI_ICONS=nerd|emoji|none
-
-QUIET
-  SHUI_QUIET=1               suppress all output
-
-COLOUR
-  NO_COLOR=1                 no escapes at all; also the default when stdout is not a terminal
-  FORCE_COLOR=1              colour even when piped (outranks NO_COLOR)
-
-TYPES
-  success  error  warning  info  primary  muted  accent  secondary  group  danger
-
-VERSION
-  shui version
-HELP
+# `shui help`: shui's own help; `shui help <command>`: that command's help;
+# `shui help --name=…`: a help page for the caller's own tool.
+_shui_help_dispatch() {
+  if (( $# == 0 )); then
+    _shui_help
+  elif [[ $1 == --* ]]; then
+    _shui_help_render "$@"
+  else
+    _shui_help_cmd "$1"
+  fi
 }
 
 _shui_help_cmd() {
@@ -338,6 +311,16 @@ _shui_help_cmd() {
     password)
       echo "Usage: shui password [<prompt>]"
       echo "Masked text entry — echoes '*' per keystroke. Prints the raw value to stdout." ;;
+    help)
+      echo "Usage: shui help [<command>]"
+      echo "       shui help --name=<tool> [--version=<v>] [--desc=<text>] [--usage=<line>]…"
+      echo "                 [--about=<text>] [--command=<name|desc>]… [--argument=<name|desc>]…"
+      echo "                 [--option=<name|desc[|default]>]… [--example=<comment|command>]…"
+      echo "                 [--env=<name|desc[|default]>]… [--see=<url>]…"
+      echo "With no argument, shui's own help; with a command, that command's help."
+      echo "With flags, a help page for your own tool in the shared layout: USAGE, COMMANDS,"
+      echo "ARGUMENTS, OPTIONS, EXAMPLES, ENVIRONMENT, SEE ALSO, each left out when empty."
+      echo "Colour on a terminal, bold only under NO_COLOR, no escapes at all when piped." ;;
     theme)
       echo "Usage: shui theme list|create|validate"
       echo "  list      — list available themes"
@@ -405,7 +388,7 @@ shui() {
     password)    _shui_password    "$@" ;;
     theme)    _shui_theme_cmd "$@" ;;
     version|--version|-v) echo "shui $SHUI_VERSION" ;;
-    help|--help|-h) _shui_help ;;
+    help|--help|-h) _shui_help_dispatch "$@" ;;
     *)
       echo "shui: unknown command '${_shui_cmd}'" >&2
       echo "Run 'shui help' for usage." >&2
