@@ -6,10 +6,6 @@ All notable changes to this project are documented here.
 
 ## [1.6.0] — 2026-11-21
 
----
-
-## [1.6.0] — 2026-11-21
-
 ### ✨ Features
 
 - `multiselect` can lay its options out as a table. `--columns=<spec>` turns each row into `id<TAB>cell<TAB>cell…` and fits the columns to the terminal. Each column in the spec is `align:width:drop`. One flexible `*` column stops growing at its widest cell, `*N` sets a minimum for it, and the columns with the highest drop numbers disappear first when the terminal is narrow.
