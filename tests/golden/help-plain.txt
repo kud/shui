@@ -1,0 +1,39 @@
+acme-cli 1.4.0
+Ship static folders to Acme hosting
+
+USAGE
+  acme-cli <command> [options]
+  acme-cli deploy <dir> [--force]
+
+  Every command reads acme.json from the current folder when it exists; the
+  flags below override it.
+
+COMMANDS
+  deploy <dir>            Upload a folder and publish it
+  login                   Store an API token for later commands
+  rollback <deployment-id…>
+                          Restore one or more earlier deployments and make the
+                          latest of them live
+
+ARGUMENTS
+  <dir>                   Folder to upload
+
+OPTIONS
+  -p, --project <id>      Project to act on (default: from acme.json)
+  -f, --force             Skip the confirmation prompt
+      --dry-run           Show what would be uploaded without sending anything
+      --region <name>     Data centre to deploy to (default: eu-west)
+
+EXAMPLES
+  # Publish the build folder
+  $ acme-cli deploy dist
+
+  $ acme-cli rollback d_8f2c
+
+ENVIRONMENT
+  ACME_TOKEN              API token, used when no login is stored
+  ACME_CONFIG_DIRECTORY_OVERRIDE
+                          Where tokens are kept
+
+SEE ALSO
+  https://acme.dev/docs/cli
