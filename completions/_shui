@@ -96,7 +96,7 @@ _shui() {
     # meta
     'theme:list/create/validate themes'
     'version:print the shui version'
-    'help:show help'
+    'help:show help, or a help page for your own tool'
   )
 
   _arguments -C \
@@ -163,6 +163,25 @@ _shui() {
             '--success=[success message]:text:' \
             '--fail=[failure message]:text:' \
             '*:message then -- command:' ;;
+        help)
+          if [[ ${words[CURRENT]} == -* ]]; then
+            local -a flags=(
+              '--name=:tool name, bold in the header'
+              '--version=:version, beside the name'
+              '--desc=:one-line description'
+              '--usage=:a USAGE line (repeat)'
+              '--about=:short paragraph under USAGE'
+              '--command=:a COMMANDS row, name|description (repeat)'
+              '--argument=:an ARGUMENTS row, name|description (repeat)'
+              '--option=:an OPTIONS row, name|description[|default] (repeat)'
+              '--example=:an EXAMPLES entry, comment|command (repeat)'
+              '--env=:an ENVIRONMENT row, name|description[|default] (repeat)'
+              '--see=:a SEE ALSO link (repeat)'
+            )
+            _describe -t flags 'help flag' flags -S ''
+          else
+            _describe -t commands 'shui command' commands
+          fi ;;
         *) ;;
       esac
       ;;
