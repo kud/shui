@@ -320,7 +320,8 @@ _shui_help_cmd() {
       echo "With no argument, shui's own help; with a command, that command's help."
       echo "With flags, a help page for your own tool in the shared layout: USAGE, COMMANDS,"
       echo "ARGUMENTS, OPTIONS, EXAMPLES, ENVIRONMENT, SEE ALSO, each left out when empty."
-      echo "Colour on a terminal, bold only under NO_COLOR, no escapes at all when piped." ;;
+      echo "Colour on a terminal (truecolor, 256 or 16 from COLORTERM and TERM), bold and"
+      echo "underline only under NO_COLOR, no escapes at all when piped." ;;
     theme)
       echo "Usage: shui theme list|create|validate"
       echo "  list      — list available themes"

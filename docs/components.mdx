@@ -170,6 +170,9 @@ shui help --name=acme-cli --version=1.4.0 --desc='Ship static folders to Acme ho
 ```
 
 Descriptions start at column 26 in every section; headings carry the only
-colour. Under `NO_COLOR` the page keeps bold and drops colour; piped or written
-to a file it carries no escape at all. `--about` adds a short paragraph under
-USAGE, and `shui help --help` lists every flag.
+structural colour. Colours come from @kud/glyphs, not the theme, so the page
+reads the same in every tool, and the output is byte for byte what
+@kud/ink-ui's `renderHelp` prints for the same input. Under `NO_COLOR` the page
+keeps bold and underline and drops colour; piped or written to a file it
+carries no escape at all. `--about` adds a short paragraph under USAGE, and
+`shui help --help` lists every flag.

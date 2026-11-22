@@ -42,7 +42,7 @@ src/
     columns.zsh           # multiselect --columns: cell markup, column fitting, detail pane and footer renderer
     help.zsh              # shui help — the shared CLI help layout (also draws shui's own help)
 assets/                   # SVG screenshots embedded in README
-tests/golden/             # golden renderings for tests/test-help.zsh (SHUI_UPDATE_GOLDEN=1 rewrites them)
+tests/golden/help/        # @kud/ink-ui's help byte contract (copied verbatim) + deploy.zsh fixture; tests/test-help.zsh must match it
 completions/
   _shui                   # zsh completion — kept in parity with the dispatcher by tests/test-completion.zsh
 scripts/
