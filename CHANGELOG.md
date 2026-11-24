@@ -4,6 +4,20 @@ All notable changes to this project are documented here.
 
 ---
 
+## [1.7.0] — 2026-11-24
+
+### ✨ Features
+
+- `shui password` now reads like `sudo`: echo off, line mode, so terminals switch on Secure Keyboard Entry while you type. A muted `(typing hidden)` hint replaces the stars. ([69eb540](https://github.com/kud/shui/commit/69eb54054c8afd21cea532af5408ccfd633c5b4e))
+- `shui password --mask` keeps the old one-star-per-key prompt, at the cost of Secure Keyboard Entry staying off.
+
+### 🔄 Changed
+
+- Ctrl-C in `shui password` is now a real SIGINT, not a swallowed key. A script that traps `INT` sees exit 130; an untrapped script is killed, where the prompt used to absorb it and return 130. The terminal is restored either way.
+- Ctrl-D on an empty line in `shui password` exits 2.
+
+---
+
 ## [1.6.0] — 2026-11-21
 
 ### ✨ Features
