@@ -38,7 +38,7 @@ src/
     animation.zsh         # one-shot text effects — typewriter, fade-in
     screen.zsh            # section header + command runner with elapsed time; also timer-start/timer-end for per-step timing
     tabs.zsh              # live horizontal tab bar — ←/→/1-9 move, enter confirms
-    interactive.zsh       # confirm, select, radio, multiselect, input (--validate=email|url|number|<regex>), password (masked)
+    interactive.zsh       # confirm, select, radio, multiselect, input (--validate=email|url|number|<regex>), password (hidden, sudo-style so secure keyboard entry engages; --mask for stars)
     columns.zsh           # multiselect --columns: cell markup, column fitting, detail pane and footer renderer
 assets/                   # SVG screenshots embedded in README
 completions/

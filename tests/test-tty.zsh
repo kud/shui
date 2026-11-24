@@ -379,11 +379,37 @@ assert_contains "and returns nothing" "<<rc=0>><<out=>>" "$_PTY"
 # ---------------------------------------------------------------------------
 _t_section "password"
 
-_masked='before=$(_modes); out=$(shui password "Passphrase?"); rc=$?; [[ $(_modes) == $before ]] && t=same || t=changed; print -r -- "<<rc=$rc>><<tty=$t>><<out=$out>>"'
-_pty 10 40 "$_masked" "Passphrase?" @0.3 a b $'\e[3~' $'\e[5~' $'\e[A' c $'\177' d $'\n'
-assert_contains "Delete, PgUp and arrows add nothing" "<<rc=0>><<tty=same>><<out=abd>>" "$_PTY"
-_pty 10 40 "$_masked" "Passphrase?" @0.3 a $'\003'
+# The default prompt must look like sudo's to the terminal: echo off, canonical
+# and signals on while it waits, or iTerm2 never engages secure keyboard entry.
+# The read spy records the modes at the moment the line is read.
+_line='read() { print -r -- "<<reading:$(_modes)>>" >&2; builtin read "$@"; }; before=$(_modes); out=$(shui password "Passphrase?"); rc=$?; [[ $(_modes) == $before ]] && t=same || t=changed; print -r -- "<<rc=$rc>><<tty=$t>><<out=$out>>"'
+_pty 10 40 "$_line" "Passphrase?" @0.3 a b c $'\n'
+_reading=${${_PTY#*<<reading:}%%>>*}
+for _mode in -echo icanon isig; do
+  assert_contains "waits with ${_mode}" " ${_mode} " " ${_reading} "
+done
+assert_contains "returns the line, tty settings back" "<<rc=0>><<tty=same>><<out=abc>>" "$_PTY"
+assert_not_contains "never echoes what was typed" "abc<<" "${_PTY%%<<rc=*}"
+assert_not_contains "draws no stars" "*" "${_PTY%%<<rc=*}"
+
+# Ctrl-C is a real signal here, so it reaches the caller too: one that traps
+# INT carries on and reads 130; one that does not dies, as it would under sudo.
+_pty 10 40 "trap : INT; $_line" "Passphrase?" @0.3 a $'\003'
 assert_contains "ctrl-c: exits 130, echo back on, no value" "<<rc=130>><<tty=same>><<out=>>" "$_PTY"
+
+_pty 10 40 'trap "print caught" INT; shui password "Passphrase?" >/dev/null; print -r -- "<<after>>"; trap' "Passphrase?" @0.3 a $'\n'
+assert_contains "the caller's INT trap is left alone" "<<after>>"$'\n'"trap -- 'print caught' INT" "$_PTY"
+
+_pty 10 40 "trap : INT; before=\$(_modes); zsh -fc 'source ${SHUI_DIR}/shui.zsh; out=\$(shui password Pass:); print never'; rc=\$?; [[ \$(_modes) == \$before ]] && t=same || t=changed; print -r -- \"<<rc=\$rc>><<tty=\$t>>\"" "Pass:" @0.3 a $'\003'
+assert_contains "untrapped script: dies with 130, tty settings back" "<<rc=130>><<tty=same>>" "$_PTY"
+assert_not_contains "untrapped script: does not carry on" "never" "$_PTY"
+
+_masked='before=$(_modes); out=$(shui password --mask "Passphrase?"); rc=$?; [[ $(_modes) == $before ]] && t=same || t=changed; print -r -- "<<rc=$rc>><<tty=$t>><<out=$out>>"'
+_pty 10 40 "$_masked" "Passphrase?" @0.3 a b $'\e[3~' $'\e[5~' $'\e[A' c $'\177' d $'\n'
+assert_contains "--mask: Delete, PgUp and arrows add nothing" "<<rc=0>><<tty=same>><<out=abd>>" "$_PTY"
+assert_contains "--mask: one star per character" "**" "$_PTY"
+_pty 10 40 "$_masked" "Passphrase?" @0.3 a $'\003'
+assert_contains "--mask: ctrl-c exits 130, echo back on, no value" "<<rc=130>><<tty=same>><<out=>>" "$_PTY"
 
 # ---------------------------------------------------------------------------
 # 9. confirm
