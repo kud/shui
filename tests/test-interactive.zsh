@@ -105,6 +105,7 @@ _out=$(shui input --help 2>&1)
 assert_contains "input --help documents --validate" "--validate" "$_out"
 
 _out=$(shui password --help 2>&1)
-assert_contains "password --help mentions masking" "Masked" "$_out"
+assert_contains "password --help documents --mask" "--mask" "$_out"
+assert_contains "password --help explains secure entry" "secure keyboard entry" "$_out"
 
 _t_results

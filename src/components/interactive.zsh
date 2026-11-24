@@ -605,22 +605,66 @@ _shui_input() {
   printf '%s\n' "$value"
 }
 
-# Masked text entry — echoes '*' per keystroke, never the raw character.
-# Reads in raw mode from the tty so nothing lands in the terminal scrollback;
-# the resolved value still prints to stdout, matching _shui_input.
+# The muted hint after the password prompt, standing in for the stars.
+typeset -g _SHUI_PASSWORD_HINT="typing hidden"
+
+# Hidden text entry. Nothing typed is echoed; the value prints to stdout,
+# matching _shui_input.
+#
+# By default it is a plain line read with echo off and the line discipline left
+# canonical: the shape of sudo's prompt, which is what a terminal watches for
+# before turning on secure keyboard entry (iTerm2's padlock, Terminal.app's
+# Secure Keyboard Entry). Raw mode, which a '*' per keystroke needs, hides the
+# prompt from that check, so --mask trades secure entry for the stars.
 _shui_password() {
   local prompt="Password:"
+  local -i mask=0
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      *) prompt="$1"; shift ;;
+      --mask) mask=1;      shift ;;
+      *)      prompt="$1"; shift ;;
     esac
   done
 
   _shui_require_tty || return 2
 
-  printf '%s%s%s ' "$SHUI_BOLD" "$prompt" "$SHUI_RESET" >&2
+  if (( mask )); then
+    printf '%s%s%s ' "$SHUI_BOLD" "$prompt" "$SHUI_RESET" >&2
+    _shui_password_masked
+    return
+  fi
 
+  # Nothing moves while typing, so a muted hint, drawn like _shui_input's
+  # default, says the keys are landing. The line is never rewritten afterwards.
+  printf '%s%s%s %s(%s)%s ' "$SHUI_BOLD" "$prompt" "$SHUI_RESET" \
+    "$SHUI_COLOR_MUTED" "$_SHUI_PASSWORD_HINT" "$SHUI_RESET" >&2
+
+  setopt localoptions localtraps
+  local old_stty value=""
+  local -i exit_code=0
+  old_stty=$(stty -g </dev/tty 2>/dev/null) || old_stty=""
+
+  # Ctrl-C stays a signal here: isig must be on for the terminal to see a
+  # password prompt. Untrapped it killed the prompt with echo still off. The
+  # trap's break ends the one-pass loop, which is what stops read: zsh retries
+  # a read a plain trap interrupted. localtraps drops the trap on return.
+  trap 'exit_code=130; break' INT
+  stty -echo icanon isig </dev/tty >/dev/null 2>&1
+  while true; do
+    read -r value </dev/tty || (( exit_code )) || exit_code=2
+    break
+  done
+  stty "${old_stty:-echo}" </dev/tty >/dev/null 2>&1
+  printf '\n' >&2
+
+  (( exit_code )) && return $exit_code
+  printf '%s\n' "$value"
+}
+
+# --mask: echoes '*' per keystroke. Reads raw, so secure keyboard entry never
+# engages. Runs inside _shui_password, after the prompt is drawn.
+_shui_password_masked() {
   # -isig makes ctrl-c a keypress: as a signal it killed the caller with echo
   # still off, and the cancel branch below never ran.
   local old_stty value=""

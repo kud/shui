@@ -210,7 +210,7 @@ INTERACTIVE
   shui multiselect <prompt> <opt1> [opt2…]
   shui tabs <prompt> <label[⇥desc]>…
   shui input [--default=<value>] [--validate=email|url|number|<regex>] <prompt>
-  shui password [<prompt>]
+  shui password [--mask] [<prompt>]
 
 THEME
   shui theme list
@@ -336,8 +336,11 @@ _shui_help_cmd() {
       echo "Prints the entered value to stdout."
       echo "--validate rules: email, url, number, or any regex. Re-prompts until valid." ;;
     password)
-      echo "Usage: shui password [<prompt>]"
-      echo "Masked text entry — echoes '*' per keystroke. Prints the raw value to stdout." ;;
+      echo "Usage: shui password [--mask] [<prompt>]"
+      echo "Hidden text entry. Prints the raw value to stdout."
+      echo "Echo is off and the line is read whole, so terminals that watch for"
+      echo "password prompts (iTerm2, Terminal.app) turn on secure keyboard entry."
+      echo "--mask  echo '*' per keystroke instead; reads raw, so secure entry stays off." ;;
     theme)
       echo "Usage: shui theme list|create|validate"
       echo "  list      — list available themes"

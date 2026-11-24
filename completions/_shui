@@ -92,7 +92,7 @@ _shui() {
     'multiselect:checkbox multi select'
     'tabs:interactive tabbed selector'
     'input:text entry (--default, --validate)'
-    'password:masked text entry'
+    'password:hidden text entry (--mask)'
     # meta
     'theme:list/create/validate themes'
     'version:print the shui version'
@@ -122,6 +122,10 @@ _shui() {
           _arguments \
             '--default=[default value]:value:' \
             '--validate=[validation rule]:rule:(email url number)' \
+            '*:prompt:' ;;
+        password)
+          _arguments \
+            '--mask[echo * per keystroke, without secure keyboard entry]' \
             '*:prompt:' ;;
         multiselect)
           _arguments \
