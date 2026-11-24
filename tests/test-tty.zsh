@@ -391,6 +391,12 @@ done
 assert_contains "returns the line, tty settings back" "<<rc=0>><<tty=same>><<out=abc>>" "$_PTY"
 assert_not_contains "never echoes what was typed" "abc<<" "${_PTY%%<<rc=*}"
 assert_not_contains "draws no stars" "*" "${_PTY%%<<rc=*}"
+_drawn=$(strip_ansi "${${_PTY%%<<rc=*}//<<reading:*>>$'\n'/}|")
+assert_eq "prompt, muted hint, then one newline and nothing else" \
+  "Passphrase? (typing hidden) "$'\n|' "$_drawn"
+assert_contains "hint drawn in the muted token" \
+  "${SHUI_COLOR_MUTED}(typing hidden)${SHUI_RESET}" "$_PTY"
+assert_not_contains "never rewrites the line" $'\e[K' "$_PTY"
 
 # Ctrl-C is a real signal here, so it reaches the caller too: one that traps
 # INT carries on and reads 130; one that does not dies, as it would under sudo.

@@ -605,6 +605,9 @@ _shui_input() {
   printf '%s\n' "$value"
 }
 
+# The muted hint after the password prompt, standing in for the stars.
+typeset -g _SHUI_PASSWORD_HINT="typing hidden"
+
 # Hidden text entry. Nothing typed is echoed; the value prints to stdout,
 # matching _shui_input.
 #
@@ -626,12 +629,16 @@ _shui_password() {
 
   _shui_require_tty || return 2
 
-  printf '%s%s%s ' "$SHUI_BOLD" "$prompt" "$SHUI_RESET" >&2
-
   if (( mask )); then
+    printf '%s%s%s ' "$SHUI_BOLD" "$prompt" "$SHUI_RESET" >&2
     _shui_password_masked
     return
   fi
+
+  # Nothing moves while typing, so a muted hint, drawn like _shui_input's
+  # default, says the keys are landing. The line is never rewritten afterwards.
+  printf '%s%s%s %s(%s)%s ' "$SHUI_BOLD" "$prompt" "$SHUI_RESET" \
+    "$SHUI_COLOR_MUTED" "$_SHUI_PASSWORD_HINT" "$SHUI_RESET" >&2
 
   setopt localoptions localtraps
   local old_stty value=""
