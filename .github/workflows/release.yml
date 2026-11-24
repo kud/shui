@@ -1,11 +1,22 @@
 name: Release
 
-# Tags the version in VERSION and publishes a GitHub release.
-# Run it by hand on main once VERSION, SHUI_VERSION and CHANGELOG.md carry the
-# new version (bin/release.sh --sync, or a release PR). Consumers pin the tag
-# (ambre: antidote.yml and plugins.txt), so the tag is the release.
+# Publishes the GitHub release for a version tag.
+#
+# Two ways in, one result:
+#   - push of a v* tag: bin/release.sh (via git lzv) tags and pushes, and this
+#     publishes the release for that tag.
+#   - by hand on main: tags the version in VERSION when the tag does not exist
+#     yet (a release PR), then publishes. Rerunning it on a tag that has no
+#     release yet repairs the missing release.
+#
+# Either way VERSION, SHUI_VERSION and CHANGELOG.md must carry the version.
+# Consumers pin the tag (ambre: antidote.yml and plugins.txt), so the tag is the
+# release. A tag pushed from this workflow uses GITHUB_TOKEN, which does not
+# start another run, so the manual path never publishes twice.
 
 on:
+  push:
+    tags: ["v*"]
   workflow_dispatch:
 
 jobs:
@@ -22,16 +33,24 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          [[ "$GITHUB_REF" == "refs/heads/main" ]] || { echo "::error::Run the release from main."; exit 1; }
-          version=$(tr -d '[:space:]' < VERSION)
-          tag="v$version"
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            tag="${GITHUB_REF#refs/tags/}"
+            version="${tag#v}"
+            [[ "$(tr -d '[:space:]' < VERSION)" == "$version" ]] || { echo "::error::VERSION does not match $tag."; exit 1; }
+          else
+            [[ "$GITHUB_REF" == "refs/heads/main" ]] || { echo "::error::Run the release from main."; exit 1; }
+            version=$(tr -d '[:space:]' < VERSION)
+            tag="v$version"
+          fi
           grep -q "^SHUI_VERSION=\"$version\"" shui.zsh || { echo "::error::shui.zsh SHUI_VERSION is not $version."; exit 1; }
           grep -q "^## \[$version\]" CHANGELOG.md || { echo "::error::CHANGELOG.md has no [$version] section."; exit 1; }
-          if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
-            echo "::error::$tag already exists. Bump VERSION first."
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "::error::$tag is already released. Bump VERSION first."
             exit 1
           fi
+          if ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+            git tag "$tag" "$GITHUB_SHA"
+            git push origin "refs/tags/$tag"
+          fi
           awk -v v="$version" '$0 ~ "^## \\[" v "\\]" {on=1; next} on && /^## \[/ {exit} on' CHANGELOG.md | sed '/^---$/d' > notes.md
-          git tag "$tag" "$GITHUB_SHA"
-          git push origin "refs/tags/$tag"
           gh release create "$tag" --title "$tag" --notes-file notes.md --verify-tag
